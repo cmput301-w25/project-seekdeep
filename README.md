@@ -4,12 +4,12 @@
 
 | Name        | CCID   | GitHub Username |
 | ----------- | ------ | --------------- |
-| [Full Name] | [CCID] | [@username]     |
-| [Full Name] | [CCID] | [@username]     |
-| [Full Name] | [CCID] | [@username]     |
-| [Full Name] | [CCID] | [@username]     |
-| [Full Name] | [CCID] | [@username]     |
-| [Full Name] | [CCID] | [@username]     |
+| Jachelle Chan | jachelle | Jshell0     |
+| Nancy Lin | nylin | nylinUA     |
+| Kevin Tu | ktu3 | kevtu2     |
+| Deryk Fong | dfong2 | pivner     |
+| Saurabh Singh Baghel | sbaghel | saurabh-s-baghel     |
+| Sarah Chang | skchang1 | skc-11     |
 
 ## Project Description
 
@@ -29,7 +29,7 @@
 
 ## Documentation
 
-- [Wiki Link]
+- https://github.com/cmput301-w25/project-seekdeep/wiki
 - [Scrum Board]
 - [UI Mockups]
 - [UML]
