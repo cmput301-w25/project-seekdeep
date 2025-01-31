@@ -1,15 +1,15 @@
-# CMPUT 301 W25 - Team [Team Name]
+# CMPUT 301 W25 - Team SeekDeep
 
 ## Team Members
 
-| Name        | CCID   | GitHub Username |
-| ----------- | ------ | --------------- |
-| Jachelle Chan | jachelle | Jshell0     |
-| Nancy Lin | nylin | nylinUA     |
-| Kevin Tu | ktu3 | kevtu2     |
-| Deryk Fong | dfong2 | pivner     |
-| Saurabh Singh Baghel | sbaghel | saurabh-s-baghel     |
-| Sarah Chang | skchang1 | skc-11     |
+| Name                 | CCID     | GitHub Username      |  
+| -----------          | ------   | ---------------      |
+| Jachelle Chan        | jachelle | Jshell0              |
+| Nancy Lin            | nylin    | nylinUA              |
+| Kevin Tu             | ktu3     | kevtu2               |
+| Deryk Fong           | dfong2   | pivner               |
+| Saurabh Singh Baghel | sbaghel  | saurabh-s-baghel     |
+| Sarah Chang          | skchang1 | skc-11               |
 
 ## Project Description
 
