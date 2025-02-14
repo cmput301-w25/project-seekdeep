@@ -29,7 +29,7 @@
 
 ## Documentation
 
-- https://github.com/cmput301-w25/project-seekdeep/wiki
-- [Scrum Board]
-- [UI Mockups]
+- [Wiki Link](https://github.com/cmput301-w25/project-seekdeep/wiki)
+- [Scrum Board](https://github.com/orgs/cmput301-w25/projects/70/views/1)
+- [UI Mockups](https://github.com/cmput301-w25/project-seekdeep/wiki/User-Interface-Mockups)
 - [UML]
