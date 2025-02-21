@@ -46,7 +46,12 @@ public class Mood {
     }
 
     public void setReasonWhy(String reasonWhy) {
+        if (reasonWhy.length() <= 20 || reasonWhy.split(" ").length <= 3) {
         this.reasonWhy = reasonWhy;
+        }
+        else {
+           throw new IllegalArgumentException("User's reason must be <=20 chars OR <=3 words!");
+        }
     }
 
 }
