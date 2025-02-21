@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "project-seekdeep"
+rootProject.name = "project_seekdeep"
 include(":app")
+ 
