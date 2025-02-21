@@ -7,7 +7,7 @@ public enum SocialSituations {
     SEVERAL_PEOPLE("Two or Several People"),
     CROWD("With a Crowd");
 
-    private String formattedName;
+    private final String formattedName;
     private SocialSituations(String formattedName) {
         this.formattedName = formattedName;
     }
