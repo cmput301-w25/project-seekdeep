@@ -13,12 +13,16 @@ public class Mood {
     private Image image;
     private Date postedDate;
     private String emotionalState;
+
+    private String reasonWhy;
+
     private List<String> followers = new ArrayList<>();
 //    private User owner;
     public Mood(/*User owner,*/String emotionalState){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
+        this.reasonWhy = "";
     }
     public Mood(/*User owner,*/String emotionalState, String socialSituation, String trigger){
 //        this.owner = owner;
@@ -26,6 +30,7 @@ public class Mood {
         this.postedDate = new Date();
         this.socialSituation = socialSituation;
         this.trigger = trigger;
+        this.reasonWhy = "";
     }
     public void setTrigger(String trigger){
         this.trigger = trigger;
@@ -39,4 +44,9 @@ public class Mood {
     public void setImage(Image image){
         this.image = image;
     }
+
+    public void setReasonWhy(String reasonWhy) {
+        this.reasonWhy = reasonWhy;
+    }
+
 }
