@@ -2,6 +2,8 @@ package com.example.code;
 
 import android.media.Image;
 
+import com.example.project_seekdeep.SocialSituations;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,18 +11,19 @@ import java.util.List;
 public class Mood {
 
     private String trigger;
-    private String socialSituation;
+    private SocialSituations socialSituation;
     private Image image;
     private Date postedDate;
     private String emotionalState;
     private List<String> followers = new ArrayList<>();
 //    private User owner;
+
     public Mood(/*User owner,*/String emotionalState){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
     }
-    public Mood(/*User owner,*/String emotionalState, String socialSituation, String trigger){
+    public Mood(/*User owner,*/String emotionalState, SocialSituations socialSituation, String trigger){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
@@ -30,7 +33,7 @@ public class Mood {
     public void setTrigger(String trigger){
         this.trigger = trigger;
     }
-    public void setSocialSituation(String socialSituation){
+    public void setSocialSituation(SocialSituations socialSituation){
         this.socialSituation = socialSituation;
     }
     public void setPostedDate(Date postedDate){
