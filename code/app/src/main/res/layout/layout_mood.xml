@@ -36,12 +36,11 @@
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_marginLeft="20sp"
+        android:layout_weight="1"
         android:text="\@user"
         android:textSize="10sp"
         app:layout_constraintLeft_toRightOf="@id/user_pfp_req_follow"
-        tools:layout_editor_absoluteX="10dp"
         tools:layout_editor_absoluteY="5dp" />
 
     <TextView
@@ -55,16 +54,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@id/username"
         tools:layout_editor_absoluteY="5dp" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match"
