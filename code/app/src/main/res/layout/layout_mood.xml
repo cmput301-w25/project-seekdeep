@@ -51,6 +51,7 @@
         android:gravity="right"
         android:text="date"
         android:textSize="10sp"
+        android:layout_marginRight="35sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@id/username"
         tools:layout_editor_absoluteY="5dp" />
@@ -60,6 +61,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/layout_rounded_mood_bg"
         android:orientation="vertical"
+        android:layout_marginRight="-10sp"
         app:layout_constraintTop_toBottomOf="@id/username"
         app:layout_constraintLeft_toRightOf="@id/user_pfp_req_follow"
         app:layout_constraintRight_toRightOf="@id/date">
