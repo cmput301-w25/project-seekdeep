@@ -9,6 +9,7 @@
         android:id="@+id/user_pfp_req_follow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="10dp">
 
         <ImageView
@@ -41,20 +42,20 @@
         android:text="\@user"
         android:textSize="10sp"
         app:layout_constraintLeft_toRightOf="@id/user_pfp_req_follow"
-        tools:layout_editor_absoluteY="5dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="35sp"
         android:layout_weight="1"
         android:gravity="right"
         android:text="date"
         android:textSize="10sp"
-        android:layout_marginRight="35sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@id/username"
-        tools:layout_editor_absoluteY="5dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:layout_width="match"
