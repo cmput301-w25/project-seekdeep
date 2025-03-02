@@ -6,14 +6,16 @@ package com.example.project_seekdeep;
 public enum EmotionalState {
     // these representations and colours can be changed later
     // the colours may change
-    ANGER("\uD83D\uDE20", "#CD5C5C"),  // RED
-    CONFUSION("\uD83E\uDD14", "#e59866"),  // ORANGE
-    DISGUST("\uD83E\uDD22", "#52be80 "),  // GREEN
-    FEAR("\uD83D\uDE28", "#aed6f1"),  // BLUE
-    HAPPINESS("\uD83D\uDE04", "#f7dc6f"),  // YELLOW
-    SHAME("\uD83D\uDE14", "#c39bd3"),  // PURPLE
-    SURPRISE("\uD83D\uDE2F", "#f1948a");  // PINK
-
+    // US 01.02.01 : As a participant, I want the emotional states to include at least: anger,
+    //confusion, disgust, fear, happiness, sadness, shame, and surprise.
+    ANGER("\uD83D\uDE20", "#D55353"),  // RED
+    CONFUSION("\uD83E\uDD14", "#FFC6E8"),  // PINK
+    DISGUST("\uD83E\uDD22", "#59C225 "),  // GREEN
+    FEAR("\uD83D\uDE28", "#828282"),  // GREY
+    HAPPINESS("\uD83D\uDE04", "#E6D600"),  // YELLOW
+    SADNESS("☹️", "#0055FF"),  // BLUE
+    SHAME("\uD83D\uDE14", "#AD2CED"),  // PURPLE
+    SURPRISE("\uD83D\uDE2F", "#E4A21F");  // ORANGE
     private String emoticon;
     private String colour;
     EmotionalState(String emoticon, String colour) {
