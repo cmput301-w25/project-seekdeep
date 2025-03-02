@@ -1,7 +1,11 @@
 package com.example.project_seekdeep;
 
+import androidx.annotation.NonNull;
+
 /**
  * This is a class that represents the emotional state of the user.
+ * @author Jachelle Chan
+ *
  */
 public enum EmotionalState {
     // these representations and colours can be changed later
@@ -22,8 +26,26 @@ public enum EmotionalState {
         this.emoticon = emoticon;
         this.colour = colour;
     }
-    // getters and setters
 
+    /**
+     * This method makes the string representation the EmotionalState class be first letter capitalized and the rest lowercase
+     * As well as adds the emoticon representation before the string itself.
+     * Eg: SADNESS -> ☹️ Sadness
+     * @return
+     *      The string representation of this class.
+     * Reference:
+     *      Taken from: https://stackoverflow.com/a/26768694
+     *      Authored by: Jorgesys
+     *      Taken by: Jachelle Chan
+     *      Taken on: March 2, 2025
+     */
+    @NonNull
+    @Override
+    public String toString() {
+        return this.emoticon + " " + this.name().substring(0,1).toUpperCase() + name().substring(1).toLowerCase();
+    }
+
+    // getters and setters which may be removed later?? //
     /**
      * This method fetches the emoticon associated with the mood
      * @return
@@ -33,10 +55,9 @@ public enum EmotionalState {
         return emoticon;
     }
 
-    // setters might be removed later! //
     /**
      * This method sets the emoticon for the mood
-     * @param emoticon
+     * @param emoticon the emotiocon of the associated emotional state
      */
     public void setEmoticon(String emoticon) {
         this.emoticon = emoticon;
@@ -53,7 +74,7 @@ public enum EmotionalState {
 
     /**
      * This method sets the colour for the mood
-     * @param colour
+     * @param colour the colour of the associated emotional state
      */
     public void setColour(String colour) {
         this.colour = colour;
