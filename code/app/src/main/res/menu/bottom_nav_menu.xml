@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <item
+        android:id="@+id/feed_bottom_nav"
+        android:title="Feed"
+        android:icon="@drawable/baseline_rss_feed_24"/>
+    <item
+        android:id="@+id/following_bottom_nav"
+        android:title="Following"
+        android:icon="@drawable/baseline_assist_walker_24"/>
+    <item
+        android:id="@+id/create_mood_bottom_nav"
+        android:title="Create Mood"
+        android:icon="@drawable/baseline_add_circle_outline_24"/>
+    <item
+        android:id="@+id/Map"
+        android:title="Map"
+        android:icon="@drawable/baseline_add_location_24"/>
+    <item
+        android:id="@+id/History"
+        android:title="History"
+        android:icon="@drawable/baseline_archive_24"/>
 </menu>
