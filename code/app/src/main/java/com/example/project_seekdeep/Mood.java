@@ -1,6 +1,8 @@
-package com.example.code;
+package com.example.project_seekdeep;
 
 import android.media.Image;
+
+import com.example.project_seekdeep.EmotionalState;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,15 +14,15 @@ public class Mood {
     private String socialSituation;
     private Image image;
     private Date postedDate;
-    private String emotionalState;
+    private EmotionalState emotionalState;
     private List<String> followers = new ArrayList<>();
 //    private User owner;
-    public Mood(/*User owner,*/String emotionalState){
+    public Mood(/*User owner,*/EmotionalState emotionalState){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
     }
-    public Mood(/*User owner,*/String emotionalState, String socialSituation, String trigger){
+    public Mood(/*User owner,*/EmotionalState emotionalState, String socialSituation, String trigger){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
