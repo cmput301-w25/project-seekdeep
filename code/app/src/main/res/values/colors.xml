@@ -9,14 +9,13 @@
     <color name="magnolia">#f8f0fb</color>
     <color name="ash_gray">#cad5ca</color>
 
-    <color name="anger_red">#cad5ca</color>
-    <color name="confusion_pink">#cad5ca</color>
-    <color name="disgust_green">#cad5ca</color>
-    <color name="fear_grey">#cad5ca</color>
-    <color name="happiness_yellow">#cad5ca</color>
-    <color name="sadness_blue">#cad5ca</color>
-    <color name="shame_purple">#cad5ca</color>
-    <color name="surprise_orange">#cad5ca</color>
-
+    <color name="anger_red">#D55353</color>
+    <color name="confusion_pink">#FFC6E8</color>
+    <color name="disgust_green">#59C225</color>
+    <color name="fear_grey">#828282</color>
+    <color name="happiness_yellow">#E6D600</color>
+    <color name="sadness_blue">#0055FF</color>
+    <color name="shame_purple">#AD2CED</color>
+    <color name="surprise_orange">#E4A21F</color>
 
 </resources>
