@@ -2,13 +2,14 @@ package com.example.project_seekdeep;
 
 import android.media.Image;
 
+import java.io.Serializable;
 import com.example.project_seekdeep.EmotionalState;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Mood {
+public class Mood implements Serializable {
 
     private String trigger;
     private String socialSituation;
