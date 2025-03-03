@@ -8,4 +8,14 @@
     <color name="medium_slate_blue">#8075FF</color>
     <color name="magnolia">#f8f0fb</color>
     <color name="ash_gray">#cad5ca</color>
+
+    <color name="anger_red">#cad5ca</color>
+    <color name="confusion_pink">#cad5ca</color>
+    <color name="disgust_green">#cad5ca</color>
+    <color name="fear_grey">#cad5ca</color>
+    <color name="happiness_yellow">#cad5ca</color>
+    <color name="sadness_blue">#cad5ca</color>
+    <color name="shame_purple">#cad5ca</color>
+    <color name="surprise_orange">#cad5ca</color>
+
 </resources>
