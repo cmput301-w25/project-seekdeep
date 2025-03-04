@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#E6D4F0">
+
+    <ImageView
+        android:id="@+id/custom_image"
+        android:layout_width="164dp"
+        android:layout_height="174dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/img"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.15" />
+
+    <EditText
+        android:id="@+id/text_username"
+        android:layout_width="220dp"
+        android:layout_height="42dp"
+        android:background="@drawable/text_box"
+        android:gravity="left"
+        android:hint="  Username"
+        app:layout_constraintBottom_toTopOf="@+id/text_password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.50"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/custom_image"
+        app:layout_constraintVertical_bias="0.695" />
+
+    <EditText
+        android:id="@+id/text_password"
+        android:layout_width="220dp"
+        android:layout_height="42dp"
+        android:background="@drawable/text_box"
+        android:gravity="left"
+        android:hint="  Password"
+        app:layout_constraintBottom_toTopOf="@+id/go_to_sign_up"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/custom_image"
+        app:layout_constraintVertical_bias="0.321" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/log_in_button"
+        android:layout_width="220dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="116dp"
+        android:autoSizeMaxTextSize="19sp"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeTextType="uniform"
+        android:backgroundTint="@color/dark_gray"
+        android:text="Log In"
+        android:textColor="#F8F8F8"
+        app:cornerRadius="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/go_to_sign_up"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.958" />
+
+    <TextView
+        android:id="@+id/go_to_sign_up"
+        android:layout_width="278dp"
+        android:layout_height="41dp"
+        android:layout_marginBottom="72dp"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="text"
+        android:text="Don't have an account? Sign up here."
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
