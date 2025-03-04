@@ -35,6 +35,9 @@
         android:text="Manage Requests"
         android:textSize="12sp"
         android:textColor="@color/raisin_black"
+        android:minHeight="32sp"
+
+        android:padding="4sp"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar_feed_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/toolbar_feed_icon" />
@@ -42,10 +45,10 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout"
         android:layout_width="wrap_content"
-
         android:layout_height="wrap_content"
+        android:layout_marginTop="12sp"
         app:layout_constraintStart_toStartOf="@+id/toolbar_feed_icon"
-        tools:layout_editor_absoluteY="67dp">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_feed_icon">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="164dp"
@@ -79,7 +82,7 @@
         android:layout_marginStart="4dp"
         android:layout_height="24sp"
         android:background="@drawable/rounded_borderless_magnolia_bg"
-        android:text="Filter Mood"
+
 
 
         app:layout_constraintBottom_toBottomOf="@+id/button_view_recent"
