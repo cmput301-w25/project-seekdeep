@@ -17,10 +17,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/mood_history_fragment_container"
-            android:name="com.example.project_seekdeep.MoodHistoryFragment"
+            android:id="@+id/fragment_container"
+            android:name="com.example.project_seekdeep.TestFragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
     </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
