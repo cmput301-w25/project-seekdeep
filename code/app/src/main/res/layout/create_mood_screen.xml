@@ -5,77 +5,171 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/wheel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:rotation="22.5"
+        android:scaleType="centerInside"
+        android:src="@drawable/wheel_no_frame"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageButton
         android:id="@+id/buttonAngry"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:layout_constraintBottom_toTopOf="@+id/space"
-        app:layout_constraintStart_toStartOf="@+id/space"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:background="transparent"
+        android:contentDescription="Select angry button"
+        android:scaleType="fitCenter"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleAngle="0"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/angry" />
 
     <ImageButton
         android:id="@+id/buttonConfused"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:layout_constraintBottom_toTopOf="@+id/space"
-        app:layout_constraintEnd_toEndOf="@+id/space"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintCircle="@id/wheel"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="45"
+        tools:srcCompat="@drawable/confused"
+        android:scaleType="fitCenter"
+        android:background="transparent"
+        android:contentDescription="Select confused button" />
 
     <ImageButton
         android:id="@+id/buttonDisgusted"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:layout_constraintStart_toEndOf="@+id/space"
-        app:layout_constraintTop_toTopOf="@+id/space"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="90"
+        android:src="@drawable/disgusted"
+        android:scaleType="fitCenter"
+        android:background="transparent"
+        android:contentDescription="Select disgusted button" />
 
     <ImageButton
         android:id="@+id/buttonFear"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:layout_constraintBottom_toBottomOf="@+id/space"
-        app:layout_constraintStart_toEndOf="@+id/space"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="135"
+        tools:srcCompat="@drawable/fear"
+        android:scaleType="fitCenter"
+        android:background="transparent"
+        android:contentDescription="Select fear button" />
 
     <ImageButton
         android:id="@+id/buttonHappy"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:layout_constraintEnd_toEndOf="@+id/space"
-        app:layout_constraintTop_toBottomOf="@+id/space"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="180"
+        tools:srcCompat="@drawable/happy"
+        android:scaleType="fitCenter"
+        android:background="transparent"
+        android:contentDescription="Select happy button" />
 
     <ImageButton
         android:id="@+id/buttonSad"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:layout_constraintStart_toStartOf="@+id/space"
-        app:layout_constraintTop_toBottomOf="@+id/space"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="225"
+        android:src="@drawable/sad"
+        android:scaleType="fitCenter"
+        android:background="transparent"
+        android:contentDescription="Select sad button" />
 
     <ImageButton
         android:id="@+id/buttonShame"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:layout_constraintEnd_toStartOf="@+id/space"
-        app:layout_constraintTop_toBottomOf="@+id/buttonSurprise"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="270"
+        tools:srcCompat="@drawable/shame"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        android:contentDescription="Select shame button" />
 
     <ImageButton
         android:id="@+id/buttonSurprise"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:layout_constraintEnd_toStartOf="@+id/space"
-        app:layout_constraintTop_toTopOf="@+id/space"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@android:color/transparent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleAngle="315"
+        app:layout_constraintCircleRadius="130dp"
+        tools:srcCompat="@drawable/surprised"
+        android:scaleType="fitCenter"
+        android:contentDescription="Select surprised button" />
 
     <Space
         android:id="@+id/space"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_marginTop="120dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How are you feeling right now?"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/space"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:text="Create"
+        app:layout_constraintBottom_toBottomOf="@+id/wheel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonHappy" />
+
+    <TextView
+        android:id="@+id/currently_selected_mood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="<mood_selected>"
+        app:layout_constraintBottom_toBottomOf="@+id/space"
+        app:layout_constraintEnd_toEndOf="@+id/space"
+        app:layout_constraintStart_toStartOf="@+id/space"
+        app:layout_constraintTop_toTopOf="@+id/space" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
