@@ -10,7 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="10dp">
+        tools:layout_editor_absoluteX="10dp"
+        tools:ignore="MissingConstraints">
 
         <ImageView
             android:id="@+id/profile_picture"
@@ -60,11 +61,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:layout_width="match"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/layout_rounded_mood_bg"
         android:orientation="vertical"
-        android:layout_marginRight="-10sp"
+        android:layout_marginRight="30sp"
+        android:layout_marginLeft="30sp"
         app:layout_constraintTop_toBottomOf="@id/username"
         app:layout_constraintLeft_toRightOf="@id/user_pfp_req_follow"
         app:layout_constraintRight_toRightOf="@id/date">
