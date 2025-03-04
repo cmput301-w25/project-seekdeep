@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:backgroundTint="@color/electric_indigo"
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/toolbar_feed_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -20,17 +21,69 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Feed"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar_feed_icon"
+        app:layout_constraintStart_toEndOf="@+id/toolbar_feed_icon"
+        app:layout_constraintTop_toTopOf="@+id/toolbar_feed_icon" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/button_manage_requests"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="32sp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/ash_gray"
         android:text="Manage Requests"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        android:textSize="12sp"
+        android:textColor="@color/raisin_black"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar_feed_icon"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/toolbar_title_feed"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintTop_toTopOf="@+id/toolbar_feed_icon" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout"
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/toolbar_feed_icon"
+        tools:layout_editor_absoluteY="67dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="164dp"
+            android:layout_height="24sp"
+            android:background="@drawable/rounded_borderless_magnolia_bg"
+            android:hint="Search Feed"
+            android:textSize="12sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/button_view_recent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4sp"
+        android:backgroundTint="@color/magnolia"
+        android:text="View Recent"
+
+        android:minHeight="32sp"
+
+        android:padding="0sp"
+        android:textColor="@color/raisin_black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayout"
+        app:layout_constraintStart_toEndOf="@+id/textInputLayout"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayout" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_height="24sp"
+        android:background="@drawable/rounded_borderless_magnolia_bg"
+        android:text="Filter Mood"
+
+
+        app:layout_constraintBottom_toBottomOf="@+id/button_view_recent"
+        app:layout_constraintStart_toEndOf="@+id/button_view_recent"
+        app:layout_constraintTop_toTopOf="@+id/button_view_recent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
