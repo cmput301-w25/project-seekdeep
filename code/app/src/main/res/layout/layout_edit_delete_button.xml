@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+
+    android:gravity="right"
+    >
+
+
+    <Button
+        android:id="@+id/edit_mood_button"
+        style="@android:style/Widget.Material.Light.Button.Small"
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+        android:minHeight="32sp"
+        android:padding="10sp"
+        android:text="Edit"
+        android:textColor="@color/raisin_black"
+
+        android:textSize="10sp"
+
+        />
+
+    <Button
+        android:id="@+id/delete_mood_button"
+        style="@android:style/Widget.Material.Light.Button.Small"
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+        android:minHeight="32sp"
+        android:padding="10sp"
+        android:text="Delete"
+
+        android:textColor="@color/raisin_black"
+
+        android:textSize="10sp" />
+
+</LinearLayout>

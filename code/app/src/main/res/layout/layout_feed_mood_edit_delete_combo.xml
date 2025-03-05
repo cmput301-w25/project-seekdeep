@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/user_pfp_req_follow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16sp"
+        android:layout_marginTop="4sp"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/profile_picture"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/request_follow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="request\nfollow"
+            android:textSize="6sp"
+            app:layout_constraintEnd_toEndOf="@+id/profile_picture"
+            app:layout_constraintStart_toStartOf="@+id/profile_picture"
+            app:layout_constraintTop_toBottomOf="@+id/profile_picture" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20sp"
+        android:layout_marginTop="4sp"
+        android:layout_weight="1"
+        android:text="\@user"
+        android:textSize="10sp"
+        app:layout_constraintLeft_toRightOf="@id/user_pfp_req_follow"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4sp"
+        android:layout_marginRight="35sp"
+        android:layout_weight="1"
+        android:gravity="right"
+        android:text="date"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/username"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout_mood_box"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="-10sp"
+        android:background="@drawable/layout_rounded_mood_bg"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toRightOf="@id/user_pfp_req_follow"
+        app:layout_constraintRight_toRightOf="@id/date"
+        app:layout_constraintTop_toBottomOf="@id/username">
+
+        <TextView
+            android:id="@+id/emotion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Emotion" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/reason"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Reason" />
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/trigger_icon"
+                android:layout_width="15sp"
+                android:layout_height="15sp"
+                android:layout_weight="0"
+                app:srcCompat="@android:drawable/ic_popup_reminder" />
+
+            <TextView
+                android:id="@+id/trigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="trigger"
+                android:textSize="10sp" />
+
+            <ImageView
+                android:id="@+id/social_situation_icon"
+                android:layout_width="15sp"
+                android:layout_height="15sp"
+                android:layout_marginLeft="10sp"
+                android:layout_weight="0"
+                app:srcCompat="@android:drawable/ic_menu_myplaces" />
+
+            <TextView
+                android:id="@+id/social_situation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="social situation"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="right
+"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout_mood_box"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout_mood_box"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_mood_box">
+
+        <Button
+            android:id="@+id/edit_mood_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="10sp"
+            android:textColor="@color/raisin_black"
+            android:textSize="10sp"
+            style="@android:style/Widget.Material.Light.Button.Small"
+            android:minHeight="32sp"
+
+            android:text="Edit"
+
+            />
+
+        <Button
+            android:id="@+id/delete_mood_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="10sp"
+            android:textColor="@color/raisin_black"
+            android:textSize="10sp"
+            android:minHeight="32sp"
+
+            style="@android:style/Widget.Material.Light.Button.Small"
+
+            android:text="Delete" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
