@@ -36,6 +36,7 @@
         android:background="@drawable/text_box"
         android:gravity="left"
         android:hint="  Username"
+        android:paddingLeft="10dp"
         app:layout_constraintBottom_toTopOf="@+id/text_password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
@@ -62,6 +63,7 @@
         android:background="@drawable/text_box"
         android:gravity="left"
         android:hint="  Password"
+        android:paddingLeft="10dp"
         app:layout_constraintBottom_toTopOf="@+id/go_to_log_in"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
@@ -86,6 +88,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.958" />
+
+    <TextView
+        android:id="@+id/password_toggle"
+        android:layout_width="226dp"
+        android:layout_height="57dp"
+        android:gravity="center_horizontal"
+        android:text="Password must be 8 characters in length and must contain a special character"
+        android:textColor="#453A3A"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/go_to_log_in"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sign_up_button"
+        app:layout_constraintVertical_bias="0.23" />
 
     <TextView
         android:id="@+id/go_to_log_in"

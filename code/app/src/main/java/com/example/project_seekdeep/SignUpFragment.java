@@ -1,7 +1,5 @@
 package com.example.project_seekdeep;
 
-import static java.security.AccessController.getContext;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,10 +19,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import org.w3c.dom.Text;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 
 public class SignUpFragment extends Fragment {
     private FirebaseFirestore db;
@@ -32,6 +27,7 @@ public class SignUpFragment extends Fragment {
     private MaterialButton signupButton;
     private CollectionReference usersRef;
     private TextView goToLogIn;
+    private TextView passwordTrigger;
 
     private ArrayAdapter<UserProfile> userArrayAdapter;
 
@@ -41,7 +37,13 @@ public class SignUpFragment extends Fragment {
         usernameInput = view.findViewById(R.id.text_username);
         passwordInput = view.findViewById(R.id.text_password);
         signupButton = view.findViewById(R.id.sign_up_button);
-        goToLogIn = view.findViewById(R.id.sign_up_button);
+        goToLogIn = view.findViewById(R.id.go_to_log_in);
+        passwordTrigger = view.findViewById(R.id.password_toggle);
+
+        passwordTrigger.setVisibility(view.INVISIBLE);
+        passwordInput.setOnClickListener(view1 -> {
+            passwordTrigger.setVisibility(view.VISIBLE);
+        });
 
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
@@ -75,18 +77,24 @@ public class SignUpFragment extends Fragment {
             Toast.makeText(getContext(), "Please enter a unique username and password in the fields.", Toast.LENGTH_SHORT).show();
         }
 
-        DocumentReference userDoc = usersRef.document(username);
-        userDoc.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()){
-                Toast.makeText(getContext(), "Username already exists! Try a different username or Log in to existing account", Toast.LENGTH_LONG).show();
-            }
-            else {
-                UserProfile newUser = new UserProfile(username, password);
-                userDoc.set(newUser)
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(getContext(), "New Account Created Successfully!", Toast.LENGTH_SHORT).show();
+        if (password.length() != 8){
+            Toast.makeText(getContext(), "Password needs to be 8 characters in length", Toast.LENGTH_SHORT).show();
+            passwordInput.setText("");
+        }
 
-                            //Go to main feed
+        else {
+            DocumentReference userDoc = usersRef.document(username);
+            userDoc.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()){
+                    Toast.makeText(getContext(), "Username already exists! Try a different username or Log in to existing account", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    UserProfile newUser = new UserProfile(username, password);
+                    userDoc.set(newUser)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getContext(), "New Account Created Successfully!", Toast.LENGTH_SHORT).show();
+
+                                //Go to main feed
 //                            FeedFragment feedFragment = new FeedFragment();
 //                            Bundle args = new Bundle();
 //                            args.putString("username", username);
@@ -96,11 +104,13 @@ public class SignUpFragment extends Fragment {
 //                                .replace(R.id.fragment_container, feedFragment)
 //                                .commit();
 
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(getContext(), "Error Occured: ", Toast.LENGTH_LONG).show();
-                        });
-            }
-        });
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getContext(), "Error Occured: ", Toast.LENGTH_LONG).show();
+                            });
+                }
+            });
+        }
+
     }
 }
