@@ -1,4 +1,4 @@
-package com.example.code;
+package com.example.project_seekdeep;
 
 import android.media.Image;
 
