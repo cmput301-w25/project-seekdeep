@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This is the Mood class I took off Jachelle's branch 8-us-010301.
+ * This is the Mood class I took off Jachelle's branch 8-us-010301. and edited
  * @author Jachelle Chan?
  */
 
@@ -24,14 +24,14 @@ public class Mood implements Serializable {
     private EmotionalState emotionalState;
     private List<String> followers = new ArrayList<>();
     private String reason;
-    //    private User owner;
-    public Mood(/*User owner,*/EmotionalState emotionalState){
-//        this.owner = owner;
+    private UserProfile owner;
+    public Mood(UserProfile owner,EmotionalState emotionalState){
+        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
     }
-    public Mood(/*User owner,*/EmotionalState emotionalState, String socialSituation, String trigger){
-//        this.owner = owner;
+    public Mood(UserProfile owner,EmotionalState emotionalState, String socialSituation, String trigger){
+        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
         this.socialSituation = socialSituation;
@@ -76,5 +76,13 @@ public class Mood implements Serializable {
 
     public String getReason() {
         return reason;
+    }
+
+    public String getOwnerString() {
+        return owner.getUsername();
+    }
+
+    public UserProfile getOwner() {
+        return owner;
     }
 }
