@@ -1,25 +1,49 @@
 package com.example.project_seekdeep;
 
+import android.graphics.Bitmap;
 import android.media.Image;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+/**
+ * This is a class that represents every mood post the user creates.
+ * @author Deryk Fong
+ *
+ */
 public class Mood {
 
     private String trigger;
     private String socialSituation;
-    private Image image;
+    private Bitmap image;
     private Date postedDate;
     private String emotionalState;
     private List<String> followers = new ArrayList<>();
 //    private User owner;
+
+    /**
+     * This method is a constructor for Mood which takes a User and emotionalState.
+     * This method also sets the date to the current date
+     * @param emotionalState
+     *  New String for emotionalState
+//     * @param owner
+//     *  New user which owns this mood
+     */
     public Mood(/*User owner,*/String emotionalState){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
     }
+    /**
+     * This method is a constructor for Mood which takes user, emotionalState, socialSituation, and trigger.
+     * This method also sets the date to the current date
+     * @param emotionalState
+     *  New String for emotionalState
+     * @param socialSituation
+     *  New String for socialSituation
+     * @param trigger
+     *  New String for trigger of the situation
+     */
     public Mood(/*User owner,*/String emotionalState, String socialSituation, String trigger){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
@@ -27,16 +51,90 @@ public class Mood {
         this.socialSituation = socialSituation;
         this.trigger = trigger;
     }
+
+    /**
+     * This function sets the trigger of the mood
+     * @param trigger
+     *  New trigger for this mood
+     */
     public void setTrigger(String trigger){
         this.trigger = trigger;
     }
+    /**
+     * This function sets the socialSituation of the mood
+     * @param socialSituation
+     *  New socialSituation for this mood
+     */
     public void setSocialSituation(String socialSituation){
         this.socialSituation = socialSituation;
     }
+    /**
+     * This function sets the postedDate of the mood
+     * @param postedDate
+     *  New postedDate for this mood
+     */
     public void setPostedDate(Date postedDate){
         this.postedDate = postedDate;
     }
-    public void setImage(Image image){
-        this.image = image;
+    /**
+    public User getOwner() {
+        return owner;
+    }
+    **/
+    /**
+     * This function gets the trigger of the mood
+     * @return
+     *  Current trigger of this mood
+     */
+    public String getTrigger() {
+        return trigger;
+    }
+    /**
+     * This function gets the socialSituation of the mood
+     * @return
+     *  Current socialSituation of this mood
+     */
+    public String getSocialSituation() {
+        return socialSituation;
+    }
+    /**
+     * This function gets the image of the mood
+     * @return
+     *  Current image of this mood
+     */
+    public Bitmap getImage() {
+        return image;
+    }
+    /**
+     * This function gets the postedDate of the mood
+     * @return
+     *  Current postedDate of this mood
+     */
+    public Date getPostedDate() {
+        return postedDate;
+    }
+    /**
+     * This function gets the emotionalState of the mood
+     * @return
+     *  Current emotionalState of this mood
+     */
+    public String getEmotionalState() {
+        return emotionalState;
+    }
+
+    /**
+     * This function sets the image of the mood if the image is valid
+     * @param image
+     *  New image for this mood
+     * @return
+     *  True if the image is not rejected
+     *  False if the image is rejected
+     */
+    public boolean setImage(Bitmap image){
+        if (image.getAllocationByteCount()<65536){
+            this.image = image;
+            return true;
+        }
+        return false;
     }
 }
