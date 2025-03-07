@@ -29,7 +29,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view;
         if (convertView == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.layout_mood, parent, false);
+            view = LayoutInflater.from(getContext()).inflate(R.layout.layout_feed_mood, parent, false);
         }
         else {
             view = convertView;
