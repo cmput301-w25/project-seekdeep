@@ -1,1 +1,5 @@
-{}
+{
+  "projects": {
+    "default": "lab-08-301"
+  }
+}
