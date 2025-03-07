@@ -9,8 +9,11 @@
         android:id="@+id/user_pfp_req_follow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="10dp">
+        android:layout_marginStart="16sp"
+        android:layout_marginTop="4sp"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/profile_picture"
@@ -29,6 +32,8 @@
             android:gravity="center"
             android:text="request\nfollow"
             android:textSize="6sp"
+            app:layout_constraintEnd_toEndOf="@+id/profile_picture"
+            app:layout_constraintStart_toStartOf="@+id/profile_picture"
             app:layout_constraintTop_toBottomOf="@+id/profile_picture" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -60,7 +65,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:layout_width="match"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/layout_rounded_mood_bg"
         android:orientation="vertical"
