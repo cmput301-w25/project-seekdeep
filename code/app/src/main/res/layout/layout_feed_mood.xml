@@ -65,14 +65,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/mood_details_box"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginRight="-10sp"
         android:background="@drawable/layout_rounded_mood_bg"
         android:orientation="vertical"
-        android:layout_marginRight="-10sp"
-        app:layout_constraintTop_toBottomOf="@id/username"
         app:layout_constraintLeft_toRightOf="@id/user_pfp_req_follow"
-        app:layout_constraintRight_toRightOf="@id/date">
+        app:layout_constraintRight_toRightOf="@id/date"
+        app:layout_constraintTop_toBottomOf="@id/username">
 
         <TextView
             android:id="@+id/emotion"

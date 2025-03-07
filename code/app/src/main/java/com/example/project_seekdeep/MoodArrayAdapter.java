@@ -57,7 +57,11 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
 
         // i don't know how to do the image and pfp one - jachelle
+
+        // color
+
         view.setBackgroundColor(Color.parseColor(currentMood.getEmotionalState().getColour()));
+
         return view;
     }
 }
