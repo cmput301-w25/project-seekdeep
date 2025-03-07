@@ -22,7 +22,7 @@
         android:id="@+id/buttonAngry"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:background="transparent"
+        android:background="@android:color/transparent"
         android:contentDescription="Select angry button"
         android:scaleType="fitCenter"
         app:layout_constraintCircle="@id/space"
@@ -43,7 +43,7 @@
         app:layout_constraintCircleAngle="45"
         tools:srcCompat="@drawable/confused"
         android:scaleType="fitCenter"
-        android:background="transparent"
+        android:background="@android:color/transparent"
         android:contentDescription="Select confused button" />
 
     <ImageButton
@@ -57,7 +57,7 @@
         app:layout_constraintCircleAngle="90"
         android:src="@drawable/disgusted"
         android:scaleType="fitCenter"
-        android:background="transparent"
+        android:background="@android:color/transparent"
         android:contentDescription="Select disgusted button" />
 
     <ImageButton
@@ -71,7 +71,7 @@
         app:layout_constraintCircleAngle="135"
         tools:srcCompat="@drawable/fear"
         android:scaleType="fitCenter"
-        android:background="transparent"
+        android:background="@android:color/transparent"
         android:contentDescription="Select fear button" />
 
     <ImageButton
@@ -85,7 +85,7 @@
         app:layout_constraintCircleAngle="180"
         tools:srcCompat="@drawable/happy"
         android:scaleType="fitCenter"
-        android:background="transparent"
+        android:background="@android:color/transparent"
         android:contentDescription="Select happy button" />
 
     <ImageButton
@@ -99,7 +99,7 @@
         app:layout_constraintCircleAngle="225"
         android:src="@drawable/sad"
         android:scaleType="fitCenter"
-        android:background="transparent"
+        android:background="@android:color/transparent"
         android:contentDescription="Select sad button" />
 
     <ImageButton
@@ -166,7 +166,7 @@
         android:id="@+id/currently_selected_mood"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="<mood_selected>"
+        android:text="mood_selected"
         app:layout_constraintBottom_toBottomOf="@+id/space"
         app:layout_constraintEnd_toEndOf="@+id/space"
         app:layout_constraintStart_toStartOf="@+id/space"
