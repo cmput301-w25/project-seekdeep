@@ -27,7 +27,7 @@ import java.util.Map;
 
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
- * @author Kevin Tu
+ * @author Kevin Tu, nancy Lin
  */
 
 public class MoodHistoryFragment extends Fragment {
@@ -73,11 +73,8 @@ public class MoodHistoryFragment extends Fragment {
 
         //1. get logged in user
         // todo   bruh idk, maybe wait on US 030101
-        // dummy value for now
-
-
+        // set a value for now
         loggedInUser = new UserProfile("User1", "pass1");
-
         //https://stackoverflow.com/questions/53140913/querying-by-a-field-with-type-reference-in-firestore
         DocumentReference userDocRef = db.collection("users").document(loggedInUser.getUsername());
 
@@ -86,7 +83,6 @@ public class MoodHistoryFragment extends Fragment {
 
         //2. query collection to get all mood from user
         //https://firebase.google.com/docs/firestore/query-data/queries#java_2
-
         Query loggedInUserMoodsQuery = MoodDB.whereEqualTo("owner", userDocRef);
 
         moodArrayList = new ArrayList<>();
@@ -117,7 +113,7 @@ public class MoodHistoryFragment extends Fragment {
 
                                 moodArrayList.add(mood);
                             }
-                            
+
                             moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList);
                             moodListView.setAdapter(moodArrayAdapter);
                         } else {
