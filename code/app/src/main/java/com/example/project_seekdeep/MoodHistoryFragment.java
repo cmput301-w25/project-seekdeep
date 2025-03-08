@@ -23,6 +23,10 @@ public class MoodHistoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
+    private void getUserMoods() {
+        // Needs to be filled in with database queries
+    }
+
 
 
 }
