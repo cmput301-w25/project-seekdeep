@@ -10,6 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +24,13 @@ import java.util.List;
  */
 
 public class MoodHistoryFragment extends Fragment {
+    // TODO: We need to figure out how to store userID to be used as primary key to access entry in the database.
+    private UserProfile user;
+    private FirebaseFirestore db;
+    private CollectionReference users;
+    private CollectionReference moods;
+    private ArrayList<Mood> moodsList;
+
 
     public MoodHistoryFragment() {
         super(R.layout.layout_feed);
@@ -30,6 +41,22 @@ public class MoodHistoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //set views
         ListView moodListView = view.findViewById(R.id.mood_list);
+
+        // Get current user that is currently logged in
+        user =  (UserProfile) requireArguments().getSerializable("user");
+
+        // Instantiate database for usage
+        db = FirebaseFirestore.getInstance();
+        users = db.collection("users");
+        moods = db.collection("MoodDB");
+
+        // Add event listeners to collections
+        moods.addSnapshotListener((value, error) -> {
+            moodsList.clear();
+            for (QueryDocumentSnapshot snapshot : value) {
+                String trigger =
+            }
+        });
 
         //create dummy array data
         Mood[] dummyMoods ={
@@ -58,9 +85,9 @@ public class MoodHistoryFragment extends Fragment {
         moodListView.setAdapter(moodArrayAdapter);
     }
 
-    //
-//    private List<Mood> getUserMoods() {
-//
-//    }
+
+    private List<Mood> getUserMoods() {
+
+    }
 
 }
