@@ -5,9 +5,13 @@ import android.graphics.Bitmap;
 import java.io.Serializable;
 import com.example.project_seekdeep.EmotionalState;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Locale;
 
 /**
  * This is a class that represents every mood post the user creates.
@@ -62,6 +66,26 @@ public class Mood implements Serializable {
      * @param trigger
      *  New trigger for this mood
      */
+
+    public Mood(EmotionalState emotionalState, List<String> followers, UserProfile owner, Date postedDate, String socialSituation, String trigger){
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+        this.postedDate = postedDate;
+        this.socialSituation = socialSituation;
+        this.trigger = trigger;
+    }
+
+    public Mood(Map<String, Object> mapMood){
+
+        this.setOwner( (UserProfile) mapMood.get("owner"));
+        this.emotionalState = emotionalState.valueOf(mapMood.get("emotionalState").toString());
+        this.postedDate = (Date) mapMood.get("postedDate");
+        this.socialSituation = mapMood.get("socialSituation").toString();
+        this.trigger = mapMood.get("trigger").toString();
+
+
+    }
+
     public void setTrigger(String trigger){
         this.trigger = trigger;
     }
@@ -81,12 +105,19 @@ public class Mood implements Serializable {
     public void setPostedDate(Date postedDate){
         this.postedDate = postedDate;
     }
+    public void setImage(Bitmap image){
+        this.image = image;
+    }
 
     /**
      * This function gets the trigger of the mood
      * @return
      *  Current trigger of this mood
      */
+    public void setOwner(UserProfile owner){
+        this.owner = owner;
+    }
+
     public String getTrigger() {
         return trigger;
     }

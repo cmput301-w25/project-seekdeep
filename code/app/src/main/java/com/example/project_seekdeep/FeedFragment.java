@@ -37,54 +37,6 @@ public class FeedFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.layout_feed, container, false);
-
-
-
-        //copy the code and edit from lab 5 and etc.
-
-        //set views
-        //moodListView = inflatedView.findViewById(R.id.mood_list);
-
-        //create dummy array data
-
-        /*
-        Mood[] dummyMoods ={
-            new Mood(new UserProfile("User1", "pass1"), EmotionalState.ANGER,
-                    "some social situation", "What the trigger"),
-
-            new Mood(new UserProfile("User2", "pass2"), EmotionalState.CONFUSION,
-                        "some social situation", "What the trigger"),
-
-            new Mood(new UserProfile("User1", "pass1"), EmotionalState.DISGUST,
-                        "some social situation", "What the trigger"),
-
-            new Mood(new UserProfile("User2", "pass2"), EmotionalState.FEAR,
-                        "some social situation", "What the trigger"),
-
-            new Mood(new UserProfile("User1", "pass1"), EmotionalState.HAPPINESS,
-                        "some social situation", "What the trigger"),
-
-            new Mood(new UserProfile("User2", "pass2"), EmotionalState.SADNESS,
-                        "some social situation", "What the trigger"),
-
-            new Mood(new UserProfile("User1", "pass1"), EmotionalState.SHAME,
-                        "some social situation", "What the trigger"),
-
-            new Mood(new UserProfile("User2", "pass2"), EmotionalState.SURPRISE,
-                        "some social situation", "What the trigger"),
-        };
-
-
-
-        moodArrayList = new ArrayList<>();
-        moodArrayList.addAll(Arrays.asList(dummyMoods));
-
-
-        moodArrayAdapter = new MoodArrayAdapter(getActivity()., moodArrayList);
-        moodListView.setAdapter(moodArrayAdapter);
-         */
-
-
         return inflatedView;
     }
 
@@ -131,8 +83,4 @@ public class FeedFragment extends Fragment {
         moodListView.setAdapter(moodArrayAdapter);
     }
 
-    //@Override
-    //public void onAttach(@NonNull Context context) {
-    //    super.onAttach(context);
-    //}
 }
