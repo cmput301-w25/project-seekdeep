@@ -1,25 +1,28 @@
 package com.example.project_seekdeep;
 
 import android.graphics.Bitmap;
-import android.media.Image;
+
+import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 /**
  * This is a class that represents every mood post the user creates.
- * @author Deryk Fong
+ * @author Deryk Fong and Jachelle Chan
  *
  */
-public class Mood {
+
+public class Mood implements Serializable {
 
     private String trigger;
     private String socialSituation;
     private Bitmap image;
     private Date postedDate;
-    private String emotionalState;
+    private EmotionalState emotionalState;
     private List<String> followers = new ArrayList<>();
-//    private User owner;
+    private String reason;
+    private UserProfile owner;
 
     /**
      * This method is a constructor for Mood which takes a User and emotionalState.
@@ -29,7 +32,7 @@ public class Mood {
 //     * @param owner
 //     *  New user which owns this mood
      */
-    public Mood(/*User owner,*/String emotionalState){
+    public Mood(/*User owner,*/EmotionalState emotionalState){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
@@ -44,7 +47,7 @@ public class Mood {
      * @param trigger
      *  New String for trigger of the situation
      */
-    public Mood(/*User owner,*/String emotionalState, String socialSituation, String trigger){
+    public Mood(/*User owner,*/EmotionalState emotionalState, String socialSituation, String trigger){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
@@ -76,11 +79,11 @@ public class Mood {
     public void setPostedDate(Date postedDate){
         this.postedDate = postedDate;
     }
-    /**
+
     public User getOwner() {
         return owner;
     }
-    **/
+
     /**
      * This function gets the trigger of the mood
      * @return
@@ -115,11 +118,19 @@ public class Mood {
     }
     /**
      * This function gets the emotionalState of the mood
-     * @return
-     *  Current emotionalState of this mood
+     *
+     * @return Current emotionalState of this mood
      */
     public String getEmotionalState() {
-        return emotionalState;
+        return emotionalState.toString();
+    }
+
+    public List<String> getFollowers() {
+        return followers;
+    }
+
+    public String getReason() {
+        return reason;
     }
 
     /**
