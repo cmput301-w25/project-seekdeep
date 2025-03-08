@@ -6,6 +6,8 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 
 /**
+ * This is probably not gonna be used
+ *
  * This class is Drawable thingy.
  * @author Nikola Despotoski, Nancy Lin
  * https://stackoverflow.com/questions/18478210/how-do-i-programatically-change-a-drawable-resources-background-color?rq=3
