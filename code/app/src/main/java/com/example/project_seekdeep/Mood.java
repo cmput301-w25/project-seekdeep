@@ -3,10 +3,12 @@ package com.example.project_seekdeep;
 import android.graphics.Bitmap;
 
 import java.io.Serializable;
+import com.example.project_seekdeep.EmotionalState;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 /**
  * This is a class that represents every mood post the user creates.
  * @author Deryk Fong and Jachelle Chan
@@ -29,11 +31,11 @@ public class Mood implements Serializable {
      * This method also sets the date to the current date
      * @param emotionalState
      *  New String for emotionalState
-//     * @param owner
-//     *  New user which owns this mood
+     * @param owner
+     *  New user which owns this mood
      */
-    public Mood(/*User owner,*/EmotionalState emotionalState){
-//        this.owner = owner;
+    public Mood(UserProfile owner,EmotionalState emotionalState){
+        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
     }
@@ -47,8 +49,8 @@ public class Mood implements Serializable {
      * @param trigger
      *  New String for trigger of the situation
      */
-    public Mood(/*User owner,*/EmotionalState emotionalState, String socialSituation, String trigger){
-//        this.owner = owner;
+    public Mood(UserProfile owner,EmotionalState emotionalState, String socialSituation, String trigger){
+        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
         this.socialSituation = socialSituation;
@@ -78,10 +80,6 @@ public class Mood implements Serializable {
      */
     public void setPostedDate(Date postedDate){
         this.postedDate = postedDate;
-    }
-
-    public User getOwner() {
-        return owner;
     }
 
     /**
@@ -121,8 +119,8 @@ public class Mood implements Serializable {
      *
      * @return Current emotionalState of this mood
      */
-    public String getEmotionalState() {
-        return emotionalState.toString();
+    public EmotionalState getEmotionalState() {
+        return emotionalState;
     }
 
     public List<String> getFollowers() {
@@ -147,5 +145,13 @@ public class Mood implements Serializable {
             return true;
         }
         return false;
+    }
+
+    public String getOwnerString() {
+        return owner.getUsername();
+    }
+
+    public UserProfile getOwner() {
+        return owner;
     }
 }

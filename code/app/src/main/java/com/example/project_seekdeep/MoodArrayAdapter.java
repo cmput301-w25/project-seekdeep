@@ -29,7 +29,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view;
         if (convertView == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.layout_mood, parent, false);
+            view = LayoutInflater.from(getContext()).inflate(R.layout.layout_feed_mood, parent, false);
         }
         else {
             view = convertView;
@@ -49,11 +49,13 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
         // set the text for the mood event (layout_mood.xml)
         reason.setText(currentMood.getReason());
-        emotion.setText(currentMood.getEmotionalState());
-        user.setText(currentMood.getOwner());
+        emotion.setText(currentMood.getEmotionalState().toString());
+        user.setText(currentMood.getOwnerString());
         trigger.setText(currentMood.getTrigger());
         socialSit.setText(currentMood.getSocialSituation());
-        date.setText(currentMood.getDate());
+        date.setText(currentMood.getPostedDate().toString());
+
+
         // i don't know how to do the image and pfp one - jachelle
         view.setBackgroundColor(Color.parseColor(currentMood.getEmotionalState().getColour()));
         return view;
