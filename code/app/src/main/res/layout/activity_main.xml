@@ -18,7 +18,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_container"
-            android:name="com.example.project_seekdeep.TestFragment"
+            android:name="com.example.project_seekdeep.FeedFragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

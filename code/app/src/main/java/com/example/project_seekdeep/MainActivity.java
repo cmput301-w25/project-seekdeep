@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set default fragment to be feed upon login
         fragManager = getSupportFragmentManager();
-        fragManager.beginTransaction().replace(R.id.frameLayout, new TestFragment()).commit();
+        fragManager.beginTransaction().replace(R.id.frameLayout, new FeedFragment()).commit();
 
     }
     // The following code for Navigation Bar was adapted from GeeksForGeeks' guide on "BottomNavigationView in Android"
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             selectedFragment = new MoodHistoryFragment();
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
-            selectedFragment = new TestFragment();
+            selectedFragment = new FeedFragment();
         }
 
         // Display selected fragment to screen
