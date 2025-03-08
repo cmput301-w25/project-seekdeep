@@ -2,6 +2,9 @@ package com.example.project_seekdeep;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import java.util.ArrayList;
 
@@ -58,9 +63,30 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
         // i don't know how to do the image and pfp one - jachelle
 
-        // color
+        // if image DNE, then hide the image view?
+        if (currentMood.getImage() == null){
+            image.setImageDrawable(null);
+        } else{
+            ; //ToDo for images
+        }
 
-        view.setBackgroundColor(Color.parseColor(currentMood.getEmotionalState().getColour()));
+
+
+        // color
+        // https://stackoverflow.com/questions/4772537/i-need-to-change-the-stroke-color-to-a-user-defined-color-nothing-to-do-with-th
+
+        //default
+        //view.setBackgroundColor(Color.parseColor(currentMood.getEmotionalState().getColour()));
+
+        //just the rectangle background
+        //Drawable box_outline = DrawableCompat.wrap(view.findViewById(R.id.mood_details_box).getBackground()).mutate();
+        //DrawableCompat.setTint(box_outline, Color.parseColor(currentMood.getEmotionalState().getColour()));
+
+        //the outline change color
+        GradientDrawable box_outline = (GradientDrawable) view.findViewById(R.id.mood_details_box).getBackground();
+        box_outline.mutate();
+        box_outline.setStroke(5, Color.parseColor(currentMood.getEmotionalState().getColour()));
+
 
         return view;
     }
