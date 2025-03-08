@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
@@ -19,11 +20,6 @@ import java.util.Arrays;
  */
 
 public class MoodHistoryFragment extends Fragment {
-
-    private ListView moodListView;
-
-    private ArrayList<Mood> moodArrayList;
-    private ArrayAdapter<Mood> moodArrayAdapter;
 
     public MoodHistoryFragment() {
         super(R.layout.layout_feed);
@@ -33,7 +29,7 @@ public class MoodHistoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //set views
-        moodListView = view.findViewById(R.id.mood_list);
+        ListView moodListView = view.findViewById(R.id.mood_list);
 
         //create dummy array data
         Mood[] dummyMoods ={
@@ -56,14 +52,15 @@ public class MoodHistoryFragment extends Fragment {
 
         //create mood array
 
-        moodArrayList = new ArrayList<>();
-        moodArrayList.addAll(Arrays.asList(dummyMoods));
+        ArrayList<Mood> moodArrayList = new ArrayList<>(Arrays.asList(dummyMoods));
 
-
-        moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList);
+        ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList);
         moodListView.setAdapter(moodArrayAdapter);
     }
 
-
+    //
+//    private List<Mood> getUserMoods() {
+//
+//    }
 
 }
