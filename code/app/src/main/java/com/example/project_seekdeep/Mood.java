@@ -90,6 +90,7 @@ public class Mood implements Serializable {
     public String getTrigger() {
         return trigger;
     }
+
     /**
      * This function gets the socialSituation of the mood
      * @return
