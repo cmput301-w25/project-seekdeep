@@ -47,7 +47,7 @@ public class CreateMoodEventFragment extends Fragment {
     //Constructor to create the fragment
     public CreateMoodEventFragment(EmotionalStates mood) {
 
-        super(R.layout.test_upload_image);
+        super(R.layout.fragment_mood_details);
     }
 
 
