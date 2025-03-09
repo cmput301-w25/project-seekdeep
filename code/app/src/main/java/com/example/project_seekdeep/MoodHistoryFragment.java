@@ -11,27 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.auth.User;
 
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+
 import java.util.Objects;
 
 /**
@@ -42,9 +31,6 @@ import java.util.Objects;
 public class MoodHistoryFragment extends Fragment {
     // TODO: We need to figure out how to store userID to be used as primary key to access entry in the database.
     private UserProfile loggedInUser;
-    private FirebaseFirestore db;
-    private CollectionReference users;
-    private CollectionReference moods;
     private ArrayList<Mood> moodsList;
 
     private ListView moodListView;
@@ -56,6 +42,14 @@ public class MoodHistoryFragment extends Fragment {
         super(R.layout.layout_feed);
     }
 
+    /**
+     * Upon creating this view, it will query the database and load in all the moods
+     * that the user has created.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -67,9 +61,9 @@ public class MoodHistoryFragment extends Fragment {
 
 
         // Instantiate database for usage
-        db = FirebaseFirestore.getInstance();
-        users = db.collection("UserDB");
-        moods = db.collection("MoodDB");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference users = db.collection("UserDB");
+        CollectionReference moods = db.collection("MoodDB");
 
         UserProfile user = new UserProfile("kevtu2", "222");
 
