@@ -86,14 +86,14 @@ public class LogInFragment extends Fragment {
 
                         ((MainActivity) requireActivity()).setCurrentUsername(username);
                         //Go to home screen
-//                        FeedFragment feedFragment = new FeedFragment();
-//                        Bundle args = new Bundle();
-//                        args.putString("username", username);
-//                        FeedFragment.setArguments(args);
-//
-//                        getParentFragmentManager().beginTransaction()
-//                                .replace(R.id.fragment_container, feedFragment)
-//                                .commit();
+                        FeedFragment feedFragment = new FeedFragment();
+                        Bundle args = new Bundle();
+                        args.putString("username", username);
+                        FeedFragment.setArguments(args);
+
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, feedFragment)
+                                .commit();
                     }
                     else {
                         Toast.makeText(getContext(), "Incorrect Password", Toast.LENGTH_SHORT).show();
