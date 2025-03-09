@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
  * @author Jachelle Chan
  *
  */
-public enum EmotionalState {
+public enum EmotionalStates {
     ANGER("\uD83D\uDE20", "#D55353"),  // RED
     CONFUSION("\uD83E\uDD14", "#FFC6E8"),  // PINK
     DISGUST("\uD83E\uDD22", "#59C225"),  // GREEN
@@ -18,7 +18,7 @@ public enum EmotionalState {
     SURPRISE("\uD83D\uDE2F", "#E4A21F");  // ORANGE
     private String emoticon;
     private String colour;
-    EmotionalState(String emoticon, String colour) {
+    EmotionalStates(String emoticon, String colour) {
         this.emoticon = emoticon;
         this.colour = colour;
     }

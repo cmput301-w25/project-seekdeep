@@ -14,18 +14,17 @@ public class Mood implements Serializable {
     private SocialSituations socialSituation;
     private Image image;
     private Date postedDate;
-    private EmotionalState emotionalState;
-    private List<String> followers = new ArrayList<>();
+    private EmotionalStates emotionalState;
     private String reason;
 //    private User owner;
 
-    public Mood(/*User owner,*/EmotionalState emotionalState){
+    public Mood(/*User owner,*/EmotionalStates emotionalState){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
     }
 
-    public Mood(/*User owner,*/EmotionalState emotionalState, String socialSituation, String trigger){
+    public Mood(/*User owner,*/EmotionalStates emotionalState, SocialSituations socialSituation, String trigger){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
@@ -38,6 +37,9 @@ public class Mood implements Serializable {
     public void setSocialSituation(SocialSituations socialSituation){
         this.socialSituation = socialSituation;
     }
+    public void setEmotionalState(EmotionalStates emotionalState) {
+        this.emotionalState = emotionalState;
+    }
     public void setPostedDate(Date postedDate){
         this.postedDate = postedDate;
     }
@@ -49,7 +51,7 @@ public class Mood implements Serializable {
         return trigger;
     }
 
-    public String getSocialSituation() {
+    public SocialSituations getSocialSituation() {
         return socialSituation;
     }
 
@@ -61,13 +63,10 @@ public class Mood implements Serializable {
         return postedDate;
     }
 
-    public EmotionalState getEmotionalState() {
+    public EmotionalStates getEmotionalState() {
         return emotionalState;
     }
 
-    public List<String> getFollowers() {
-        return followers;
-    }
 
     public String getReason() {
         return reason;
