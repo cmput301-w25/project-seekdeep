@@ -14,7 +14,7 @@ public enum EmotionalState {
     //confusion, disgust, fear, happiness, sadness, shame, and surprise.
     ANGER("\uD83D\uDE20", "#D55353"),  // RED
     CONFUSION("\uD83E\uDD14", "#FFC6E8"),  // PINK
-    DISGUST("\uD83E\uDD22", "#59C225 "),  // GREEN
+    DISGUST("\uD83E\uDD22", "#59C225"),  // GREEN
     FEAR("\uD83D\uDE28", "#828282"),  // GREY
     HAPPINESS("\uD83D\uDE04", "#E6D600"),  // YELLOW
     SADNESS("☹️", "#0055FF"),  // BLUE
@@ -57,7 +57,7 @@ public enum EmotionalState {
 
     /**
      * This method sets the emoticon for the mood
-     * @param emoticon the emotiocon of the associated emotional state
+     * @param emoticon the emoticon of the associated emotional state
      */
     public void setEmoticon(String emoticon) {
         this.emoticon = emoticon;
