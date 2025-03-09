@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +16,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 /**
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
- *
+ * It also sets up the navigation and fragment management for the app's main UI flow.
  */
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragManager;
@@ -34,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
         navBar.setOnItemSelectedListener(navListener);
+
+        // Initially hide the navigation bar until a successful log-in
+        navBar.setVisibility(View.GONE);
 
         // Set default fragment to be feed upon login
         fragManager = getSupportFragmentManager();
@@ -63,9 +67,6 @@ public class MainActivity extends AppCompatActivity {
             selectedFragment = new TestFragment();
         }
 
-        // Add username Primary Key to fragment's arguments
-        addUsernameToFragment(selectedFragment);
-
         // Display selected fragment to screen
         if (selectedFragment != null) {
             fragManager.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
@@ -74,21 +75,32 @@ public class MainActivity extends AppCompatActivity {
     };
 
     /**
-     * Adds the current username to a fragment's arguments
+     * Sets the current username, which will be used by the fragments.
+     * @param username : he username of the currently logged-in user.
      */
-    private void addUsernameToFragment(Fragment fragment) {
-        if (fragment != null && currentUser != null) {
-            Bundle args = new Bundle();
-            args.putString("username", currentUser);
-            fragment.setArguments(args);
-        }
-    }
-
     public void setCurrentUsername(String username) {
         this.currentUser = username;
     }
-    // Method to get the current username (can be used by any fragment)
+
+    /**
+     * Retrieves the current username which can be used by any fragment to access the logged-in user's data.
+     * @return : The username of the current user.
+     */
     public String getCurrentUsername() {
         return currentUser;
+    }
+
+    /**
+     * This method is called after a successful login to make the navigation bar visible and indicate that the user has logged in successfully.
+     */
+    public void successful_login() {
+        BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
+        navBar.setVisibility(View.VISIBLE);
+
+        // A placeholder for future functionality
+        // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
+//      getParentFragmentManager().beginTransaction()
+//          .replace(R.id.frameLayout, feedFragment)
+//          .commit();
     }
 }

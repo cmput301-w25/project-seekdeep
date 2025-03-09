@@ -34,10 +34,10 @@ public class LogInFragment extends Fragment {
 
         usernameInput = view.findViewById(R.id.text_username);
         passwordInput = view.findViewById(R.id.text_password);
-        passwordInput.setTransformationMethod(new MyPasswordTransformationMethod());
         logInButton = view.findViewById(R.id.log_in_button);
         goToSignUp = view.findViewById(R.id.go_to_sign_up);
 
+        // Initialize Firebase Firestore
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
 
@@ -52,6 +52,7 @@ public class LogInFragment extends Fragment {
             }
         });
 
+        // Navigate to "Go to Sign Up" page
         goToSignUp.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.frameLayout, new SignUpFragment())
@@ -59,12 +60,15 @@ public class LogInFragment extends Fragment {
                     .commit();
         });
 
+        // Click listener for login button
         logInButton.setOnClickListener(v -> logInUser());
         return view;
     }
 
     /**
      * Log-ins the user by authenticating their credentials.
+     * This method checks if the username exists in the Firestore database and compares the entered password with the stored password.
+     * If successful, it updates the username in MainActivity and navigates to the feed.
      */
     private void logInUser() {
         String username = usernameInput.getText().toString();
@@ -75,69 +79,39 @@ public class LogInFragment extends Fragment {
             return;
         }
 
+        // Get reference to the user's document based on the entered username
         DocumentReference userDoc = usersRef.document(username);
         userDoc.get()
                 .addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()){
-                    UserProfile user = documentSnapshot.toObject(UserProfile.class);
+                    // If the document exists, check the password
+                    if (documentSnapshot.exists()){
+                        UserProfile user = documentSnapshot.toObject(UserProfile.class);
 
-                    if (user != null && user.getPassword().equals(password)) {
-                        Toast.makeText(getContext(), "Login Successful!", Toast.LENGTH_SHORT).show();
+                        // If the user exists and the password matches, log in the user
+                        if (user != null && user.getPassword().equals(password)) {
+                            Toast.makeText(getContext(), "Login Successful!", Toast.LENGTH_SHORT).show();
 
-                        ((MainActivity) requireActivity()).setCurrentUsername(username);
-                        //Go to home screen
-//                        FeedFragment feedFragment = new FeedFragment();
-//                        Bundle args = new Bundle();
-//                        args.putString("username", username);
-//                        FeedFragment.setArguments(args);
-//
-//                        getParentFragmentManager().beginTransaction()
-//                                .replace(R.id.frameLayout, feedFragment)
-//                                .commit();
+                            // Update the username in MainActivity to be used as Primary Key
+                            ((MainActivity) requireActivity()).setCurrentUsername(username);
+
+                            // Call the successful_login() method to show BottomNavigationView and navigate to FeedFragment
+                            ((MainActivity) requireActivity()).successful_login();
+
+                        }
+                        // If the password is incorrect, display an error
+                        else {
+                            Toast.makeText(getContext(), "Incorrect Password", Toast.LENGTH_SHORT).show();
+                            passwordInput.setText("");
+                        }
                     }
-
+                    // If the username does not exist, show a error message
                     else {
-                        Toast.makeText(getContext(), "Incorrect Password", Toast.LENGTH_SHORT).show();
-                        passwordInput.setText("");
+                        Toast.makeText(getContext(), "Username not found!! Try Again", Toast.LENGTH_SHORT).show();
                     }
-                }
-                else {
-                    Toast.makeText(getContext(), "Username not found!! Try Again", Toast.LENGTH_SHORT).show();
-                }
-            })
-            .addOnFailureListener(e -> {
-                Toast.makeText(getContext(), "Error checking username: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                Log.e("Firestore", "Error checking username", e);
-            });
+                })
+                // Display failure in retrieving the data
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Error checking username: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
-
-    // https://stackoverflow.com/questions/14137184/how-do-i-use-the-transformationmethod-interface/23110194#23110194
-    public class MyPasswordTransformationMethod extends PasswordTransformationMethod {
-
-        @Override
-        public CharSequence getTransformation(CharSequence source, View view) {
-            return new PasswordCharSequence(source);
-        }
-
-        private class PasswordCharSequence implements CharSequence {
-
-            private CharSequence mSource;
-
-            public PasswordCharSequence(CharSequence source) {
-                mSource = source;
-            }
-
-            public char charAt(int index) {
-                return '*';
-            }
-
-            public int length() {
-                return mSource.length();
-            }
-
-            public CharSequence subSequence(int start, int end) {
-                return mSource.subSequence(start, end); // Return default
-            }
-        }
-    };
 }

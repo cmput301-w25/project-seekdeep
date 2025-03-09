@@ -21,31 +21,50 @@
     <EditText
         android:id="@+id/text_username"
         android:layout_width="220dp"
-        android:layout_height="42dp"
+        android:layout_height="52dp"
         android:background="@drawable/text_box"
-        android:gravity="left"
-        android:hint="  Username"
+        android:gravity="left|center_vertical"
+        android:hint=" Username"
         android:paddingLeft="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/text_password"
+        android:paddingRight="45dp"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif"
+        app:layout_constraintBottom_toTopOf="@+id/password_layout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.50"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/custom_image"
-        app:layout_constraintVertical_bias="0.695" />
+        app:layout_constraintVertical_bias="0.69" />
 
-    <EditText
-        android:id="@+id/text_password"
+    <!-- The following code was take from - https://www.geeksforgeeks.org/how-to-toggle-password-visibility-in-android/ -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password_layout"
         android:layout_width="220dp"
-        android:layout_height="42dp"
+        android:layout_height="wrap_content"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="@color/black"
         android:background="@drawable/text_box"
-        android:gravity="left"
-        android:hint="  Password"
-        android:paddingLeft="10dp"
+        app:boxBackgroundMode="none"
+        app:hintEnabled="false"
         app:layout_constraintBottom_toTopOf="@+id/go_to_sign_up"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/custom_image"
-        app:layout_constraintVertical_bias="0.321" />
+        app:layout_constraintVertical_bias="0.321">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/text_password"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@null"
+            android:gravity="left|center_vertical"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:paddingLeft="10dp"
+            android:paddingRight="45dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/log_in_button"
