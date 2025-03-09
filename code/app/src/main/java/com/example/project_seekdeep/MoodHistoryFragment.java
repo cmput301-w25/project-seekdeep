@@ -54,7 +54,7 @@ public class MoodHistoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //set views
-        ListView moodListView = view.findViewById(R.id.mood_list);
+        ListView moodListView = view.findViewById(R.id.list_view_mood);
 
         // Get current user that is currently logged in
 //        loggedInUser = (UserProfile) requireArguments().getSerializable("user");

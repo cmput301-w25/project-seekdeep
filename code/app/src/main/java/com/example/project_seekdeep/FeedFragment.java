@@ -44,7 +44,7 @@ public class FeedFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //set views
-        moodListView = view.findViewById(R.id.mood_list);
+        moodListView = view.findViewById(R.id.list_view_mood);
 
         //create dummy array data
         Mood[] dummyMoods ={

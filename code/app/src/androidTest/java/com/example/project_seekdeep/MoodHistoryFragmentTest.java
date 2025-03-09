@@ -4,9 +4,12 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.CoreMatchers.allOf;
 
 import android.util.Log;
 
@@ -99,10 +102,7 @@ public class MoodHistoryFragmentTest {
     public void appShouldDisplayExistingMoods() throws InterruptedException {
         onView(withId(R.id.History)).perform(click());
 
-        Thread.sleep(1000);
-
         // Write tests for displaying existing moods..
-
     }
 
 
