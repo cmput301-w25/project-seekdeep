@@ -62,6 +62,8 @@ public class EditMoodFragment extends DialogFragment {
         socialSituationSpinner = view.findViewById(R.id.social_situation_spinner);
         imageView = view.findViewById(R.id.image);
 
+        emotionSpinner.setAdapter(new ArrayAdapter<EmotionalStates>(getContext(), android.R.layout.simple_spinner_item, EmotionalStates.values()));
+
         String tag = getTag();
         Bundle bundle = getArguments();
         Mood mood;
@@ -71,7 +73,8 @@ public class EditMoodFragment extends DialogFragment {
             editReason.setText(mood.getReason());
             editTrigger.setText(mood.getTrigger());
             // i think the spinners setting previous info may have to be implemented in a different way but that will be dealt with later
-            // the spinner and image ...
+            emotionSpinner.setSelection(mood.getEmotionalState().ordinal());  // maybe like this? hard to test currently
+            // the spinners and image ...
         }
         else {mood = null;}
 
@@ -90,7 +93,7 @@ public class EditMoodFragment extends DialogFragment {
             positiveButton.setOnClickListener(v -> {
                 String reason = editReason.getText().toString().trim();
                 String trigger = editTrigger.getText().toString().trim();
-                // the spinner and image ...
+                // the spinners and image ...
                 // the only required thing is emotional state i believe
             });
         });
