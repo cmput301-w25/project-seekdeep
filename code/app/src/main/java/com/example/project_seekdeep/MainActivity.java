@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import android.os.Bundle;
+import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,8 @@ import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragManager;
+
+    private ListView moodListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +35,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Set default fragment to be feed upon login
         fragManager = getSupportFragmentManager();
-        fragManager.beginTransaction().replace(R.id.fragment_container, new TestFragment()).commit();
+        fragManager.beginTransaction().replace(R.id.frameLayout, new TestFragment()).commit();
+
+
+        //set views
 
     }
     // The following code for Navigation Bar was adapted from GeeksForGeeks' guide on "BottomNavigationView in Android"
@@ -59,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Display selected fragment to screen
         if (selectedFragment != null) {
-            fragManager.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+            fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
         }
         return true;
     };

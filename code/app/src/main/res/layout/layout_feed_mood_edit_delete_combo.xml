@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="12sp">
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/user_pfp_req_follow"
@@ -141,8 +140,49 @@
                 android:layout_weight="0"
                 android:text="social situation"
                 android:textSize="10sp" />
+
         </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="right
+"
+        app:layout_constraintEnd_toEndOf="@+id/mood_details_box"
+        app:layout_constraintStart_toStartOf="@+id/mood_details_box"
+        app:layout_constraintTop_toBottomOf="@+id/mood_details_box">
+
+        <Button
+            android:id="@+id/edit_mood_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="10sp"
+            android:textColor="@color/raisin_black"
+            android:textSize="10sp"
+            style="@android:style/Widget.Material.Light.Button.Small"
+            android:minHeight="32sp"
+
+            android:text="Edit"
+
+            />
+
+        <Button
+            android:id="@+id/delete_mood_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="10sp"
+            android:textColor="@color/raisin_black"
+            android:textSize="10sp"
+            android:minHeight="32sp"
+
+            style="@android:style/Widget.Material.Light.Button.Small"
+
+            android:text="Delete" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
