@@ -58,7 +58,7 @@ public class EditMoodFragment extends DialogFragment {
         socialSituationSpinner = view.findViewById(R.id.social_situation_spinner);
         imageView = view.findViewById(R.id.image);
 
-        emotionSpinner.setAdapter(new ArrayAdapter<EmotionalState>(getContext(), android.R.layout.simple_spinner_item, EmotionalState.values()));
+        emotionSpinner.setAdapter(new ArrayAdapter<EmotionalStates>(getContext(), android.R.layout.simple_spinner_item, EmotionalStates.values()));
 
         String tag = getTag();
         Bundle bundle = getArguments();
