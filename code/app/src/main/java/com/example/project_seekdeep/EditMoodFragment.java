@@ -64,6 +64,8 @@ public class EditMoodFragment extends DialogFragment {
 
         emotionSpinner.setAdapter(new ArrayAdapter<EmotionalStates>(getContext(), android.R.layout.simple_spinner_item, EmotionalStates.values()));
 
+        socialSituationSpinner.setAdapter(new ArrayAdapter<SocialSituations>(getContext(), android.R.layout.simple_spinner_item, SocialSituations.values()));
+
         String tag = getTag();
         Bundle bundle = getArguments();
         Mood mood;
