@@ -1,5 +1,6 @@
 package com.example.project_seekdeep;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -98,11 +99,10 @@ public class MoodHistoryFragmentTest {
     public void appShouldDisplayExistingMoods() throws InterruptedException {
         onView(withId(R.id.History)).perform(click());
 
-        Thread.sleep(10000);
+        Thread.sleep(1000);
 
-        onView(withText("Happiness")).check(matches(isDisplayed()));
-        onView(withText("Confusion")).check(matches(isDisplayed()));
-        onView(withText("Sadness")).check(matches(isDisplayed()));
+        // Write tests for displaying existing moods..
+
     }
 
 

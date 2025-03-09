@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
@@ -89,10 +90,11 @@ public class MoodHistoryFragment extends Fragment {
                     EmotionalState emotionalState = EmotionalState.valueOf((String)snapshot.get("emotionalState"));
                     String socialSituation = (String) snapshot.get("socialSituation");
                     String trigger = (String) snapshot.get("trigger");
-                    // For now, test with no followers
-                    Date postedDate = new Date();
+                    List<String> followers = (List<String>) snapshot.get("followers");
+                    Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
 
-                    Mood mood = new Mood(user, emotionalState, socialSituation, trigger, null, postedDate);
+                    Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate);
+
                     moodArrayList.add(mood);
                }
                moodArrayAdapter.notifyDataSetChanged();
