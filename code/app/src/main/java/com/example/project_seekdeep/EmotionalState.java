@@ -8,10 +8,6 @@ import androidx.annotation.NonNull;
  *
  */
 public enum EmotionalState {
-    // these representations and colours can be changed later
-    // the colours may change
-    // US 01.02.01 : As a participant, I want the emotional states to include at least: anger,
-    //confusion, disgust, fear, happiness, sadness, shame, and surprise.
     ANGER("\uD83D\uDE20", "#D55353"),  // RED
     CONFUSION("\uD83E\uDD14", "#FFC6E8"),  // PINK
     DISGUST("\uD83E\uDD22", "#59C225"),  // GREEN
