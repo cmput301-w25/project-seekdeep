@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Mood implements Serializable {
-
+    private String id;
     private String trigger;
     private SocialSituations socialSituation;
     private Image image;
@@ -70,5 +70,13 @@ public class Mood implements Serializable {
 
     public String getReason() {
         return reason;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

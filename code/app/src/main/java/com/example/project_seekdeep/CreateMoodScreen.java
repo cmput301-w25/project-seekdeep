@@ -52,42 +52,49 @@ public class CreateMoodScreen extends Fragment {
             @Override
             public void onClick(View view) {
                 selectedMood.setText("SHAME");
+                mood = EmotionalStates.SHAME;
             }
         });
         view.findViewById(R.id.buttonSad).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 selectedMood.setText("SAD");
+                mood = EmotionalStates.SADNESS;
             }
         });
         view.findViewById(R.id.buttonHappy).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 selectedMood.setText("HAPPY");
+                mood = EmotionalStates.HAPPINESS;
             }
         });
         view.findViewById(R.id.buttonFear).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 selectedMood.setText("FEAR");
+                mood = EmotionalStates.FEAR;
             }
         });
         view.findViewById(R.id.buttonDisgusted).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 selectedMood.setText("DISGUSTED");
+                mood = EmotionalStates.DISGUST;
             }
         });
         view.findViewById(R.id.buttonConfused).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 selectedMood.setText("CONFUSED");
+                mood = EmotionalStates.CONFUSION;
             }
         });
         view.findViewById(R.id.buttonAngry).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 selectedMood.setText("ANGRY");
+                mood = EmotionalStates.ANGER;
             }
         });
 

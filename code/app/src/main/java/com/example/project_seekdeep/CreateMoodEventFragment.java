@@ -1,11 +1,16 @@
 package com.example.project_seekdeep;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
@@ -15,6 +20,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.UUID;
 
 /**
  * This Fragment class is designed to display a Mood Event Card, and let users Create a mood.
@@ -26,28 +37,58 @@ import com.bumptech.glide.Glide;
 //Image Picker code adapted from: https://medium.com/@everydayprogrammer/implement-android-photo-picker-in-android-studio-3562a85c85f1
 
 public class CreateMoodEventFragment extends Fragment {
-    //Attributes:
+    //ATTRIBUTES:
     private ImageView uploadImageHere;  //this imageView is set to be clickable
     private EmotionalStates mood;
     private Mood moodEvent;
+    private Uri imageUri; //this is where selected image is assigned
+    private MoodProvider moodProvider;
+
+    //Constructor to create the fragment
+    public CreateMoodEventFragment(EmotionalStates mood) {
+        super(R.layout.fragment_mood_details);
+    }
+
+    /*
+    US 02.02.01 : As a participant, I want to express the reason why for a mood event using a
+    photograph.
+    Subissue #114-Limit user such that the user can only add a single to photo for a mood event.
+
+    Implemented by: the PickVisualMedia() activity result contract only allows users to pick one image from their gallery
+    */
 
     //This launches the chosen image into the imageView
     ActivityResultLauncher<PickVisualMediaRequest> launcher = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), new ActivityResultCallback<Uri>() {
         @Override
-        public void onActivityResult(Uri o) {
-            if (o == null) {
+        public void onActivityResult(Uri imageUri) {
+            if (imageUri == null) {
                 Toast.makeText(requireContext(), "No image Selected", Toast.LENGTH_SHORT).show();
             } else {
-                Glide.with(requireContext()).load(o).into(uploadImageHere);
+                //Load the image into the mood event card (UI component)
+                Glide.with(requireContext()).load(imageUri).into(uploadImageHere);
+
+                //Call a method that'll upload the image to Firebase
+                uploadImageToFirebase(imageUri);
             }
         }
     });
 
+    private void uploadImageToFirebase(Uri selectedImage) {
+        //Initialize a MoodProvider object and pass in the firebase
+        moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
+        //Try sending a new mood to MoodProvider:
+        moodProvider.addMoodEvent(new Mood(EmotionalStates.SURPRISE));
 
-    //Constructor to create the fragment
-    public CreateMoodEventFragment(EmotionalStates mood) {
+        //Get a reference to the firebase storage
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
 
-        super(R.layout.fragment_mood_details);
+        /*TO DO:
+        - create a reference to the image URI
+        - assign it to the image field in the mood event
+        - Have to use Firebase storage to store photos
+         */
+
     }
 
 
@@ -61,16 +102,16 @@ public class CreateMoodEventFragment extends Fragment {
         //Initialize the image UI element
         uploadImageHere = view.findViewById(R.id.image);
 
-        //Set a listener for when the imageButton is clicked on
+        //Set a listener for when the imageView is clicked on
         uploadImageHere.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //launch the gallery
                 launcher.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                         .build());
             }
         });
     }
-
 
 }
