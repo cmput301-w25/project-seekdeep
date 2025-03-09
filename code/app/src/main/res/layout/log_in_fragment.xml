@@ -51,6 +51,8 @@
         android:id="@+id/log_in_button"
         android:layout_width="220dp"
         android:layout_height="45dp"
+        android:enabled="true"
+        android:clickable="true"
         android:layout_marginBottom="116dp"
         android:autoSizeMaxTextSize="19sp"
         android:autoSizeMinTextSize="10sp"

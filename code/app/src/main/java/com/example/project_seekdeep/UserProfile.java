@@ -2,10 +2,17 @@ package com.example.project_seekdeep;
 
 import java.io.Serializable;
 
+/**
+ * UserProfile represents users attributes
+ */
 public class UserProfile implements Serializable {
 //    private String id;
     private String username;
     private String password;
+
+    public UserProfile() {
+        // Empty constructor required for Firestore
+    }
 
     public UserProfile(String username, String password) {
 //        this.id = id;

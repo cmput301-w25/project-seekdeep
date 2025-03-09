@@ -7,13 +7,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
+/**
+ * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
+ *
+ */
 public class MainActivity extends AppCompatActivity {
-    private FirebaseFirestore db;
-    private CollectionReference usersRef;
+    private FragmentManager fragManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,14 +31,63 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        db = FirebaseFirestore.getInstance();
-        usersRef = db.collection("users");
+        BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
+        navBar.setOnItemSelectedListener(navListener);
 
-        // If the activity is loaded for first time
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new LogInFragment())
-                    .commit();
+        // Set default fragment to be feed upon login
+        fragManager = getSupportFragmentManager();
+        fragManager.beginTransaction().replace(R.id.fragment_container, new LogInFragment()).commit();
+    }
+
+
+    // The following code for Navigation Bar was adapted from GeeksForGeeks' guide on "BottomNavigationView in Android"
+    // https://www.geeksforgeeks.org/bottomnavigationview-inandroid/
+    // Taken on: 2025-03-03
+    // Taken by: Kevin Tu
+    /**
+     * Use this listener to specify which fragment to create when a specific button on the
+     * navigation bar is pressed. To do this, you can add another else if statement checking
+     * if the item that was pressed on was "R.id.(Fragment_ID)". Then, create a new Fragment
+     * object and store it in selectedFragment as shown for the "History" fragment.
+     */
+    private final NavigationBarView.OnItemSelectedListener navListener = item -> {
+        Fragment selectedFragment = null;
+        int itemPressed = item.getItemId();
+
+        // Check which fragment the user clicked on
+        if (itemPressed == R.id.History) {
+            selectedFragment = new MoodHistoryFragment();
+            // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
+        } else if (itemPressed == R.id.feed_bottom_nav) {
+            selectedFragment = new TestFragment();
         }
+
+        // Add username Primary Key to fragment's arguments
+        addUsernameToFragment(selectedFragment);
+
+        // Display selected fragment to screen
+        if (selectedFragment != null) {
+            fragManager.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+        }
+        return true;
+    };
+
+    /**
+     * Adds the current username to a fragment's arguments
+     */
+    private void addUsernameToFragment(Fragment fragment) {
+        if (fragment != null && currentUsername != null) {
+            Bundle args = new Bundle();
+            args.putString("username", currentUsername);
+            fragment.setArguments(args);
+        }
+    }
+
+    public void setCurrentUsername(String username) {
+        this.currentUsername = username;
+    }
+    // Method to get the current username (can be used by any fragment)
+    public String getCurrentUsername() {
+        return currentUsername;
     }
 }

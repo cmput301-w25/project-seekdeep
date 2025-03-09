@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,8 +18,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-
-
+/**
+ * SignUpFragment handles creating a new account and storing the users credentials in Firebase Database.
+ */
 public class SignUpFragment extends Fragment {
     private FirebaseFirestore db;
     private EditText usernameInput, passwordInput;
@@ -29,7 +29,6 @@ public class SignUpFragment extends Fragment {
     private TextView goToLogIn;
     private TextView passwordTrigger;
 
-    private ArrayAdapter<UserProfile> userArrayAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.sign_up_fragment, container, false);
@@ -69,22 +68,26 @@ public class SignUpFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Handles the user sign-up and saves their credentials.
+     */
     private void signUpUser() {
         String username = usernameInput.getText().toString();
         String password = passwordInput.getText().toString();
 
         if (username.isEmpty() || password.isEmpty()) {
             Toast.makeText(getContext(), "Please enter a unique username and password in the fields.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        if (password.length() != 8){
+        if (password.length() < 8){
             Toast.makeText(getContext(), "Password needs to be 8 characters in length", Toast.LENGTH_SHORT).show();
             passwordInput.setText("");
+            return;
         }
-
-        else {
-            DocumentReference userDoc = usersRef.document(username);
-            userDoc.get().addOnSuccessListener(documentSnapshot -> {
+        DocumentReference userDoc = usersRef.document(username);
+        userDoc.get()
+                .addOnSuccessListener(documentSnapshot -> {
                 if (documentSnapshot.exists()){
                     Toast.makeText(getContext(), "Username already exists! Try a different username or Log in to existing account", Toast.LENGTH_LONG).show();
                 }
@@ -94,23 +97,27 @@ public class SignUpFragment extends Fragment {
                             .addOnSuccessListener(aVoid -> {
                                 Toast.makeText(getContext(), "New Account Created Successfully!", Toast.LENGTH_SHORT).show();
 
+                                ((MainActivity) requireActivity()).setCurrentUsername(username);
+                                // This method is implemented from over here: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
                                 //Go to main feed
-//                            FeedFragment feedFragment = new FeedFragment();
-//                            Bundle args = new Bundle();
-//                            args.putString("username", username);
-//                            FeedFragment.setArguments(args);
-//
-//                            getParentFragmentManager().beginTransaction()
-//                                .replace(R.id.fragment_container, feedFragment)
-//                                .commit();
+                                FeedFragment feedFragment = new FeedFragment();
+                                Bundle args = new Bundle();
+                                args.putString("username", username);
+                                FeedFragment.setArguments(args);
+
+                                getParentFragmentManager().beginTransaction()
+                                    .replace(R.id.fragment_container, feedFragment)
+                                    .commit();
 
                             })
                             .addOnFailureListener(e -> {
-                                Toast.makeText(getContext(), "Error Occured: ", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "Error Occurred: ", Toast.LENGTH_LONG).show();
                             });
                 }
-            });
-        }
-
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Error checking username: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e("Firestore", "Error checking username", e);
+                });
     }
 }
