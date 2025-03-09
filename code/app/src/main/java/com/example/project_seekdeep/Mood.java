@@ -62,6 +62,25 @@ public class Mood implements Serializable {
     }
 
     /**
+     * This is a constructor for Mood.
+     * @param owner
+     *  The user that posted the mood event (UserProfile)
+     * @param emotionalState
+     *  The emotional state of the user/mood event (EmotionalState)
+     * @param stringFields
+     *  A string array in the form [trigger, reason, social situation] (String[])
+     */
+    public Mood(UserProfile owner, EmotionalState emotionalState, String[] stringFields) {
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+        this.postedDate = new Date();
+        // position 0 is trigger, position 1 is reason, position 2 is social situation
+        this.trigger = stringFields[0];
+        this.reason = stringFields[1];
+        this.socialSituation = stringFields[2];
+    }
+
+    /**
      * This function sets the trigger of the mood
      * @param trigger
      *  New trigger for this mood
