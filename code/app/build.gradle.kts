@@ -46,4 +46,5 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
     implementation("com.google.firebase:firebase-firestore:25.1.1")
+    implementation("com.google.android.material:material:1.12.0")
 }
