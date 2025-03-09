@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-//        BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
-//        navBar.setOnItemSelectedListener(navListener);
+        BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
+        navBar.setOnItemSelectedListener(navListener);
 
         // Set default fragment to be feed upon login
         fragManager = getSupportFragmentManager();
@@ -56,12 +56,12 @@ public class MainActivity extends AppCompatActivity {
         int itemPressed = item.getItemId();
 
         // Check which fragment the user clicked on
-//        if (itemPressed == R.id.History) {
-//            selectedFragment = new MoodHistoryFragment();
-//            // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
-//        } else if (itemPressed == R.id.feed_bottom_nav) {
-//            selectedFragment = new TestFragment();
-//        }
+        if (itemPressed == R.id.History) {
+           selectedFragment = new MoodHistoryFragment();
+           // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
+        } else if (itemPressed == R.id.feed_bottom_nav) {
+           selectedFragment = new TestFragment();
+        }
 
         // Add username Primary Key to fragment's arguments
         addUsernameToFragment(selectedFragment);
@@ -90,5 +90,5 @@ public class MainActivity extends AppCompatActivity {
     // Method to get the current username (can be used by any fragment)
     public String getCurrentUsername() {
         return currentUser;
-    }
+
 }
