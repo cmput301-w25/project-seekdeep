@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (itemPressed == R.id.feed_bottom_nav) {
             selectedFragment = new TestFragment();
         } else if (itemPressed == R.id.create_mood_bottom_nav) {
-            selectedFragment = new CreateMoodFragment();
+            selectedFragment = new CreateMoodScreen();
         }
 
         // Display selected fragment to screen

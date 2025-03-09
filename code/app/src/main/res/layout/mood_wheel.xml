@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true">
+
+    <TextView
+        android:id="@+id/how_are_you_feeling"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How are you feeling right now?"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/buttonSurprise"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/currently_selected_mood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HAPPY"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/space"
+        app:layout_constraintEnd_toEndOf="@+id/space"
+        app:layout_constraintStart_toStartOf="@+id/space"
+        app:layout_constraintTop_toTopOf="@+id/space" />
+
+    <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonFear" />
+
+
+    <Button
+        android:id="@+id/buttonSurprise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="😯"
+        android:textSize="50dp"
+        tools:layout_editor_absoluteX="184dp"
+        tools:layout_editor_absoluteY="188dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="0" />
+
+    <Button
+        android:id="@+id/buttonShame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="😔"
+        android:textSize="50dp"
+        tools:layout_editor_absoluteX="184dp"
+        tools:layout_editor_absoluteY="188dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="45" />
+
+    <Button
+        android:id="@+id/buttonSad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="☹️"
+        android:textSize="50dp"
+        tools:layout_editor_absoluteX="184dp"
+        tools:layout_editor_absoluteY="188dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="90" />
+
+    <Button
+        android:id="@+id/buttonHappy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="😄"
+        android:textSize="50dp"
+        tools:layout_editor_absoluteX="184dp"
+        tools:layout_editor_absoluteY="188dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="135"  />
+
+    <Button
+        android:id="@+id/buttonFear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="😨"
+        android:textSize="50dp"
+        tools:layout_editor_absoluteX="184dp"
+        tools:layout_editor_absoluteY="188dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="180" />
+
+    <Button
+        android:id="@+id/buttonDisgusted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🤢"
+        android:textSize="50dp"
+        tools:layout_editor_absoluteX="184dp"
+        tools:layout_editor_absoluteY="188dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="225" />
+
+    <Button
+        android:id="@+id/buttonConfused"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🤔"
+        android:textSize="50dp"
+        tools:layout_editor_absoluteX="184dp"
+        tools:layout_editor_absoluteY="188dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="270" />
+
+    <Button
+        android:id="@+id/buttonAngry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="😠"
+        android:textSize="50dp"
+        tools:layout_editor_absoluteX="184dp"
+        tools:layout_editor_absoluteY="188dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintCircle="@id/space"
+        app:layout_constraintCircleRadius="130dp"
+        app:layout_constraintCircleAngle="315" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

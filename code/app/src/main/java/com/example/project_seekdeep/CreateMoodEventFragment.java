@@ -3,7 +3,6 @@ package com.example.project_seekdeep;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -26,14 +25,11 @@ import com.bumptech.glide.Glide;
  */
 //Image Picker code adapted from: https://medium.com/@everydayprogrammer/implement-android-photo-picker-in-android-studio-3562a85c85f1
 
-public class CreateMoodFragment extends Fragment {
-    //Constructor to create the fragment
-    public CreateMoodFragment() {
-        super(R.layout.test_upload_image);
-    }
-
+public class CreateMoodEventFragment extends Fragment {
     //Attributes:
     private ImageView uploadImageHere;  //this imageView is set to be clickable
+    private EmotionalStates mood;
+    private Mood moodEvent;
 
     //This launches the chosen image into the imageView
     ActivityResultLauncher<PickVisualMediaRequest> launcher = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), new ActivityResultCallback<Uri>() {
@@ -47,9 +43,20 @@ public class CreateMoodFragment extends Fragment {
         }
     });
 
+
+    //Constructor to create the fragment
+    public CreateMoodEventFragment(EmotionalStates mood) {
+
+        super(R.layout.test_upload_image);
+    }
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //Initialize moodEvent to a new Mood object (and pass in the selected mood)
+        moodEvent = new Mood(mood);
 
         //Initialize the image UI element
         uploadImageHere = view.findViewById(R.id.image);
