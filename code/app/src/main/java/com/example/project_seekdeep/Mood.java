@@ -11,18 +11,20 @@ import java.util.List;
 public class Mood implements Serializable {
 
     private String trigger;
-    private String socialSituation;
+    private SocialSituations socialSituation;
     private Image image;
     private Date postedDate;
     private EmotionalState emotionalState;
     private List<String> followers = new ArrayList<>();
     private String reason;
 //    private User owner;
+
     public Mood(/*User owner,*/EmotionalState emotionalState){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
     }
+
     public Mood(/*User owner,*/EmotionalState emotionalState, String socialSituation, String trigger){
 //        this.owner = owner;
         this.emotionalState = emotionalState;
@@ -33,7 +35,7 @@ public class Mood implements Serializable {
     public void setTrigger(String trigger){
         this.trigger = trigger;
     }
-    public void setSocialSituation(String socialSituation){
+    public void setSocialSituation(SocialSituations socialSituation){
         this.socialSituation = socialSituation;
     }
     public void setPostedDate(Date postedDate){
