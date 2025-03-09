@@ -67,7 +67,7 @@ public class Mood implements Serializable {
      *  New trigger for this mood
      */
 
-    public Mood(EmotionalState emotionalState, List<String> followers, UserProfile owner, Date postedDate, String socialSituation, String trigger){
+    public Mood(UserProfile owner, EmotionalState emotionalState, String socialSituation, String trigger, List<String> followers, Date postedDate){
         this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = postedDate;
@@ -76,16 +76,12 @@ public class Mood implements Serializable {
     }
 
     public Mood(Map<String, Object> mapMood){
-
         this.setOwner( (UserProfile) mapMood.get("owner"));
         this.emotionalState = emotionalState.valueOf(mapMood.get("emotionalState").toString());
         this.postedDate = (Date) mapMood.get("postedDate");
         this.socialSituation = mapMood.get("socialSituation").toString();
         this.trigger = mapMood.get("trigger").toString();
-
-
     }
-
     public void setTrigger(String trigger){
         this.trigger = trigger;
     }
@@ -104,9 +100,6 @@ public class Mood implements Serializable {
      */
     public void setPostedDate(Date postedDate){
         this.postedDate = postedDate;
-    }
-    public void setImage(Bitmap image){
-        this.image = image;
     }
 
     /**
