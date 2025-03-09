@@ -95,8 +95,11 @@ public class MoodHistoryFragmentTest {
     }
 
     @Test
-    public void appShouldDisplayExistingMoods() {
+    public void appShouldDisplayExistingMoods() throws InterruptedException {
         onView(withId(R.id.History)).perform(click());
+
+        Thread.sleep(10000);
+
         onView(withText("Happiness")).check(matches(isDisplayed()));
         onView(withText("Confusion")).check(matches(isDisplayed()));
         onView(withText("Sadness")).check(matches(isDisplayed()));

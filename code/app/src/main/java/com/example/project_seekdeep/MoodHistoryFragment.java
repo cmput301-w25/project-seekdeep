@@ -15,13 +15,18 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.auth.User;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -62,74 +67,36 @@ public class MoodHistoryFragment extends Fragment {
 
         // Instantiate database for usage
         db = FirebaseFirestore.getInstance();
-        users = db.collection("users");
+        users = db.collection("UserDB");
         moods = db.collection("MoodDB");
 
-
-//        //create dummy array data
-//        Mood[] dummyMoods ={
-//                new Mood(new UserProfile("User1", "pass1"), EmotionalState.ANGER,
-//                        "some social situation", "What the trigger"),
-//
-//                new Mood(new UserProfile("User1", "pass2"), EmotionalState.CONFUSION,
-//                        "some social situation", "What the trigger"),
-//
-//                new Mood(new UserProfile("User1", "pass1"), EmotionalState.DISGUST,
-//                        "some social situation", "What the trigger"),
-//
-//                new Mood(new UserProfile("User1", "pass2"), EmotionalState.FEAR,
-//                        "some social situation", "What the trigger"),
-//
-//        };
-
-        //-----------------get mood from specific user-------------------------
-        //https://stackoverflow.com/questions/53140913/querying-by-a-field-with-type-reference-in-firestore
-//        DocumentReference userDocRef = users.document(loggedInUser.getUsername());
-
-        // TEMPORARY FOR TESTING
-        DocumentReference userDocRef = users.document("kevtu2");
-
+        UserProfile user = new UserProfile("kevtu2", "222");
 
         //2. query collection to get all mood from user
         //https://firebase.google.com/docs/firestore/query-data/queries#java_2
-        Query loggedInUserMoodsQuery = moods.whereEqualTo("owner", userDocRef);
+        Query loggedInUserMoodsQuery = moods.whereEqualTo("ownerString", "kevtu2");
 
         ArrayList<Mood> moodArrayList = new ArrayList<>();
         ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList);
-
-        loggedInUserMoodsQuery.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Log.d("NANCY", document.getId() + " => " + document.getData());
-
-                                // Get fields to build Mood
-                                EmotionalState emotionalState = (EmotionalState) document.get("emotionalState");
-                                List<String> followers = (List<String>) document.get("followers");
-                                String socialSituation = (String) document.get("socialSituation");
-                                String trigger = (String) document.get("trigger");
-                                Date datePosted = (Date) document.get("postedDate");
-
-                                Mood mood = new Mood(loggedInUser, emotionalState, socialSituation, trigger, followers, datePosted);
-
-
-//                                Map<String, Object> moodDocument = document.getData();
-//                                moodDocument.replace("owner", user);
-//                                Timestamp timestamp = (Timestamp) moodDocument.get("postedDate");
-//                                moodDocument.replace("postedDate", timestamp.toDate());
-//                                Log.d("NANCY", moodDocument.toString());
-
-//                                for (var entry : moodDocument.entrySet()) {
-//                                    Log.d("NANCY", "Map items: " + entry.getKey() + "/" + entry.getValue() + "/" + entry.getValue().getClass().getName());
-//                                }
-                                moodArrayList.add(mood);
-                            }
-                            moodArrayAdapter.notifyDataSetChanged();
-                        }
-                    }
-                });
         moodListView.setAdapter(moodArrayAdapter);
+
+        loggedInUserMoodsQuery.addSnapshotListener((value, error) -> {
+           if (error != null) {
+               Log.e("Firestore", error.toString());
+           }
+           if (value != null) {
+               for (QueryDocumentSnapshot snapshot : value) {
+                    EmotionalState emotionalState = EmotionalState.valueOf((String)snapshot.get("emotionalState"));
+                    String socialSituation = (String) snapshot.get("socialSituation");
+                    String trigger = (String) snapshot.get("trigger");
+                    // For now, test with no followers
+                    Date postedDate = new Date();
+
+                    Mood mood = new Mood(user, emotionalState, socialSituation, trigger, null, postedDate);
+                    moodArrayList.add(mood);
+               }
+               moodArrayAdapter.notifyDataSetChanged();
+           }
+        });
     }
 }
