@@ -61,7 +61,7 @@ public class MoodEventBaseAdapter extends BaseAdapter {
 
         Mood currentMood = (Mood) getItem(position);
 
-        Log.d("NANCY", currentMood.getSocialSituation());
+        Log.d("NANCY", currentMood.getSocialSituation().toString());
 
         // set up ids
         TextView reason = view.findViewById(R.id.reason);
@@ -78,7 +78,7 @@ public class MoodEventBaseAdapter extends BaseAdapter {
         emotion.setText(currentMood.getEmotionalState().toString());
         user.setText(currentMood.getOwnerString());
         trigger.setText(currentMood.getTrigger());
-        socialSit.setText(currentMood.getSocialSituation());
+        socialSit.setText(currentMood.getSocialSituation().toString());
         date.setText(currentMood.getPostedDate().toString());
 
 

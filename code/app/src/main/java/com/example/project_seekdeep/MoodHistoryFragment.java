@@ -98,7 +98,6 @@ public class MoodHistoryFragment extends Fragment{
 
                                 Mood mood = new Mood(moodDocument);
 
-
                                 moodArrayList.add(mood);
                             }
 
