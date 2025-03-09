@@ -60,7 +60,7 @@ public class SignUpFragment extends Fragment {
 
         goToLogIn.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new LogInFragment())
+                    .replace(R.id.frameLayout, new LogInFragment())
                     .addToBackStack(null)
                     .commit();
         });
@@ -100,14 +100,14 @@ public class SignUpFragment extends Fragment {
                                 ((MainActivity) requireActivity()).setCurrentUsername(username);
                                 // This method is implemented from over here: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
                                 //Go to main feed
-                                FeedFragment feedFragment = new FeedFragment();
-                                Bundle args = new Bundle();
-                                args.putString("username", username);
-                                FeedFragment.setArguments(args);
-
-                                getParentFragmentManager().beginTransaction()
-                                    .replace(R.id.fragment_container, feedFragment)
-                                    .commit();
+//                                FeedFragment feedFragment = new FeedFragment();
+//                                Bundle args = new Bundle();
+//                                args.putString("username", username);
+//                                FeedFragment.setArguments(args);
+//
+//                                getParentFragmentManager().beginTransaction()
+//                                    .replace(R.id.frameLayout, feedFragment)
+//                                    .commit();
 
                             })
                             .addOnFailureListener(e -> {

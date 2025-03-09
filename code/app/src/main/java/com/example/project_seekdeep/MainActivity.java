@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set default fragment to be feed upon login
         fragManager = getSupportFragmentManager();
-        fragManager.beginTransaction().replace(R.id.fragment_container, new LogInFragment()).commit();
+        fragManager.beginTransaction().replace(R.id.frameLayout, new LogInFragment()).commit();
     }
 
 
