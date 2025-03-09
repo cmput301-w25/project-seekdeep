@@ -5,6 +5,12 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * This enum can be used to represent social situations in user Moods. It comes with functions to help
+ * with formatting when being used in UI and support for converting to a drop down menu.
+ * @author Kevin Tu
+ */
 public enum SocialSituations {
     // This first enum "TITLE" is meant to be a filler and shouldn't actually be used as an option
     // by the user.
