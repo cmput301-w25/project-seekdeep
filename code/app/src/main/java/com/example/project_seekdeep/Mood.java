@@ -17,10 +17,7 @@ public class Mood implements Serializable {
     private EmotionalStates emotionalState;
     private String reason;
 //    private User owner;
-
-    public Mood(/*User owner,*/EmotionalStates emotionalState){
-//        this.owner = owner;
-        this.emotionalState = emotionalState;
+    public Mood(/*User owner,*/){
         this.postedDate = new Date();
     }
 
@@ -43,8 +40,16 @@ public class Mood implements Serializable {
     public void setPostedDate(Date postedDate){
         this.postedDate = postedDate;
     }
-    public void setImage(Image image){
-        this.image = image;
+    public void setDateNow(){
+        this.postedDate = new Date();
+    }
+
+    public boolean setImage(Image image){
+        if (image.getHeight()*image.getWidth()>16384){
+            this.image = image;
+            return true;
+        }
+        return false;
     }
 
     public String getTrigger() {
