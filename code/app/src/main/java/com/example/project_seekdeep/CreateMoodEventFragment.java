@@ -207,8 +207,8 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                         return; //this stops execution for the rest of this click method
                     }
 
-                    //Issue, in this constructor: SocialSit can't be null, so temp hardcord social sit to "Alone"
-                    SocialSituations socialSit = SocialSituations.ALONE;
+                    //Issue, in this constructor: SocialSit can't be null, so temp hardcoded to the TITLE value.
+                    SocialSituations socialSit = SocialSituations.TITLE;
                     moodEvent = new Mood(userProfile, selectedEmotion, new String[] {"null", reason, socialSit.toString()} );
 
                 }
