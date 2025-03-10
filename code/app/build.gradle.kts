@@ -65,4 +65,8 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.firebase.firestore)
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    //javadoc dependency
+    implementation(files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"))
+
 }

@@ -41,6 +41,12 @@ import java.util.Map;
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
  * @author Kevin Tu, Nancy Lin
+ *
+ * When this history fragment is created, instantiate moodArrayList once
+ *       AS well as the firebase
+ *       and the userprofile
+ * Upon creating this view, it will query the database and load in all the moods
+ * that the user has created.
  */
 
 public class MoodHistoryFragment extends Fragment {
@@ -60,6 +66,9 @@ public class MoodHistoryFragment extends Fragment {
     private CollectionReference users;
 
 
+    /**
+     * mandotory constructor javadocs
+     */
     public MoodHistoryFragment() {
         super(R.layout.layout_feed);
     }

@@ -31,6 +31,8 @@ import java.util.Objects;
 /**
  * This class is a custom array adapter for the Mood class.
  * @author Jachelle Chan and Nancy Lin
+ * It has a getView() that:
+ * Creates and gets the view of each mood event in a user's mood listview
  */
 public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
@@ -41,7 +43,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
      * Mandatory constructor class for MoodArrayAdapter
      *
      * @param context   , type Context
-     * @param moods     , type ArrayList<Mood>
+     * @param moods     , type ArrayList Mood
      */
     public MoodArrayAdapter(Context context, ArrayList<Mood> moods) {
         super(context, 0, moods);
@@ -63,6 +65,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
      *        {@link #getItemViewType(int)}).
      * @param parent The parent that this view will eventually be attached to
      * @return
+     *      completed view
      */
     @NonNull
     @Override

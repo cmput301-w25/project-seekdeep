@@ -8,16 +8,52 @@ import androidx.annotation.NonNull;
  *
  */
 public enum EmotionalStates {
+
+    /**
+     * Red
+     */
     ANGER("\uD83D\uDE20", "#D55353"),  // RED
+    /**
+     * Pink
+     */
     CONFUSION("\uD83E\uDD14", "#FFC6E8"),  // PINK
+    /**
+     * Green
+     */
     DISGUST("\uD83E\uDD22", "#59C225"),  // GREEN
+    /**
+     * Grey
+     */
     FEAR("\uD83D\uDE28", "#828282"),  // GREY
+
+    /**
+     * yellow
+     */
     HAPPINESS("\uD83D\uDE04", "#E6D600"),  // YELLOW
+
+    /**
+     * blue
+     */
     SADNESS("☹️", "#0055FF"),  // BLUE
+    /**
+     * purple
+     */
     SHAME("\uD83D\uDE14", "#AD2CED"),  // PURPLE
+
+    /**
+     * orange
+     */
     SURPRISE("\uD83D\uDE2F", "#E4A21F");  // ORANGE
     private String emoticon;
     private String colour;
+
+    /**
+     * Constructor for enuum
+     * @param emoticon
+     *      the emopji
+     * @param colour
+     *      the color
+     */
     EmotionalStates(String emoticon, String colour) {
         this.emoticon = emoticon;
         this.colour = colour;

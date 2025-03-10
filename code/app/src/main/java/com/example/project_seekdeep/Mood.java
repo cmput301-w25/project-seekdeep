@@ -44,13 +44,15 @@ public class Mood implements Serializable {
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
     }
+
     /**
-     * This method is a constructor for Mood which takes user, emotionalState, socialSituation, and trigger.
-     * This method also sets the date to the current date
+     *
+     * @param owner
+     *      owner of the damn mood
      * @param emotionalState
-     *  New String for emotionalState
+     *  New EmotionalState for emotionalState
      * @param socialSituation
-     *  New String for socialSituation
+     *  New SocialSituation for socialSituation
      * @param trigger
      *  New String for trigger of the situation
      */
@@ -100,7 +102,22 @@ public class Mood implements Serializable {
     }
 
 
-
+    /**
+     * This is constructor for Mood
+     *
+     * @param owner
+     *      The user that posted the mood event (UserProfile)
+     * @param emotionalState
+     *      The emotional state of the user/mood event (EmotionalState)
+     * @param socialSituation
+     *      The social situation of the user/mood event (SocialSituation)
+     * @param trigger
+     *      The string that describes a trigger the user experienced for the mood
+     * @param followers
+     *      A list of strings that correspond with the users that are
+     * @param postedDate
+     *      A Date that corresponds with when the mood was created/posted
+     */
     public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate){
         this.owner = owner;
         this.emotionalState = emotionalState;
@@ -109,6 +126,26 @@ public class Mood implements Serializable {
         this.trigger = trigger;
     }
 
+    /**
+     * This is constructor for Mood
+     *
+     * @param owner
+     *      The user that posted the mood event (UserProfile)
+     * @param emotionalState
+     *      The emotional state of the user/mood event (EmotionalState)
+     * @param socialSituation
+     *      The social situation of the user/mood event (SocialSituation)
+     * @param trigger
+     *      The string that describes a trigger the user experienced for the mood
+     * @param followers
+     *      A list of strings that correspond with the users that are
+     * @param postedDate
+     *      A Date that corresponds with when the mood was created/posted
+     * @param reason
+     *      the reason with mood
+     *
+     *
+     */
     public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate, String reason){
         this.owner = owner;
         this.emotionalState = emotionalState;
@@ -120,6 +157,21 @@ public class Mood implements Serializable {
     }
 
 
+    /**
+     *
+     * @param emotionalState
+     *      The emotional state of the user/mood event (EmotionalState)
+     * @param followers
+     *      A list of strings that correspond with the users that are
+     * @param owner
+     *      The user that posted the mood event (UserProfile)
+     * @param postedDate
+     *      A Date that corresponds with when the mood was created/posted
+     * @param socialSituation
+     *      The social situation of the user/mood event (SocialSituation)
+     * @param trigger
+     *       The string that describes a trigger the user experienced for the mood
+     */
     public Mood(EmotionalStates emotionalState, List<String> followers, UserProfile owner, Date postedDate, SocialSituations socialSituation, String trigger){
         this.owner = owner;
         this.emotionalState = emotionalState;
@@ -136,6 +188,7 @@ public class Mood implements Serializable {
     public void setTrigger(String trigger){
         this.trigger = trigger;
     }
+
     /**
      * This function sets the socialSituation of the mood
      * @param socialSituation
@@ -144,6 +197,7 @@ public class Mood implements Serializable {
     public void setSocialSituation(SocialSituations socialSituation){
         this.socialSituation = socialSituation;
     }
+
     /**
      * This function sets the emotionalState of the mood
      * @param emotionalState
@@ -152,6 +206,7 @@ public class Mood implements Serializable {
     public void setEmotionalState(EmotionalStates emotionalState) {
         this.emotionalState = emotionalState;
     }
+
     /**
      * This function sets the postedDate of the mood
      * @param postedDate
@@ -162,22 +217,38 @@ public class Mood implements Serializable {
     }
 
     /**
-     * This function gets the trigger of the mood
-     * @return
-     *  Current trigger of this mood
+     * Sets the mood
+     * @param owner
+     *      owner to be set
      */
     public void setOwner(UserProfile owner){
         this.owner = owner;
     }
 
+
+    /**
+     * This function sets the reason of the mood
+     * @param reason
+     *      new reason for the mood
+     */
     public void setReason(String reason){
         this.reason = reason;
     }
 
+    /**
+     * This function sets the id of the mood's individual document reference
+     * @param docRef
+     *      new document Reference for the mood
+     */
     public void setDocRef(DocumentReference docRef){
         this.docRef = docRef;
     }
 
+    /**
+     * This function gets the trigger of the mood
+     * @return
+     *      current trigger as String
+     */
     public String getTrigger() {
         return trigger;
     }
@@ -215,10 +286,20 @@ public class Mood implements Serializable {
         return emotionalState;
     }
 
+    /**
+     * This function gets the list of followers that are following a mood
+     * @return
+     *      List of followers as List string
+     */
     public List<String> getFollowers() {
         return followers;
     }
 
+    /**
+     * This function gets the current reason attached to the mood
+     * @return
+     *      current reason as String
+     */
     public String getReason() {
         return reason;
     }
@@ -227,9 +308,6 @@ public class Mood implements Serializable {
      * This function sets the image of the mood if the image is valid
      * @param image
      *  New image for this mood
-     * @return
-     *  True if the image is not rejected
-     *  False if the image is rejected
      */
     public void setImage(Uri image){
 
@@ -247,14 +325,29 @@ public class Mood implements Serializable {
         this.image = image;
     }
 
+    /**
+     * This function gets the username of the userProfile attached to the mood
+     * @return
+     *      String username of userProfile of mood
+     */
     public String getOwnerString() {
         return owner.getUsername();
     }
 
+    /**
+     * This function gets the user / creator of the mood
+     * @return
+     *      owner as UserProfile
+     */
     public UserProfile getOwner() {
         return owner;
     }
 
+    /**
+     * This function gets the firebase document reference of where the mood is stored
+     * @return
+     *      location of mood in firebase db -- docRef as DocumentReference
+     */
     public DocumentReference getDocRef(){
         return docRef;
     }

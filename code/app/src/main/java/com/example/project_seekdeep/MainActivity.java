@@ -23,13 +23,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
  * It also sets up the navigation and fragment management for the app's main UI flow.
  */
-
 public class MainActivity extends AppCompatActivity implements MoodDialogListener, DeleteMoodDialogListener {
     private FragmentManager fragManager;
     private UserProfile currentUser;
 
 
     private ListView moodListView;
+
+    /**
+     * required constructor for javadoc
+     */
+    public MainActivity(){
+        ;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
     /**
      * This method accesses firestore and edits the mood
      * @param mood
+     *      Mood to be updated
      */
     @Override
     public void updateMood(Mood mood) {
@@ -149,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
     /**
      * This method accesses firestore and deletes the mood
      * @param mood
+     *      mood to be deleted
      */
     @Override
     public void deleteMood(Mood mood) {

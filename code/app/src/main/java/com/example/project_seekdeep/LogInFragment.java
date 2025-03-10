@@ -29,6 +29,14 @@ public class LogInFragment extends Fragment {
     private CollectionReference usersRef;
     private TextView goToSignUp;
 
+    /**
+     * required constructor for javadoc
+     */
+    public LogInFragment(){
+        ;
+    }
+
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.log_in_fragment, container, false);
 

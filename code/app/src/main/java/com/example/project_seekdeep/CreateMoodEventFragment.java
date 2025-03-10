@@ -48,14 +48,11 @@ import java.util.UUID;
  * This Fragment class is designed to display a Mood Event Card, and let users Create a mood.
  * When the user clicks to select an emotion, a SelectMoodDialogFragment will pop up.
  * @author Sarah Chang, Nancy Lin
- */
-
-/*
+ *
  * Current working features:
  *      - lets a user insert an image
  *      - user can select an emotion
  *      - a new Mood will be created and passed to ModdProvider, where it will be stored in firebase
- * TO DO:
  *      - if the user does not want to select an image, then must get rid of that imageView UI element (using a new xml file?)
  *      - need to pass in the UserProfile object to create a new Mood object
  *      - image needs to be uploaded to firebase
@@ -87,6 +84,10 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
 
     //Constructor to create the fragment
+
+    /**
+     * Constructor for the fragment
+     */
     public CreateMoodEventFragment() {
         super(R.layout.frag_create_mood_event);
     }
@@ -299,7 +300,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
     /**
      * This checks whether a reason is under 20 characters or under 3 words
-     * @param reason
+     * @param reason    reason to assess
      * @return true if the reason is ≤ 20 chars or ≤ 3 words, false otherwise
      */
     public boolean validReasonLength(String reason) {
@@ -314,7 +315,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
      * It also set the isnstance of CreateMoodEventFragment's selectedEmotion attribute to the selected mood,
      * which will be used in createConfirmButton.setOnClickListener
      * @param selectedMood
-     *          This is the selected mood to be displayed and set to selectedEmotion
+     * This is the selected mood to be displayed and set to selectedEmotion
      */
     @Override
     public void moodHasBeenSelected(EmotionalStates selectedMood) {

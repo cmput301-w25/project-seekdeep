@@ -17,11 +17,17 @@ import androidx.fragment.app.FragmentManager;
  * This displays the mood wheel as a fragment.
  * @deprecated CURRENTLY: THIS CLASS IS NOT BEING USED, INSTEAD IS REPLACED BY SelectMoodDialogFragment
  */
-
 public class CreateMoodScreen extends Fragment {
 
     private TextView selectedMood;
     private EmotionalStates mood;
+
+    /**
+     * Require constructor for javadoc
+     */
+    public CreateMoodScreen(){
+        ;
+    }
 
     @Nullable
     @Override

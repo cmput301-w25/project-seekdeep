@@ -7,6 +7,11 @@ package com.example.project_seekdeep;
  */
 public interface MoodDialogListener {
 
+    /**
+     * Interface method for updating a Mood
+     * @param mood
+     *      Mood to be updated
+     */
     void updateMood(Mood mood);
 
 }

@@ -14,8 +14,18 @@ import androidx.fragment.app.DialogFragment;
  *
  * @author Nancy Lin
  * reuses code from Lab 7
+ *
+ * This code adds onAttach listener that instanciates a Delete mood fragment
+ * Also creates a dialog that takes care of deleting moods
  */
 public class DeleteMoodFragment extends DialogFragment {
+
+    /**
+     * required constructor for javadoc
+     */
+    public DeleteMoodFragment(){
+        ;
+    }
 
     private DeleteMoodDialogListener listener;
 
@@ -24,6 +34,7 @@ public class DeleteMoodFragment extends DialogFragment {
      * Mandotory constructor that creates a delete mood fragment with its corresponding mood
      *
      * @param mood
+     *  Mood to use for delete
      * @return      fragment
      */
     public static DeleteMoodFragment newInstance(Mood mood){
@@ -38,6 +49,7 @@ public class DeleteMoodFragment extends DialogFragment {
     /**
      * On attach, implement the deleteMood dialog listener to list for deleteMood()
      * @param context
+     *      context of the fragment
      */
     @Override
     public void onAttach(@NonNull Context context) {
@@ -57,6 +69,7 @@ public class DeleteMoodFragment extends DialogFragment {
      * or null if this is a freshly created Fragment.
      *
      * @return
+     *      returns a dialog
      */
     @NonNull
     @Override

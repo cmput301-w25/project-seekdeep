@@ -11,6 +11,7 @@ public interface DeleteMoodDialogListener {
      * method interface for deleting a mood
      *
      * @param mood
+     *      Mood to be deleted
      */
     void deleteMood(Mood mood);
 }

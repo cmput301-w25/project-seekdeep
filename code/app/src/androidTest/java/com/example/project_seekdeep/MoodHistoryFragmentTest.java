@@ -37,13 +37,24 @@ import java.util.Objects;
 // Taken from Seth's lab-07 instructions on UI testing :)
 // Taken by: Kevin Tu
 // Taken on: 2025-03-08
+
+/**
+ * java doc for test
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class MoodHistoryFragmentTest {
+
+    /**
+     * java doc for test
+     */
     @Rule
     public ActivityScenarioRule<MainActivity> scenario =
             new ActivityScenarioRule<MainActivity>(MainActivity.class);
 
+    /**
+     * java doc for test
+     */
     @BeforeClass
     public static void setup() {
         // Specific address for emulated device to access our localHost
@@ -53,6 +64,9 @@ public class MoodHistoryFragmentTest {
         FirebaseFirestore.getInstance().useEmulator(androidLocalhost, portNumber);
     }
 
+    /**
+     * java doc for test
+     */
     @Before
     public void seedDatabase() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -74,6 +88,9 @@ public class MoodHistoryFragmentTest {
 
     }
 
+    /**
+     * java doc for test
+     */
     @After
     public void tearDown() {
         String projectId = "project-seekdeep";
@@ -98,6 +115,9 @@ public class MoodHistoryFragmentTest {
         }
     }
 
+    /**
+     * java doc for test
+     */
     @Test
     public void appShouldDisplayExistingMoods() throws InterruptedException {
         onView(withId(R.id.History)).perform(click());

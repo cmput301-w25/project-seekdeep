@@ -17,6 +17,17 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
+
+    /**
+     * required constructor for javadoc
+     */
+    public ExampleInstrumentedTest(){
+        ;
+    }
+
+    /**
+     * idk i didnt write this
+     */
     @Test
     public void useAppContext() {
         // Context of the app under test.

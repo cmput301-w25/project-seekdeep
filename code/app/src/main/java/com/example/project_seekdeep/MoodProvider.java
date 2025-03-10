@@ -27,6 +27,7 @@ public class MoodProvider {
     /**
      * This is a constructor for MoodProvider
      * @param db
+     *      the damn db firebase
      */
     public MoodProvider(FirebaseFirestore db) {
         //Initialize moodEventList with an empty ArrayList (will be populated after reading from firestore)
@@ -36,15 +37,27 @@ public class MoodProvider {
     }
 
 
-    //All methods in this interface must be implemented by the caller of MoodProvider
+    //
+
+    /**
+     * All methods in this interface must be implemented by the caller of MoodProvider
+     */
     public interface DataStatus {
+
+        /**
+         * interface method
+         */
         void onDataUpdated();
+        /**
+         * interface method
+         */
         void OnError(String strin);
     }
 
     /**
      * This checks for any changes in the database
      * @param dataStatus
+     *      the status of database
      */
     public void listenForUpdates(final DataStatus dataStatus) {
         moodCollection.addSnapshotListener((snapshot, error) -> {
@@ -66,6 +79,7 @@ public class MoodProvider {
     /**
      * This checks if a MoodProvider already exists. If not, make a new instance of MoodProvider
      * @param db
+     *      the database firebase
      * @return MoodProvider (either an existing instance or a new instance)
      */
     public static MoodProvider getInstance(FirebaseFirestore db) {
@@ -75,6 +89,12 @@ public class MoodProvider {
     }
 
     //Getter
+
+    /**
+     * getter
+     * @return
+     *      return list of moods
+     */
     public ArrayList<Mood> getMoodEventList() {
         return moodEventList;
     }

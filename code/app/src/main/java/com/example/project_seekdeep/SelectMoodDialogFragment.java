@@ -19,7 +19,15 @@ public class SelectMoodDialogFragment extends DialogFragment {
     TextView selectedMood; //displays the currently selected mood in the middle of wheel
     EmotionalStates mood; //this is the mood that will be passed back to CreateMoodEventFragment
 
+    /**
+     * Interface for the fragment
+     */
     public interface MoodSelectionListener {
+        /**
+         * interface method
+         * @param mood
+         *      emotional state to look at
+         */
         void moodHasBeenSelected(EmotionalStates mood);
     }
 

@@ -33,6 +33,8 @@ import java.util.Objects;
  * This class is a custom array adapter for the Mood class.
  * Copy of MoodArrayAdapter but modified for User's moods (add edit /delete functionality)
  * @author Jachelle Chan and Nancy Lin
+ * It has a getView() that:
+ * Creates and gets the view of each mood event in a user's mood listview
  */
 public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 

@@ -24,7 +24,16 @@ import java.util.Dictionary;
  *
  * @author Jachelle Chan, modified by Nancy Lin
  * reuses code from Lab 7
+ *
+ * This class has an Instance constructor for EditMoodFragment
+ *
+ * Also has an onAttach listener that instantiates the edit mood
+ *
+ * Creates a dialog that manages editing an existing mood
+ *
+ *
  */
+
 public class EditMoodFragment extends DialogFragment {
     private EditText editReason;
     private EditText editTrigger;
@@ -33,12 +42,20 @@ public class EditMoodFragment extends DialogFragment {
     private ImageView imageView;
     private MoodDialogListener listener;
 
+    /**
+     * Required constructor for javadoc
+     */
+    public EditMoodFragment(){
+        ;
+    }
+
 
     //** btw i used seth's lab-07 code for this **//
 
     /**
      * Instance constructor for EditMoodFragment
      * @param mood
+     *  mood to use
      * @return EditMoodFragment fragment
      */
     public static EditMoodFragment newInstance(Mood mood) {
@@ -55,6 +72,7 @@ public class EditMoodFragment extends DialogFragment {
     /**
      * Modifies onAttach to add a listener that will handle editing moods
      * @param context
+     *  context of fragment
      */
     @Override
     public void onAttach(@NonNull Context context) {

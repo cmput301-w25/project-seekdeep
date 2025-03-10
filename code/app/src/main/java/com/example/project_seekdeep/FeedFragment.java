@@ -34,6 +34,21 @@ import java.util.Objects;
 /**
  * This fragment class is designed to display all the moods in the database.
  * @author Kevin Tu, Nancy Lin
+ *
+ *
+ *
+ * Has an onCreateView that:
+ *  Upon creating this fragment, it will create a basic view, as well as
+ *       assign value to the firebase/ database references
+ *
+ *
+ *
+ *
+ * Has an onViewCreated that:
+ * When this view is created, it will query the mood database for all of the moods and show them
+ *
+ *
+ *
  */
 public class FeedFragment extends Fragment {
 
@@ -69,6 +84,7 @@ public class FeedFragment extends Fragment {
      * from a previous saved state as given here.
      *
      * @return
+     *      completed view
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
