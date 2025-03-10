@@ -108,7 +108,7 @@ public class SignUpFragment extends Fragment {
                                 Toast.makeText(getContext(), "New Account Created Successfully!", Toast.LENGTH_SHORT).show();
 
                                 // Update the username in MainActivity to be used as Primary Key
-                                ((MainActivity) requireActivity()).setCurrentUsername(username);
+                                ((MainActivity) requireActivity()).setCurrentUser(newUser);
 
                                 // Call the successful_login() method to show BottomNavigationView and navigate to FeedFragment
                                 ((MainActivity) requireActivity()).successful_login();
