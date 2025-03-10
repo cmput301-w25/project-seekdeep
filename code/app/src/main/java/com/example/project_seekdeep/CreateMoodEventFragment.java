@@ -7,7 +7,9 @@ import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -58,6 +60,7 @@ import java.util.UUID;
  *      - need to pass in the UserProfile object to create a new Mood object
  *      - image needs to be uploaded to firebase
  *      - once a mood is made, return to whatever the user was previously doing
+ *      - the uploadImageToFirebase should technically be implemented in MoodProvider
  */
 
 //Resources:
@@ -129,6 +132,10 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         }
     });
 
+    /**
+     * This uploads the image that a user selects into Firebase Storage
+     * @param selectedImage
+     */
     private void uploadImageToFirebase(Uri selectedImage) {
         //Initialize a MoodProvider object and pass in the firebase
 
@@ -173,7 +180,13 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
     }
 
-
+    /**
+     * When this view is created, it will collect all the fields from the UI to create a new mood
+     * Fields collected: EmotionalState, trigger, SocialSituation, and reason
+     * @param view The View returned.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -202,16 +215,12 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         if (getArguments() != null) {
             //Retrieve UserProfile (must be casted), save it in userProfile class attribute
             userProfile = (UserProfile) getArguments().getSerializable("userProfile");
-//            String username = getArguments().getString("username");
         }
         else {  //Throw error into logcat (use for debugging)
             String message = "UserProfile was not passed to CreateMoodEventFragment correctly!";
             Log.e("CreateMoodEventFragment", message);
             throw new NullPointerException(message);
         }
-
-        //Temporarily hardcode userProfile to User1
-        //userProfile = new UserProfile("User1", "pass1");
 
 
         //Set a listener for when the imageView is clicked on
@@ -287,8 +296,6 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
                 //Log.d("NANCY", imageUri.toString());
 
-
-
                 if (imageUri != null) {
                     uploadImageToFirebase(imageUri);
                 }
@@ -313,7 +320,6 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     }
 
     //Must implement this listener method from the SelectMoodDialogFragment
-
     /**
      * This updates the UI to display the selected mood from the mood wheel (in SelectMoodDialogFragment)
      * @param selectedMood
