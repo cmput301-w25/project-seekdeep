@@ -9,6 +9,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
+/**
+ *  This class is in charge of reflecting new/updated/deleted data between the app and the database
+ *  @author Sarah Chang
+ */
+
 public class MoodProvider {
     //Attributes:
     //note: the FirestoreFirebase instance will no be an attribute, but be passed to MovieProvider (so there's no accidental mix up of possible db instances)
@@ -62,10 +67,18 @@ public class MoodProvider {
 
     //METHODS:
 
+    /**
+     * This adds a new Mood object into the MoodDB collection in the firebase database
+     * @param mood
+     *          This is the mood to be added to firebase
+     */
     public void addMoodEvent(Mood mood) {
         //Create a new document for the mood.  Keep the parameter empty in document() so that firestore generates a unique Key
         DocumentReference moodDocRef = moodCollection.document();
-        mood.setId(moodDocRef.getId());
+//        mood.setId(moodDocRef.getId()); //Mood has no id attribute
+
+        //Populate the new document with mood
+        moodDocRef.set(mood);
     }
 
 

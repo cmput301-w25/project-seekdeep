@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -33,23 +34,40 @@ import java.util.UUID;
 
 /**
  * This Fragment class is designed to display a Mood Event Card, and let users Create a mood.
- * Current working feature:
- *      - lets a user insert an image
- *      - user can select their mood
- * Fixes to implement:
- *      - if the user does not want to select an image, then must get rid of that imageView UI element (using a new xml file?)
+ * When the user clicks to select an emotion, a SelectMoodDialogFragment will pop up.
+ * @author Sarah Chang
  */
-//Image Picker code adapted from: https://medium.com/@everydayprogrammer/implement-android-photo-picker-in-android-studio-3562a85c85f1
+
+/*
+ * Current working features:
+ *      - lets a user insert an image
+ *      - user can select an emotion
+ *      - a new Mood will be created and passed to ModdProvider, where it will be stored in firebase
+ * TO DO:
+ *      - if the user does not want to select an image, then must get rid of that imageView UI element (using a new xml file?)
+ *      - need to pass in the UserProfile object to create a new Mood object
+ *      - image needs to be uploaded to firebase
+ *      - once a mood is made, return to whatever the user was previously doing
+ */
+
+//Resources:
+//  Image Picker code adapted from: https://medium.com/@everydayprogrammer/implement-android-photo-picker-in-android-studio-3562a85c85f1
 
 public class CreateMoodEventFragment extends Fragment implements SelectMoodDialogFragment.MoodSelectionListener {
     //ATTRIBUTES:
     private ImageView uploadImageHere;  //this imageView is set to be clickable
     private Button createConfirmButton;
-    private Mood moodEvent = new Mood();
+    private Mood moodEvent;
     private Uri imageUri; //this is where selected image is assigned
     private MoodProvider moodProvider;
     //Attributes for selecting a mood:
     TextView clickToSelectMood; //this textView is set to clickable
+
+    //Attributes for the User
+    private UserProfile userProfile;
+    private EmotionalStates selectedEmotion;
+
+
 
     //Constructor to create the fragment
     public CreateMoodEventFragment() {
@@ -74,8 +92,8 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                 //Load the image into the mood event card (UI component)
                 Glide.with(requireContext()).load(imageUri).into(uploadImageHere);
 
-                //Call a method that'll upload the image to Firebase
-                uploadImageToFirebase(imageUri);
+                //TO DO: Implement a method that'll upload the image to Firebase
+                //uploadImageToFirebase(imageUri);
             }
         }
     });
@@ -100,17 +118,27 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //Initialize an instance of movieProvide (so can add new mood to firestore)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        moodProvider = MoodProvider.getInstance(db);
+
         //Initialize the image UI element
         uploadImageHere = view.findViewById(R.id.image);
         //Initialize selectMood to UI element
         clickToSelectMood = view.findViewById(R.id.edit_emotion_editText);
         createConfirmButton = view.findViewById(R.id.confirm_create_button);
-        createConfirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moodProvider.addMoodEvent(moodEvent); //add the mood to the database
-            }
-        });
+
+        //Retrieve UserProfile from the bundle (to use inside this fragment)
+        if (getArguments() != null) {
+            //Retrieve UserProfile (must be casted), save it in userProfile class attribute
+            this.userProfile = (UserProfile) getArguments().getSerializable("userProfile");
+//            String username = getArguments().getString("username");
+        }
+
+        //Temporarily hardcode userProfile to User1
+        userProfile = new UserProfile("User1", "pass1");
+
+
         //Set a listener for when the imageView is clicked on
         uploadImageHere.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,12 +159,38 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                 newDialog.show(getChildFragmentManager(), "SelectMoodDialog");
             }
         });
+
+        //Set a listener for the "Create" button. This will create a new Mood object
+        createConfirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Create a new Mood object
+                moodEvent = new Mood(userProfile, selectedEmotion);
+
+                //Upload the new Mood to firebase
+                moodProvider.addMoodEvent(moodEvent);
+
+                Toast.makeText(requireContext(), "Your mood has been uploaded!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
     //Must implement this listener method from the SelectMoodDialogFragment
+
+    /**
+     * This updates the UI to display the selected mood from the mood wheel (in SelectMoodDialogFragment)
+     * @param selectedMood
+     *          This is the selected mood to be displayed
+     */
     @Override
-    public void moodHasBeenSelected(EmotionalStates mood) {
-        this.moodEvent.setEmotionalState(mood);
-        clickToSelectMood.setText(mood.toString());
+    public void moodHasBeenSelected(EmotionalStates selectedMood) {
+//        this.moodEvent.setEmotionalState(selectedEmotion);
+
+        //Save selectedMood to this fragment-instance's selectedEmotion attribute
+        this.selectedEmotion = selectedMood;
+        //Update UI element to display the selected emotion
+        clickToSelectMood.setText(selectedMood.toString());
     }
 }
