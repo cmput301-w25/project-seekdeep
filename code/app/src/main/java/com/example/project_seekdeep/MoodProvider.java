@@ -23,6 +23,11 @@ public class MoodProvider {
 
 
     //Use constructor to initialize the attributes to the firestore database:
+
+    /**
+     * This is a constructor for MoodProvider
+     * @param db
+     */
     public MoodProvider(FirebaseFirestore db) {
         //Initialize moodEventList with an empty ArrayList (will be populated after reading from firestore)
         moodEventList = new ArrayList<>();
@@ -37,6 +42,10 @@ public class MoodProvider {
         void OnError(String strin);
     }
 
+    /**
+     * This checks for any changes in the database
+     * @param dataStatus
+     */
     public void listenForUpdates(final DataStatus dataStatus) {
         moodCollection.addSnapshotListener((snapshot, error) -> {
             if (error != null) {
@@ -53,7 +62,12 @@ public class MoodProvider {
         });
     }
 
-    //Check if a MoodProvider already exists. If not, make a new instance of MoodProvider
+
+    /**
+     * This checks if a MoodProvider already exists. If not, make a new instance of MoodProvider
+     * @param db
+     * @return MoodProvider (either an existing instance or a new instance)
+     */
     public static MoodProvider getInstance(FirebaseFirestore db) {
         if (moodProvider == null)
             moodProvider = new MoodProvider(db);
@@ -64,6 +78,7 @@ public class MoodProvider {
     public ArrayList<Mood> getMoodEventList() {
         return moodEventList;
     }
+
 
     //METHODS:
 
