@@ -61,9 +61,9 @@ public class MoodHistoryFragmentTest {
 
         UserProfile testUser = new UserProfile("kevtu2", "222");
         Mood[] moods = {
-                new Mood(testUser, EmotionalStates.HAPPINESS, "Alone", "Food"),
-                new Mood(testUser, EmotionalStates.CONFUSION, "With other people", "Homework"),
-                new Mood(testUser, EmotionalStates.SADNESS, "Alone", "Midterms")
+                new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food"),
+                new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework"),
+                new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms")
         };
 
         usersRef.document().set(testUser);
