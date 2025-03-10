@@ -7,36 +7,53 @@ import java.io.Serializable;
  * @author Saurabh Baghel
  */
 public class UserProfile implements Serializable {
-    //    private String id;
     private String username;
     private String password;
 
+    /**
+     * Default empty constructor required by Firestore for deserialization.
+     */
+    public UserProfile() {
+    }
+
+    /**
+     * Constructor to create a UserProfile instance
+     * @param username : The username of the user.
+     * @param password : The password of the user.
+     */
     public UserProfile(String username, String password) {
-//        this.id = id;
         this.username = username;
         this.password = password;
     }
 
-//    public String getId() {
-//        return id;
-//    }
-//
-//    public void setId(String id) {
-//        this.id = id;
-//    }
-
+    /**
+     * Gets the username of the user.
+     * @return : The username of the user.
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Sets the username for the user.
+     * @param username : The username to set for the user.
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
+    /**
+     * Gets the password of the user.
+     * @return : The password of the user.
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Sets the password for the user.
+     * @param password : The password to set for the user.
+     */
     public void setPassword(String password) {
         this.password = password;
     }
