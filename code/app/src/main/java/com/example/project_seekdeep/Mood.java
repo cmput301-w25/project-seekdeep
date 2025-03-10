@@ -146,6 +146,10 @@ public class Mood implements Serializable {
         this.docRef = docRef;
     }
 
+    public void setEmotionalState(EmotionalStates emotionalState) {
+        this.emotionalState = emotionalState;
+    }
+
     public String getTrigger() {
         return trigger;
     }

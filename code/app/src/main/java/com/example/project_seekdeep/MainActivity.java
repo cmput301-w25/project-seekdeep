@@ -112,6 +112,12 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
 //          .commit();
     }
 
+    //required code to update an edited mood
+
+    /**
+     * This method access firestore and edits the mood
+     * @param mood
+     */
     @Override
     public void updateMood(Mood mood) {
         DocumentReference documentReference = mood.getDocRef();

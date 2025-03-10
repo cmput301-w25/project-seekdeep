@@ -59,6 +59,14 @@ public class MoodHistoryFragment extends Fragment {
         super(R.layout.layout_feed);
     }
 
+    // add username as variable
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ;
+    }
+
     /**
      * Upon creating this view, it will query the database and load in all the moods
      * that the user has created.
@@ -77,19 +85,21 @@ public class MoodHistoryFragment extends Fragment {
 //        loggedInUser = (UserProfile) requireArguments().getSerializable("user");
 
 
+
+
         // Instantiate database for usage
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference users = db.collection("UserDB");
         CollectionReference moods = db.collection("MoodDB");
 
-        UserProfile user = new UserProfile("kevtu2", "222");
+        UserProfile user = new UserProfile("User1", "pass1");
 
         //2. query collection to get all mood from user
         //https://firebase.google.com/docs/firestore/query-data/queries#java_2
-        Query loggedInUserMoodsQuery = moods.whereEqualTo("ownerString", "kevtu2");
+        Query loggedInUserMoodsQuery = moods.whereEqualTo("owner", "User1");
 
         ArrayList<Mood> moodArrayList = new ArrayList<>();
-        ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList);
+        ArrayAdapter<Mood> moodArrayAdapter = new UserMoodArrayAdapter(view.getContext(), moodArrayList);
         moodListView.setAdapter(moodArrayAdapter);
 
         loggedInUserMoodsQuery.addSnapshotListener((value, error) -> {
@@ -97,6 +107,7 @@ public class MoodHistoryFragment extends Fragment {
                Log.e("Firestore", error.toString());
            }
            if (value != null) {
+               moodArrayList.clear();
                for (QueryDocumentSnapshot snapshot : value) {
                     EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
                     SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
@@ -105,6 +116,8 @@ public class MoodHistoryFragment extends Fragment {
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
 
                     Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate);
+
+                    mood.setDocRef(snapshot.getReference());
 
                     moodArrayList.add(mood);
                }
