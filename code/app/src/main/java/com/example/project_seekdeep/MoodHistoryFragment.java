@@ -2,27 +2,97 @@ package com.example.project_seekdeep;
 
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+
+import java.util.Date;
+import java.util.List;
+
+import java.util.Objects;
+
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
- * @author Kevin Tu
+ * @author Kevin Tu, Nancy Lin
  */
 
 public class MoodHistoryFragment extends Fragment {
+    // TODO: We need to figure out how to store userID to be used as primary key to access entry in the database.
+    private UserProfile loggedInUser;
+    private ArrayList<Mood> moodsList;
+
+    private ListView moodListView;
+
+    private ArrayList<Mood> moodArrayList;
+    private ArrayAdapter<Mood> moodArrayAdapter;
+
     public MoodHistoryFragment() {
-        super(R.layout.fragment_mood_history);
+        super(R.layout.layout_feed);
     }
 
+    /**
+     * Upon creating this view, it will query the database and load in all the moods
+     * that the user has created.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //set views
+        ListView moodListView = view.findViewById(R.id.list_view_mood);
+
+        // Get current user that is currently logged in
+//        loggedInUser = (UserProfile) requireArguments().getSerializable("user");
+
+
+        // Instantiate database for usage
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference users = db.collection("UserDB");
+        CollectionReference moods = db.collection("MoodDB");
+
+        UserProfile user = new UserProfile("kevtu2", "222");
+
+        //2. query collection to get all mood from user
+        //https://firebase.google.com/docs/firestore/query-data/queries#java_2
+        Query loggedInUserMoodsQuery = moods.whereEqualTo("ownerString", "kevtu2");
+
+        ArrayList<Mood> moodArrayList = new ArrayList<>();
+        ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList);
+        moodListView.setAdapter(moodArrayAdapter);
+
+        loggedInUserMoodsQuery.addSnapshotListener((value, error) -> {
+           if (error != null) {
+               Log.e("Firestore", error.toString());
+           }
+           if (value != null) {
+               for (QueryDocumentSnapshot snapshot : value) {
+                    EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
+                    SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
+                    String trigger = (String) snapshot.get("trigger");
+                    List<String> followers = (List<String>) snapshot.get("followers");
+                    Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+
+                    Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate);
+
+                    moodArrayList.add(mood);
+               }
+               moodArrayAdapter.notifyDataSetChanged();
+           }
+        });
     }
-
-
-
 }
