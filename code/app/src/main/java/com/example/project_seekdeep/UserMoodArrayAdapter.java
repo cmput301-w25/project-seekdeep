@@ -133,6 +133,7 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
         box_outline.setStroke(5, Color.parseColor(currentMood.getEmotionalState().getColour()));
 
 
+        // Create delete button
         Button editMoodButton = view.findViewById(R.id.edit_mood_button);
         editMoodButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,6 +148,7 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
             }
         });
 
+        // create delete button
         Button deleteMoodButton = view.findViewById(R.id.delete_mood_button);
         deleteMoodButton.setOnClickListener(new View.OnClickListener() {
             @Override

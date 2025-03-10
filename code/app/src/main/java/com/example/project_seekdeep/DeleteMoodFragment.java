@@ -20,6 +20,12 @@ public class DeleteMoodFragment extends DialogFragment {
     private DeleteMoodDialogListener listener;
 
 
+    /**
+     * Mandotory constructor that creates a delete mood fragment with its corresponding mood
+     *
+     * @param mood
+     * @return      fragment
+     */
     public static DeleteMoodFragment newInstance(Mood mood){
         Bundle args = new Bundle();
         args.putSerializable("Mood", mood);
@@ -29,6 +35,10 @@ public class DeleteMoodFragment extends DialogFragment {
         return fragment;
     }
 
+    /**
+     * On attach, implement the deleteMood dialog listener to list for deleteMood()
+     * @param context
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -40,6 +50,14 @@ public class DeleteMoodFragment extends DialogFragment {
         }
     }
 
+    /**
+     * On creation, create an alert dialog
+     *
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {

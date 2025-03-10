@@ -7,5 +7,10 @@ package com.example.project_seekdeep;
  */
 public interface DeleteMoodDialogListener {
 
+    /**
+     * method interface for deleting a mood
+     *
+     * @param mood
+     */
     void deleteMood(Mood mood);
 }
