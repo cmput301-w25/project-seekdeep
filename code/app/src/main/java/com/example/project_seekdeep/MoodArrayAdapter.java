@@ -57,7 +57,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         emotion.setText(currentMood.getEmotionalState().toString());
         user.setText(currentMood.getOwnerString());
         trigger.setText(currentMood.getTrigger());
-        socialSit.setText(currentMood.getSocialSituation());
+        socialSit.setText(currentMood.getSocialSituation().toString());
         date.setText(currentMood.getPostedDate().toString());
 
 

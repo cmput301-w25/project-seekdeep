@@ -73,7 +73,7 @@ public class Mood implements Serializable {
         // position 0 is trigger, position 1 is reason, position 2 is social situation
         this.trigger = stringFields[0];
         this.reason = stringFields[1];
-        this.socialSituation = stringFields[2];
+        this.socialSituation = SocialSituations.valueOf(stringFields[2]);
     }
 
     /**
@@ -94,7 +94,7 @@ public class Mood implements Serializable {
         this.setOwner( (UserProfile) mapMood.get("owner"));
         this.emotionalState = emotionalState.valueOf(mapMood.get("emotionalState").toString());
         this.postedDate = (Date) mapMood.get("postedDate");
-        this.socialSituation = mapMood.get("socialSituation").toString();
+        this.socialSituation = SocialSituations.valueOf(mapMood.get("socialSituation").toString());
         this.trigger = mapMood.get("trigger").toString();
     }
     public void setTrigger(String trigger){

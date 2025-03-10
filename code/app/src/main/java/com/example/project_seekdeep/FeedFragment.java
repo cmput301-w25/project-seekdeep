@@ -49,28 +49,28 @@ public class FeedFragment extends Fragment {
         //create dummy array data
         Mood[] dummyMoods ={
                 new Mood(new UserProfile("User1", "pass1"), EmotionalStates.ANGER,
-                        "some social situation", "What the trigger"),
+                        SocialSituations.ALONE, "What the trigger"),
 
                 new Mood(new UserProfile("User2", "pass2"), EmotionalStates.CONFUSION,
-                        "some social situation", "What the trigger"),
+                        SocialSituations.SEVERAL_PEOPLE, "What the trigger"),
 
                 new Mood(new UserProfile("User3", "pass1"), EmotionalStates.DISGUST,
-                        "some social situation", "What the trigger"),
+                        SocialSituations.CROWD, "What the trigger"),
 
                 new Mood(new UserProfile("User4", "pass2"), EmotionalStates.FEAR,
-                        "some social situation", "What the trigger"),
+                        SocialSituations.WITH_ANOTHER, "What the trigger"),
 
                 new Mood(new UserProfile("User5", "pass1"), EmotionalStates.HAPPINESS,
-                        "some social situation", "What the trigger"),
+                        SocialSituations.ALONE, "What the trigger"),
 
                 new Mood(new UserProfile("User6", "pass2"), EmotionalStates.SADNESS,
-                        "some social situation", "What the trigger"),
+                        SocialSituations.SEVERAL_PEOPLE, "What the trigger"),
 
                 new Mood(new UserProfile("User7", "pass1"), EmotionalStates.SHAME,
-                        "some social situation", "What the trigger"),
+                        SocialSituations.SEVERAL_PEOPLE, "What the trigger"),
 
                 new Mood(new UserProfile("User8", "pass2"), EmotionalStates.SURPRISE,
-                        "some social situation", "What the trigger")
+                        SocialSituations.ALONE, "What the trigger")
         };
 
         //create mood array
