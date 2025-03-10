@@ -105,7 +105,7 @@ public class EditMoodFragment extends DialogFragment {
             // i think the spinners setting previous info may have to be implemented in a different way but that will be dealt with later
             emotionSpinner.setSelection(mood.getEmotionalState().ordinal());  // maybe like this? hard to test currently
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
-            
+
 
             //todo add edit image functionality
         }
