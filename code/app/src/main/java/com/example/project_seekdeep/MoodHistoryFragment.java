@@ -79,7 +79,8 @@ public class MoodHistoryFragment extends Fragment {
         moodArrayList = new ArrayList<>();
 
         // Get the logged in User
-        loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+        loggedInUser = new UserProfile(getArguments().getString("username"), "");
+        //loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
 
         //Log.d("NANCY", "On Create ->" + loggedInUser.getUsername() + loggedInUser.getPassword());
 
@@ -119,7 +120,8 @@ public class MoodHistoryFragment extends Fragment {
         HashMap<String, Object> userMap = new HashMap<String, Object> ();
         userMap.put("password", loggedInUser.getPassword());
         userMap.put("username", loggedInUser.getUsername());
-        Query loggedInUserMoodsQuery = moods.whereEqualTo("owner", userMap);
+        //Query loggedInUserMoodsQuery = moods.whereEqualTo("owner", userMap);
+        Query loggedInUserMoodsQuery = moods.whereEqualTo("owner.username", loggedInUser.getUsername());
 
         moodArrayAdapter = new UserMoodArrayAdapter(view.getContext(), moodArrayList);
 

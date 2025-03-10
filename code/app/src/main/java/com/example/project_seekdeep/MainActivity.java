@@ -28,8 +28,7 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
     private FragmentManager fragManager;
     private String currentUser;
 
-    //this is bad implementation but no time bruv
-    private UserProfile currentUserProfile;
+
     private ListView moodListView;
 
     @Override
@@ -73,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
             selectedFragment = new MoodHistoryFragment();
             //add logged in user's UserProfile to bundle to pass to mood history
             Bundle bundle = new Bundle();
-            bundle.putSerializable("userProfile", currentUserProfile);
             bundle.putString("username", getCurrentUsername());
             selectedFragment.setArguments(bundle);
 
@@ -105,22 +103,6 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
         return currentUser;
     }
 
-
-    /**
-     * Retrieves the current UserProfile which can be used by any fragment to access the logged-in user's data.
-     * @return : The UserProfile of the current user.
-     */
-    public String getCurrentUser() {
-        return currentUser;
-    }
-
-    /**
-     * Sets the current UserProfile, which will be used by the fragments.
-     * @param userProfile : The UserProfile of the currently logged-in user.
-     */
-    public void setCurrentUserProfile (UserProfile userProfile){
-        this.currentUserProfile = userProfile;
-    }
 
     /**
      * This method is called after a successful login to make the navigation bar visible and indicate that the user has logged in successfully.

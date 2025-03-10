@@ -104,7 +104,7 @@ public class FeedFragment extends Fragment {
                     //idk why this here but it won't run without
                     //probably needed to the casting below doesn't break
                     Log.e("NANCY", snapshot.toString());
-                    Log.d("NANCY", snapshot.get("owner").toString() + " | " + snapshot.getClass());
+                    //Log.d("NANCY", snapshot.get("owner").toString() + " | " + snapshot.getClass());
 
                     HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
 
