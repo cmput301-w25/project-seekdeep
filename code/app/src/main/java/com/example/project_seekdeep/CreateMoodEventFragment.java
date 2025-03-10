@@ -3,6 +3,7 @@ package com.example.project_seekdeep;
 import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,12 +28,17 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.google.firebase.storage.internal.StorageReferenceUri;
 
+import java.io.FileNotFoundException;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -72,7 +78,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     //Attributes for the User
     private UserProfile userProfile;
     private EmotionalStates selectedEmotion;
-    private SocialSituations selectedSocialSit;
+    private String socialSit;
 
 
 
@@ -92,32 +98,77 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     //This launches the chosen image into the imageView
     ActivityResultLauncher<PickVisualMediaRequest> launcher = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), new ActivityResultCallback<Uri>() {
         @Override
-        public void onActivityResult(Uri imageUri) {
-            if (imageUri == null) {
+        public void onActivityResult(Uri imageUriActivty) {
+            if (imageUriActivty == null) {
                 Toast.makeText(requireContext(), "No image Selected", Toast.LENGTH_SHORT).show();
             } else {
                 //Load the image into the mood event card (UI component)
-                Glide.with(requireContext()).load(imageUri).into(uploadImageHere);
+                imageUri = imageUriActivty;
 
+                AssetFileDescriptor fileDescriptor = null;
+                try {
+                    fileDescriptor = getContext().getContentResolver().openAssetFileDescriptor(imageUri, "r");
+                } catch (FileNotFoundException e) {
+                    Log.d("NANCY", "check file zie error");
+                    throw new RuntimeException(e);
+                }
+                long fileSize = fileDescriptor.getLength();
+
+                if (fileSize > 65536) {
+                    Toast.makeText(requireContext(), "Image too large, must be under 65536 bytes", Toast.LENGTH_SHORT).show();
+                } else {
+                    Glide.with(requireContext()).load(imageUriActivty).into(uploadImageHere);
+                }
+
+                Log.d("NANCY", "did the glide work at least? imguri" + imageUri.toString());
                 //TO DO: Implement a method that'll upload the image to Firebase
                 //uploadImageToFirebase(imageUri);
             }
+
         }
     });
 
     private void uploadImageToFirebase(Uri selectedImage) {
         //Initialize a MoodProvider object and pass in the firebase
+
+        Log.d("NANCY", "do we ever get here in uploadimage?");
+
         moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
-        moodProvider.addMoodEvent(this.moodEvent);
+
+
+        //
+        //moodProvider.addMoodEvent(this.moodEvent);
         //Get a reference to the firebase storage
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference temp = storageRef.child(selectedImage.getEncodedPath());
+        //StorageReference temp = storageRef.child(selectedImage.getEncodedPath());
         /*TO DO:
         - create a reference to the image URI
         - assign it to the image field in the mood event
         - Have to use Firebase storage to store photos
          */
+
+
+        StorageReference selectedImageRef = storageRef.child("Images/" + selectedImage.getLastPathSegment());
+        UploadTask uploadTask = selectedImageRef.putFile(selectedImage);
+
+
+// Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                Log.d("nancy", "unsuccessful upload");
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+                Log.d("nancy", "working image upload");
+            }
+        });
+
 
     }
 
@@ -141,6 +192,8 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         socialSitSpinner = view.findViewById(R.id.social_situation_spinner);
         socialSitSpinner.setAdapter(new ArrayAdapter<SocialSituations>(getContext(), android.R.layout.simple_spinner_item, SocialSituations.values()));
 
+        //intialize the SocialSituations socialSit
+        socialSit = SocialSituations.TITLE.toString();
 
         //Retrieve UserProfile from the bundle (to use inside this fragment)
         if (getArguments() != null) {
@@ -180,7 +233,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
              @Override
              public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                  //Get the selected social sit (how?)
-                 //SocialSituations socialSit = socialSitSpinner.getSelection();
+                 socialSit = socialSitSpinner.getSelectedItem().toString();
                  //Display it on UI?
                  // Initialize the class attribute (will be used when in the Create button's listener)
                  //selectedSocialSit = socialSit;
@@ -208,16 +261,26 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                     }
 
                     //Issue, in this constructor: SocialSit can't be null, so temp hardcoded to the TITLE value.
-                    SocialSituations socialSit = SocialSituations.TITLE;
+                    //resolved? - nancy
+
                     moodEvent = new Mood(userProfile, selectedEmotion, new String[] {"null", reason, socialSit.toString()} );
 
                 }
 
                 //Default: create Mood object with only the UserProfile and EmotionalState
                 else {
-                    moodEvent = new Mood(userProfile, selectedEmotion);
+
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {null, null, socialSit.toString()});
                 }
 
+                Log.d("NANCY", imageUri.toString());
+
+
+
+                if (imageUri != null) {
+                    uploadImageToFirebase(imageUri);
+                }
+                moodEvent.setImage(imageUri);
                 //Upload the new Mood to firebase
                 moodProvider.addMoodEvent(moodEvent);
 

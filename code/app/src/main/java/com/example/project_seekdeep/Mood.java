@@ -1,7 +1,10 @@
 package com.example.project_seekdeep;
 
 import android.graphics.Bitmap;
+import android.graphics.ImageDecoder;
+import android.net.Uri;
 
+import java.io.File;
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -19,7 +22,7 @@ public class Mood implements Serializable {
 
     private String trigger;
     private SocialSituations socialSituation;
-    private Bitmap image;
+    private Uri image;
     private Date postedDate;
     private EmotionalStates emotionalState;
     private List<String> followers = new ArrayList<>();
@@ -73,7 +76,25 @@ public class Mood implements Serializable {
         // position 0 is trigger, position 1 is reason, position 2 is social situation
         this.trigger = stringFields[0];
         this.reason = stringFields[1];
-        this.socialSituation = SocialSituations.valueOf(stringFields[2]);
+        switch (stringFields[2]) {
+            case "Social Situations":
+                this.socialSituation = SocialSituations.TITLE;
+                break;
+            case "Alone":
+                this.socialSituation = SocialSituations.ALONE;
+                break;
+            case "With Another Person":
+                this.socialSituation = SocialSituations.WITH_ANOTHER;
+                break;
+            case "Two or Several People":
+                this.socialSituation = SocialSituations.SEVERAL_PEOPLE;
+                break;
+
+            case "With a Crowd":
+                this.socialSituation = SocialSituations.CROWD;
+                break;
+        }
+
     }
 
     /**
@@ -151,7 +172,7 @@ public class Mood implements Serializable {
      * @return
      *  Current image of this mood
      */
-    public Bitmap getImage() {
+    public Uri getImage() {
         return image;
     }
     /**
@@ -187,12 +208,20 @@ public class Mood implements Serializable {
      *  True if the image is not rejected
      *  False if the image is rejected
      */
-    public boolean setImage(Bitmap image){
+    public void setImage(Uri image){
+
+
+        /*
+
         if (image.getAllocationByteCount()<65536){
             this.image = image;
             return true;
         }
         return false;
+
+         */
+
+        this.image = image;
     }
 
     public String getOwnerString() {
