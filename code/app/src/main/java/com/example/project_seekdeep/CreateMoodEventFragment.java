@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,6 +58,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     //ATTRIBUTES:
     private ImageView uploadImageHere;  //this imageView is set to be clickable
     private Button createConfirmButton;
+    private EditText reasonEditText;
     private Mood moodEvent;
     private Uri imageUri; //this is where selected image is assigned
     private MoodProvider moodProvider;
@@ -118,10 +120,13 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         //Initialize an instance of movieProvide (so can add new mood to firestore)
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         moodProvider = MoodProvider.getInstance(db);
 
+        //Initialize the EditText where user inputs reason
+        reasonEditText = view.findViewById(R.id.edit_reason);
         //Initialize the image UI element
         uploadImageHere = view.findViewById(R.id.image);
         //Initialize selectMood to UI element
@@ -164,8 +169,21 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         createConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Create a new Mood object
-                moodEvent = new Mood(userProfile, selectedEmotion);
+                // CREATE A NEW MOOD OBJECT
+
+                // US 02.01.01 - I want to express the reason why for a mood is happening (no more than 20 characters or 3 words).
+                // check if a reason was inputed
+                if (reasonEditText != null) {
+                    String reason = reasonEditText.getText().toString().trim();
+                    //Issue, in this constructor: SocialSit can't be null, so temp hardcord social sit to "Alone"
+                    SocialSituations socialSit = SocialSituations.ALONE;
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {"null", reason, "ALONE"} );
+                }
+
+                //Default: create Mood object with only the UserProfile and EmotionalState
+                else {
+                    moodEvent = new Mood(userProfile, selectedEmotion);
+                }
 
                 //Upload the new Mood to firebase
                 moodProvider.addMoodEvent(moodEvent);
