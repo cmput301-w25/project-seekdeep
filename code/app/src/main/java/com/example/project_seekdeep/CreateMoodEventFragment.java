@@ -143,25 +143,15 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
         moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
 
-
-        //
-        //moodProvider.addMoodEvent(this.moodEvent);
         //Get a reference to the firebase storage
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         //StorageReference temp = storageRef.child(selectedImage.getEncodedPath());
-        /*TO DO:
-        - create a reference to the image URI
-        - assign it to the image field in the mood event
-        - Have to use Firebase storage to store photos
-         */
-
 
         StorageReference selectedImageRef = storageRef.child("Images/" + selectedImage.getLastPathSegment());
         UploadTask uploadTask = selectedImageRef.putFile(selectedImage);
 
-
-// Register observers to listen for when the download is done or if it fails
+        // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
@@ -290,7 +280,6 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
                 //Default: create Mood object with only the UserProfile and EmotionalState
                 else {
-
                     moodEvent = new Mood(userProfile, selectedEmotion, new String[] {trigger, null, socialSit.toString()});
                 }
 
@@ -322,13 +311,13 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     //Must implement this listener method from the SelectMoodDialogFragment
     /**
      * This updates the UI to display the selected mood from the mood wheel (in SelectMoodDialogFragment)
+     * It also set the isnstance of CreateMoodEventFragment's selectedEmotion attribute to the selected mood,
+     * which will be used in createConfirmButton.setOnClickListener
      * @param selectedMood
-     *          This is the selected mood to be displayed
+     *          This is the selected mood to be displayed and set to selectedEmotion
      */
     @Override
     public void moodHasBeenSelected(EmotionalStates selectedMood) {
-//        this.moodEvent.setEmotionalState(selectedEmotion);
-
         //Save selectedMood to this fragment-instance's selectedEmotion attribute
         this.selectedEmotion = selectedMood;
         //Update UI element to display the selected emotion
