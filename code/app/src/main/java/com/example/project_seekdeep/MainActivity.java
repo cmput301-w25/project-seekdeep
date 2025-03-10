@@ -126,8 +126,8 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
         //find document reference to users database
         CollectionReference usersDB = FirebaseFirestore.getInstance().collection("users");
 
-        documentReference.update("owner", FieldValue.delete());
-        documentReference.update("owner", mood.getOwner().getUsername());
+        //documentReference.update("owner", FieldValue.delete());
+        //documentReference.update("owner", mood.getOwner().getUsername());
 
     }
 }

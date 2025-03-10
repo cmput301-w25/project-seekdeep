@@ -19,6 +19,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import java.util.Objects;
@@ -63,8 +64,8 @@ public class MoodHistoryFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        moodArrayList = new ArrayList<>();
 
-        ;
     }
 
     /**
@@ -96,18 +97,25 @@ public class MoodHistoryFragment extends Fragment {
 
         //2. query collection to get all mood from user
         //https://firebase.google.com/docs/firestore/query-data/queries#java_2
-        Query loggedInUserMoodsQuery = moods.whereEqualTo("owner", "User1");
+        HashMap<String, Object> userMap = new HashMap<String, Object> ();
+        userMap.put("password", user.getPassword());
+        userMap.put("username", user.getUsername());
+        Query loggedInUserMoodsQuery = moods.whereEqualTo("owner", userMap);
 
-        ArrayList<Mood> moodArrayList = new ArrayList<>();
-        ArrayAdapter<Mood> moodArrayAdapter = new UserMoodArrayAdapter(view.getContext(), moodArrayList);
-        moodListView.setAdapter(moodArrayAdapter);
+        moodArrayAdapter = new UserMoodArrayAdapter(view.getContext(), moodArrayList);
+
 
         loggedInUserMoodsQuery.addSnapshotListener((value, error) -> {
            if (error != null) {
                Log.e("Firestore", error.toString());
            }
            if (value != null) {
-               moodArrayList.clear();
+
+               if (!(moodArrayList == null)){
+                   moodArrayList.clear();
+                   Log.d("NANCY", "Clear arraylist");
+               }
+
                for (QueryDocumentSnapshot snapshot : value) {
                     EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
                     SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
@@ -117,11 +125,18 @@ public class MoodHistoryFragment extends Fragment {
 
                     Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate);
 
-                    mood.setDocRef(snapshot.getReference());
+                    mood.setDocRef (snapshot.getReference());
 
                     moodArrayList.add(mood);
+
+                    Log.d("NANCY", "UserDoc: " + snapshot.toString());
                }
-               moodArrayAdapter.notifyDataSetChanged();
+
+               if (!(moodArrayList == null)){
+                   moodArrayAdapter.notifyDataSetChanged();
+                   moodListView .setAdapter(moodArrayAdapter);
+               }
+
            }
         });
     }
