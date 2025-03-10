@@ -3,15 +3,11 @@ package com.example.project_seekdeep;
 import android.graphics.Bitmap;
 
 import java.io.Serializable;
-import com.example.project_seekdeep.EmotionalState;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Locale;
 
 /**
  * This is a class that represents every mood post the user creates.
@@ -22,10 +18,10 @@ import java.util.Locale;
 public class Mood implements Serializable {
 
     private String trigger;
-    private String socialSituation;
+    private SocialSituations socialSituation;
     private Bitmap image;
     private Date postedDate;
-    private EmotionalState emotionalState;
+    private EmotionalStates emotionalState;
     private List<String> followers = new ArrayList<>();
     private String reason;
     private UserProfile owner;
@@ -38,7 +34,7 @@ public class Mood implements Serializable {
      * @param owner
      *  New user which owns this mood
      */
-    public Mood(UserProfile owner,EmotionalState emotionalState){
+    public Mood(UserProfile owner, EmotionalStates emotionalState){
         this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
@@ -53,7 +49,7 @@ public class Mood implements Serializable {
      * @param trigger
      *  New String for trigger of the situation
      */
-    public Mood(UserProfile owner,EmotionalState emotionalState, String socialSituation, String trigger){
+    public Mood(UserProfile owner,EmotionalStates emotionalState, SocialSituations socialSituation, String trigger){
         this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
@@ -70,14 +66,14 @@ public class Mood implements Serializable {
      * @param stringFields
      *  A string array in the form [trigger, reason, social situation] (String[])
      */
-    public Mood(UserProfile owner, EmotionalState emotionalState, String[] stringFields) {
+    public Mood(UserProfile owner, EmotionalStates emotionalState, String[] stringFields) {
         this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
         // position 0 is trigger, position 1 is reason, position 2 is social situation
         this.trigger = stringFields[0];
         this.reason = stringFields[1];
-        this.socialSituation = stringFields[2];
+        this.socialSituation = SocialSituations.valueOf(stringFields[2]);
     }
 
     /**
@@ -86,7 +82,7 @@ public class Mood implements Serializable {
      *  New trigger for this mood
      */
 
-    public Mood(UserProfile owner, EmotionalState emotionalState, String socialSituation, String trigger, List<String> followers, Date postedDate){
+    public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate){
         this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = postedDate;
@@ -98,7 +94,7 @@ public class Mood implements Serializable {
         this.setOwner( (UserProfile) mapMood.get("owner"));
         this.emotionalState = emotionalState.valueOf(mapMood.get("emotionalState").toString());
         this.postedDate = (Date) mapMood.get("postedDate");
-        this.socialSituation = mapMood.get("socialSituation").toString();
+        this.socialSituation = SocialSituations.valueOf(mapMood.get("socialSituation").toString());
         this.trigger = mapMood.get("trigger").toString();
     }
     public void setTrigger(String trigger){
@@ -109,7 +105,7 @@ public class Mood implements Serializable {
      * @param socialSituation
      *  New socialSituation for this mood
      */
-    public void setSocialSituation(String socialSituation){
+    public void setSocialSituation(SocialSituations socialSituation){
         this.socialSituation = socialSituation;
     }
     /**
@@ -139,7 +135,7 @@ public class Mood implements Serializable {
      * @return
      *  Current socialSituation of this mood
      */
-    public String getSocialSituation() {
+    public SocialSituations getSocialSituation() {
         return socialSituation;
     }
     /**
@@ -163,7 +159,7 @@ public class Mood implements Serializable {
      *
      * @return Current emotionalState of this mood
      */
-    public EmotionalState getEmotionalState() {
+    public EmotionalStates getEmotionalState() {
         return emotionalState;
     }
 

@@ -48,29 +48,29 @@ public class FeedFragment extends Fragment {
 
         //create dummy array data
         Mood[] dummyMoods ={
-                new Mood(new UserProfile("User1", "pass1"), EmotionalState.ANGER,
-                        "some social situation", "What the trigger"),
+                new Mood(new UserProfile("User1", "pass1"), EmotionalStates.ANGER,
+                        SocialSituations.ALONE, "What the trigger"),
 
-                new Mood(new UserProfile("User2", "pass2"), EmotionalState.CONFUSION,
-                        "some social situation", "What the trigger"),
+                new Mood(new UserProfile("User2", "pass2"), EmotionalStates.CONFUSION,
+                        SocialSituations.SEVERAL_PEOPLE, "What the trigger"),
 
-                new Mood(new UserProfile("User3", "pass1"), EmotionalState.DISGUST,
-                        "some social situation", "What the trigger"),
+                new Mood(new UserProfile("User3", "pass1"), EmotionalStates.DISGUST,
+                        SocialSituations.CROWD, "What the trigger"),
 
-                new Mood(new UserProfile("User4", "pass2"), EmotionalState.FEAR,
-                        "some social situation", "What the trigger"),
+                new Mood(new UserProfile("User4", "pass2"), EmotionalStates.FEAR,
+                        SocialSituations.WITH_ANOTHER, "What the trigger"),
 
-                new Mood(new UserProfile("User5", "pass1"), EmotionalState.HAPPINESS,
-                        "some social situation", "What the trigger"),
+                new Mood(new UserProfile("User5", "pass1"), EmotionalStates.HAPPINESS,
+                        SocialSituations.ALONE, "What the trigger"),
 
-                new Mood(new UserProfile("User6", "pass2"), EmotionalState.SADNESS,
-                        "some social situation", "What the trigger"),
+                new Mood(new UserProfile("User6", "pass2"), EmotionalStates.SADNESS,
+                        SocialSituations.SEVERAL_PEOPLE, "What the trigger"),
 
-                new Mood(new UserProfile("User7", "pass1"), EmotionalState.SHAME,
-                        "some social situation", "What the trigger"),
+                new Mood(new UserProfile("User7", "pass1"), EmotionalStates.SHAME,
+                        SocialSituations.SEVERAL_PEOPLE, "What the trigger"),
 
-                new Mood(new UserProfile("User8", "pass2"), EmotionalState.SURPRISE,
-                        "some social situation", "What the trigger")
+                new Mood(new UserProfile("User8", "pass2"), EmotionalStates.SURPRISE,
+                        SocialSituations.ALONE, "What the trigger")
         };
 
         //create mood array

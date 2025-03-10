@@ -81,8 +81,8 @@ public class MoodHistoryFragment extends Fragment {
            }
            if (value != null) {
                for (QueryDocumentSnapshot snapshot : value) {
-                    EmotionalState emotionalState = EmotionalState.valueOf((String)snapshot.get("emotionalState"));
-                    String socialSituation = (String) snapshot.get("socialSituation");
+                    EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
+                    SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
                     String trigger = (String) snapshot.get("trigger");
                     List<String> followers = (List<String>) snapshot.get("followers");
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();

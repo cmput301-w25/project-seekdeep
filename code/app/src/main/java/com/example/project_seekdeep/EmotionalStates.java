@@ -7,11 +7,7 @@ import androidx.annotation.NonNull;
  * @author Jachelle Chan
  *
  */
-public enum EmotionalState {
-    // these representations and colours can be changed later
-    // the colours may change
-    // US 01.02.01 : As a participant, I want the emotional states to include at least: anger,
-    //confusion, disgust, fear, happiness, sadness, shame, and surprise.
+public enum EmotionalStates {
     ANGER("\uD83D\uDE20", "#D55353"),  // RED
     CONFUSION("\uD83E\uDD14", "#FFC6E8"),  // PINK
     DISGUST("\uD83E\uDD22", "#59C225"),  // GREEN
@@ -22,7 +18,7 @@ public enum EmotionalState {
     SURPRISE("\uD83D\uDE2F", "#E4A21F");  // ORANGE
     private String emoticon;
     private String colour;
-    EmotionalState(String emoticon, String colour) {
+    EmotionalStates(String emoticon, String colour) {
         this.emoticon = emoticon;
         this.colour = colour;
     }
@@ -57,7 +53,7 @@ public enum EmotionalState {
 
     /**
      * This method sets the emoticon for the mood
-     * @param emoticon the emotiocon of the associated emotional state
+     * @param emoticon the emoticon of the associated emotional state
      */
     public void setEmoticon(String emoticon) {
         this.emoticon = emoticon;
