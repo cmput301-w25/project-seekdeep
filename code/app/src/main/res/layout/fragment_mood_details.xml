@@ -12,33 +12,14 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="10dp">
 
-        <ImageView
-            android:id="@+id/profile_picture"
-            android:layout_width="20sp"
-            android:layout_height="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/avatars" />
-
-        <TextView
-            android:id="@+id/request_follow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="request\nfollow"
-            android:textSize="6sp"
-            app:layout_constraintTop_toBottomOf="@+id/profile_picture" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20sp"
-        android:layout_marginTop="4sp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="340dp"
         android:layout_weight="1"
         android:text="\@user"
         android:textSize="10sp"
@@ -49,8 +30,8 @@
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4sp"
-        android:layout_marginRight="35sp"
+        android:layout_marginTop="340dp"
+        android:layout_marginEnd="52dp"
         android:layout_weight="1"
         android:gravity="right"
         android:text="date"
@@ -62,17 +43,30 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginRight="-10sp"
         android:background="@drawable/layout_rounded_mood_bg"
         android:orientation="vertical"
+        android:layout_marginEnd="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@id/user_pfp_req_follow"
-        app:layout_constraintRight_toRightOf="@id/date"
-        app:layout_constraintTop_toBottomOf="@id/username">
+        app:layout_constraintStart_toEndOf="@+id/request_follow"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <Spinner
-            android:id="@+id/emotion_spinner"
+        <TextView
+            android:id="@+id/edit_emotion_editText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:ems="10"
+            android:hint="select mood"
+            android:inputType="text"
+            android:paddingBottom="10dp"
+            android:textSize="25dp" />
+
+        <!--        <Spinner-->
+        <!--            android:id="@+id/emotion_spinner"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -86,7 +80,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:hint="Reason" />
+                android:hint="Reason"
+                android:padding="10dp" />
 
             <ImageView
                 android:id="@+id/image"
@@ -134,5 +129,24 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/request_follow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="request\nfollow"
+        android:textSize="6sp"
+        tools:layout_editor_absoluteX="9dp"
+        tools:layout_editor_absoluteY="354dp" />
+
+    <ImageView
+        android:id="@+id/profile_picture"
+        android:layout_width="20sp"
+        android:layout_height="20sp"
+        tools:layout_editor_absoluteX="10dp"
+        tools:layout_editor_absoluteY="333dp"
+        tools:srcCompat="@tools:sample/avatars" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

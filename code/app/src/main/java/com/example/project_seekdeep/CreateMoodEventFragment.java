@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -31,21 +32,24 @@ import java.util.UUID;
  * This Fragment class is designed to display a Mood Event Card, and let users Create a mood.
  * Current working feature:
  *      - lets a user insert an image
+ *      - user can select their mood
  * Fixes to implement:
  *      - if the user does not want to select an image, then must get rid of that imageView UI element (using a new xml file?)
  */
 //Image Picker code adapted from: https://medium.com/@everydayprogrammer/implement-android-photo-picker-in-android-studio-3562a85c85f1
 
-public class CreateMoodEventFragment extends Fragment {
+public class CreateMoodEventFragment extends Fragment implements SelectMoodDialogFragment.MoodSelectionListener {
     //ATTRIBUTES:
     private ImageView uploadImageHere;  //this imageView is set to be clickable
     private EmotionalStates mood;
     private Mood moodEvent;
     private Uri imageUri; //this is where selected image is assigned
     private MoodProvider moodProvider;
+    //Attributes for selecting a mood:
+    TextView clickToSelectMood; //this textView is set to clickable
 
     //Constructor to create the fragment
-    public CreateMoodEventFragment(EmotionalStates mood) {
+    public CreateMoodEventFragment() {
         super(R.layout.fragment_mood_details);
     }
 
@@ -101,6 +105,8 @@ public class CreateMoodEventFragment extends Fragment {
 
         //Initialize the image UI element
         uploadImageHere = view.findViewById(R.id.image);
+        //Initialize selectMood to UI elemet
+        clickToSelectMood = view.findViewById(R.id.edit_emotion_editText);
 
         //Set a listener for when the imageView is clicked on
         uploadImageHere.setOnClickListener(new View.OnClickListener() {
@@ -112,6 +118,22 @@ public class CreateMoodEventFragment extends Fragment {
                         .build());
             }
         });
+
+        //Set listener for the select_mood is clicked on -> open the mood wheel in a dialog fragment:
+        clickToSelectMood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //open the mood wheel dialog
+                SelectMoodDialogFragment newDialog = new SelectMoodDialogFragment();
+                newDialog.show(getChildFragmentManager(), "SelectMoodDialog");
+            }
+        });
     }
 
+    //Must implement this listener method from the SelectMoodDialogFragment
+    @Override
+    public void moodHasBeenSelected(EmotionalStates mood) {
+        this.moodEvent.setEmotionalState(mood);
+        clickToSelectMood.setText(mood.toString());
+    }
 }

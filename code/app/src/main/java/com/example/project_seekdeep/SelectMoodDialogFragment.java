@@ -1,42 +1,55 @@
 package com.example.project_seekdeep;
 
-import android.database.sqlite.SQLiteDatabase;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.DialogFragment;
 
-public class CreateMoodScreen extends Fragment {
+/**
+ * This class extends DialogFragment, and will display the mood wheel when a user wants to create or edit a mood event.
+ * It is implemented as a child fragment of the CreateMoodEventFragment.
+ */
+public class SelectMoodDialogFragment extends DialogFragment {
 
-    private TextView selectedMood;
-    private EmotionalStates mood;
+    TextView selectedMood; //displays the currently selected mood in the middle of wheel
+    EmotionalStates mood; //this is the mood that will be passed back to CreateMoodEventFragment
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View createMoodScreenLayout = inflater.inflate(R.layout.mood_wheel, container, false);
-
-        return createMoodScreenLayout;
+    public interface MoodSelectionListener {
+        void moodHasBeenSelected(EmotionalStates mood);
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    private MoodSelectionListener listener;
 
-        //Initialize fragManager (used to switch to a different fragment)
-        FragmentManager fragManager = getParentFragmentManager();
+    // Attach the listener (Make sure the parent fragment implements it)
+    @Override
+    public void onAttach(@NonNull android.content.Context context) {
+        super.onAttach(context);
+        if (getParentFragment() instanceof MoodSelectionListener) {   //the parent fragment is CreateMoodEventFragment
+            listener = (MoodSelectionListener) getParentFragment();
+        } else {
+            throw new RuntimeException("Parent fragment did not implement MoodSelectionListener!!");
+        }
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+
+        // Inflate custom mood selection layout
+        View view = getLayoutInflater().inflate(R.layout.mood_wheel, null);
+        builder.setView(view);
+
+        // Handle mood selection logic here (e.g., find buttons inside mood_wheel and set click listeners):
 
         //Initialize the TextView to the UI element (to show the currently selected text
         //In case users are not sure what each emoji represents, they can read this text.
         selectedMood = view.findViewById(R.id.currently_selected_mood);
-
 
         //Define actions for each mood button
         view.findViewById(R.id.buttonSurprise).setOnClickListener(new View.OnClickListener() {
@@ -97,13 +110,15 @@ public class CreateMoodScreen extends Fragment {
                 mood = EmotionalStates.ANGER;
             }
         });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.setPositiveButton("Select", (dialog, which) -> {
+            if (listener != null) {
+                listener.moodHasBeenSelected(mood);  //the listener notifies parent frag (since they implement the listener)
+                //dialog closes automatically
+            }
+        });
 
-        //Go to the CreateMoodEventFragment once a mood has been selected
-//        view.findViewById(R.id.confirm_button).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                fragManager.beginTransaction().replace(R.id.frameLayout, new CreateMoodEventFragment()).commit();
-//            }
-//        });
+        return builder.create(); // Return the built dialog
+
     }
 }

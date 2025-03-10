@@ -53,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
         if (itemPressed == R.id.History) {
             selectedFragment = new MoodHistoryFragment();
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
+        } else if (itemPressed == R.id.create_mood_bottom_nav) {
+            selectedFragment = new CreateMoodEventFragment();
         } else if (itemPressed == R.id.feed_bottom_nav) {
             selectedFragment = new TestFragment();
-        } else if (itemPressed == R.id.create_mood_bottom_nav) {
-            selectedFragment = new CreateMoodScreen();
         }
 
         // Display selected fragment to screen
