@@ -109,6 +109,14 @@ public class Mood implements Serializable {
         this.socialSituation = socialSituation;
     }
     /**
+     * This function sets the emotionalState of the mood
+     * @param emotionalState
+     *  New emotionalState for this mood
+     */
+    public void setEmotionalState(EmotionalStates emotionalState) {
+        this.emotionalState = emotionalState;
+    }
+    /**
      * This function sets the postedDate of the mood
      * @param postedDate
      *  New postedDate for this mood

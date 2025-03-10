@@ -54,7 +54,7 @@ public class EditMoodFragment extends DialogFragment {
         View view = getLayoutInflater().inflate(R.layout.fragment_mood_details, null);
         editReason = view.findViewById(R.id.edit_reason);
         editTrigger = view.findViewById(R.id.edit_trigger);
-        emotionSpinner = view.findViewById(R.id.emotion_spinner);
+//        emotionSpinner = view.findViewById(R.id.emotion_spinner);
         socialSituationSpinner = view.findViewById(R.id.social_situation_spinner);
         imageView = view.findViewById(R.id.image);
 
