@@ -1,6 +1,9 @@
 package com.example.project_seekdeep;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
+
+import com.google.firebase.firestore.DocumentReference;
 
 import java.io.Serializable;
 
@@ -19,12 +22,13 @@ public class Mood implements Serializable {
 
     private String trigger;
     private SocialSituations socialSituation;
-    private Bitmap image;
+    private Uri image;
     private Date postedDate;
     private EmotionalStates emotionalState;
     private List<String> followers = new ArrayList<>();
     private String reason;
     private UserProfile owner;
+    private DocumentReference docRef;
 
     /**
      * This method is a constructor for Mood which takes a User and emotionalState.
@@ -76,11 +80,7 @@ public class Mood implements Serializable {
         this.socialSituation = SocialSituations.valueOf(stringFields[2]);
     }
 
-    /**
-     * This function sets the trigger of the mood
-     * @param trigger
-     *  New trigger for this mood
-     */
+
 
     public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate){
         this.owner = owner;
@@ -90,13 +90,30 @@ public class Mood implements Serializable {
         this.trigger = trigger;
     }
 
-    public Mood(Map<String, Object> mapMood){
-        this.setOwner( (UserProfile) mapMood.get("owner"));
-        this.emotionalState = emotionalState.valueOf(mapMood.get("emotionalState").toString());
-        this.postedDate = (Date) mapMood.get("postedDate");
-        this.socialSituation = SocialSituations.valueOf(mapMood.get("socialSituation").toString());
-        this.trigger = mapMood.get("trigger").toString();
+    public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate, String reason){
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+        this.postedDate = postedDate;
+        this.socialSituation = socialSituation;
+        this.trigger = trigger;
+        this.reason = reason;
+        this.followers = followers;
     }
+
+
+    public Mood(EmotionalStates emotionalState, List<String> followers, UserProfile owner, Date postedDate, SocialSituations socialSituation, String trigger){
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+        this.postedDate = postedDate;
+        this.socialSituation = socialSituation;
+        this.trigger = trigger;
+    }
+
+    /**
+     * This function sets the trigger of the mood
+     * @param trigger
+     *  New trigger for this mood
+     */
     public void setTrigger(String trigger){
         this.trigger = trigger;
     }
@@ -126,6 +143,18 @@ public class Mood implements Serializable {
         this.owner = owner;
     }
 
+    public void setReason(String reason){
+        this.reason = reason;
+    }
+
+    public void setDocRef(DocumentReference docRef){
+        this.docRef = docRef;
+    }
+
+    public void setEmotionalState(EmotionalStates emotionalState) {
+        this.emotionalState = emotionalState;
+    }
+
     public String getTrigger() {
         return trigger;
     }
@@ -143,7 +172,7 @@ public class Mood implements Serializable {
      * @return
      *  Current image of this mood
      */
-    public Bitmap getImage() {
+    public Uri getImage() {
         return image;
     }
     /**
@@ -179,12 +208,20 @@ public class Mood implements Serializable {
      *  True if the image is not rejected
      *  False if the image is rejected
      */
-    public boolean setImage(Bitmap image){
+    public void setImage(Uri image){
+
+
+        /*
+
         if (image.getAllocationByteCount()<65536){
             this.image = image;
             return true;
         }
         return false;
+
+         */
+
+        this.image = image;
     }
 
     public String getOwnerString() {
@@ -193,5 +230,9 @@ public class Mood implements Serializable {
 
     public UserProfile getOwner() {
         return owner;
+    }
+
+    public DocumentReference getDocRef(){
+        return docRef;
     }
 }
