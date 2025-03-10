@@ -3,6 +3,7 @@ package com.example.project_seekdeep;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -31,6 +38,9 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 
     //private Context context;
 
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+
     /**
      * Constructor for UserMoodArrayAdapter
      * @param context
@@ -39,11 +49,13 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
      */
     public UserMoodArrayAdapter(Context context, ArrayList<Mood> moods) {
         super(context, 0, moods);
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
     }
 
     /**
      * Creates and gets the view of each mood event in a user's mood listview
-     * 
+     *
      *
      * @param position The position of the item within the adapter's data set of the item whose view
      *        we want.
@@ -92,6 +104,10 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 
         // todo Set up image for mood events
 
+        // Create a reference with an initial file path and name
+
+
+
         //if theres no trigger, hide it
         if (currentMood.getTrigger() == null || Objects.equals(currentMood.getTrigger(), "")){
             trigger.setVisibility(View.GONE);
@@ -112,7 +128,42 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
         if (currentMood.getImage() == null){
             image.setImageDrawable(null);
         } else{
+            image.setVisibility(View.VISIBLE);
             ; //ToDo for images
+            StorageReference pathReference = storageRef.child("Images/" +
+                    currentMood.getImage().getLastPathSegment());
+
+            Log.d("NANCY", "Non null Pathref/ " + pathReference);
+
+
+
+            StorageReference imageFire = storage.getReference("Images/" +
+                    currentMood.getImage().getLastPathSegment());
+
+
+            Log.d("NANCY", "Non null image fire/ " + imageFire);
+
+
+            //Glide.with(getContext())
+             //       .load(imageFire)
+              //      .into(image);
+
+
+            imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL for 'users/me/profile.png'
+                    Glide.with(getContext())
+                            .load(uri)
+                            .into(image);
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
         }
 
 

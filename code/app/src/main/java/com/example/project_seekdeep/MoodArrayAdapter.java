@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.media.Image;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -26,6 +34,9 @@ import java.util.Objects;
  */
 public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+
     /**
      * Mandatory constructor class for MoodArrayAdapter
      *
@@ -34,6 +45,8 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
      */
     public MoodArrayAdapter(Context context, ArrayList<Mood> moods) {
         super(context, 0, moods);
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
     }
 
     /**
@@ -106,8 +119,49 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         // if image DNE, then hide the image view?
         if (currentMood.getImage() == null){
             image.setImageDrawable(null);
+
+            Log.d("NANCY", "null image");
         } else{
             ; //ToDo for images
+
+
+            //Log.d("NANCY", "non null image: " + splitString.toString());
+
+
+            StorageReference pathReference = storageRef.child("Images/" +
+                    currentMood.getImage().getLastPathSegment());
+
+            Log.d("NANCY", "Non null Pathref/ " + pathReference);
+
+
+
+            StorageReference imageFire = storage.getReference("Images/" +
+                    currentMood.getImage().getLastPathSegment());
+
+
+            Log.d("NANCY", "Non null image fire/ " + imageFire);
+
+
+            //Glide.with(getContext())
+            //       .load(imageFire)
+            //      .into(image);
+
+
+            imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL for 'users/me/profile.png'
+                    Glide.with(getContext())
+                            .load(uri)
+                            .into(image);
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
         }
 
 

@@ -1,5 +1,6 @@
 package com.example.project_seekdeep;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,12 +13,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.auth.User;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -37,7 +42,10 @@ public class FeedFragment extends Fragment {
     private ArrayList<Mood> moodArrayList;
     private ArrayAdapter<Mood> moodArrayAdapter;
 
+
     private FirebaseFirestore db;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
     CollectionReference MoodDB;
 
     /**
@@ -69,6 +77,7 @@ public class FeedFragment extends Fragment {
         //initialize variables
         db = FirebaseFirestore.getInstance();
         MoodDB = db.collection("MoodDB");
+
 
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.layout_feed, container, false);
@@ -117,8 +126,16 @@ public class FeedFragment extends Fragment {
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
                     String reason = (String) snapshot.get("reason");
 
+                    String imageStr = (String) snapshot.get("image");
+                    Uri image = null;
+                    if (imageStr != null){
+                        image = Uri.parse(imageStr);
+                    }
+                    
+
                     Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate, reason);
 
+                    mood.setImage(image);
                     mood.setDocRef(snapshot.getReference());
 
                     moodArrayList.add(mood);
