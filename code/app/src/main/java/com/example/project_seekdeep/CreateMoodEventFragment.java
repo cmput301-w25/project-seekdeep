@@ -7,9 +7,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +59,7 @@ import java.util.UUID;
 
 public class CreateMoodEventFragment extends Fragment implements SelectMoodDialogFragment.MoodSelectionListener {
     //ATTRIBUTES:
+    private Spinner socialSitSpinner;
     private ImageView uploadImageHere;  //this imageView is set to be clickable
     private Button createConfirmButton;
     private EditText reasonEditText;
@@ -68,6 +72,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     //Attributes for the User
     private UserProfile userProfile;
     private EmotionalStates selectedEmotion;
+    private SocialSituations selectedSocialSit;
 
 
 
@@ -132,6 +137,10 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         //Initialize selectMood to UI element
         clickToSelectMood = view.findViewById(R.id.edit_emotion_editText);
         createConfirmButton = view.findViewById(R.id.confirm_create_button);
+        //Social Sit Spinner:
+        socialSitSpinner = view.findViewById(R.id.social_situation_spinner);
+        socialSitSpinner.setAdapter(new ArrayAdapter<SocialSituations>(getContext(), android.R.layout.simple_spinner_item, SocialSituations.values()));
+
 
         //Retrieve UserProfile from the bundle (to use inside this fragment)
         if (getArguments() != null) {
@@ -165,6 +174,24 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
             }
         });
 
+
+        //Set a listener for choosing a social situation
+         socialSitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+             @Override
+             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                 //Get the selected social sit (how?)
+                 //SocialSituations socialSit = socialSitSpinner.getSelection();
+                 //Display it on UI?
+                 // Initialize the class attribute (will be used when in the Create button's listener)
+                 //selectedSocialSit = socialSit;
+             }
+             @Override
+             public void onNothingSelected(AdapterView<?> adapterView) {
+                //social sit remains empty/null
+             }
+         });
+
+
         //Set a listener for the "Create" button. This will create a new Mood object
         createConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,7 +209,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
                     //Issue, in this constructor: SocialSit can't be null, so temp hardcord social sit to "Alone"
                     SocialSituations socialSit = SocialSituations.ALONE;
-                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {"null", reason, "ALONE"} );
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {"null", reason, socialSit.toString()} );
 
                 }
 

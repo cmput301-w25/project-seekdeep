@@ -94,7 +94,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:hint="trigger"
-                android:textSize="10sp" />
+                android:textSize="10sp"
+                android:layout_marginEnd="20dp"/>
 
             <ImageView
                 android:id="@+id/social_situation_icon"

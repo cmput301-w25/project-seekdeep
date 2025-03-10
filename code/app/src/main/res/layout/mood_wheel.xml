@@ -30,7 +30,7 @@
         android:id="@+id/currently_selected_mood"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="HAPPY"
+        android:text="SELECTMOOD"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/space"
         app:layout_constraintEnd_toEndOf="@+id/space"
