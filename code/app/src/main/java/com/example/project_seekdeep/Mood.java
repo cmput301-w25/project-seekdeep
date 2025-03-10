@@ -2,6 +2,8 @@ package com.example.project_seekdeep;
 
 import android.media.Image;
 
+import com.google.firebase.firestore.DocumentReference;
+
 import java.io.Serializable;
 
 import java.util.Date;
@@ -22,6 +24,8 @@ public class Mood implements Serializable {
     private EmotionalStates emotionalState;
     private String reason;
     private UserProfile owner;
+
+    private DocumentReference docRef;
 
 
     public Mood(UserProfile owner,EmotionalStates emotionalState){
@@ -73,6 +77,14 @@ public class Mood implements Serializable {
         this.image = image;
     }
 
+    public void setReason(String reason){
+        this.reason = reason;
+    }
+
+    public void setDocRef(DocumentReference docRef){
+        this.docRef = docRef;
+    }
+
     public String getTrigger() {
         return trigger;
     }
@@ -110,5 +122,9 @@ public class Mood implements Serializable {
 
     public UserProfile getOwner() {
         return owner;
+    }
+
+    public DocumentReference getDocRef(){
+        return docRef;
     }
 }

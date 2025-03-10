@@ -13,8 +13,12 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MoodDialogListener {
     private FragmentManager fragManager;
 
     private ListView moodListView;
@@ -69,4 +73,17 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     };
+
+    @Override
+    public void updateMood(Mood mood) {
+        DocumentReference documentReference = mood.getDocRef();
+        documentReference.set(mood);
+
+        //find document reference to users database
+        CollectionReference usersDB = FirebaseFirestore.getInstance().collection("users");
+
+        documentReference.update("owner", FieldValue.delete());
+        documentReference.update("owner", mood.getOwner().getUsername());
+
+    }
 }

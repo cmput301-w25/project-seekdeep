@@ -23,13 +23,19 @@ import java.util.ArrayList;
 
 /**
  * This class is a custom array adapter for the Mood class.
- * Copy of MoodArrayAdapter but changed for User's moods
+ * Copy of MoodArrayAdapter but modified for User's moods (add edit /delete functionality)
  * @author Jachelle Chan and Nancy Lin
  */
 public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 
     //private Context context;
 
+    /**
+     * Constructor for UserMoodArrayAdapter
+     * @param context
+     * @param moods
+     *      arraylist of Mood s to display
+     */
     public UserMoodArrayAdapter(Context context, ArrayList<Mood> moods) {
         super(context, 0, moods);
     }
@@ -68,6 +74,23 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 
         // i don't know how to do the image and pfp one - jachelle
 
+        //if theres no trigger, hide it
+
+        if (currentMood.getTrigger() == null){
+            trigger.setVisibility(View.GONE);
+            view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
+        }
+
+        // if no reason, hide it
+        if(currentMood.getReason() == null){
+            reason.setVisibility(View.GONE);
+        }
+        //if no social situation, hide it
+        if(currentMood.getSocialSituation().toString().equals("Social Situations")){
+            socialSit.setVisibility(View.GONE);
+            view.findViewById(R.id.social_situation_icon).setVisibility(View.GONE);
+        }
+
         // if image DNE, then hide the image view?
         if (currentMood.getImage() == null){
             image.setImageDrawable(null);
@@ -94,21 +117,16 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 
 
         Button editMoodButton = view.findViewById(R.id.edit_mood_button);
-
-
-
         editMoodButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("NANCY", "Click button");
-                EditMoodFragment editMoodFragment = new EditMoodFragment();
+                EditMoodFragment editMoodFragment = EditMoodFragment.newInstance(currentMood);
 
                 FragmentActivity activity =  (FragmentActivity) getContext();
                 FragmentManager fm = activity.getSupportFragmentManager();
 
-
-
-                editMoodFragment.show(fm, "Edit Mood");
+                editMoodFragment.show(fm, "Mood Details");
 
             }
         });

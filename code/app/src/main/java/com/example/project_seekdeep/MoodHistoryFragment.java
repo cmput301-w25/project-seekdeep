@@ -1,14 +1,10 @@
 package com.example.project_seekdeep;
 
 
-import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +14,9 @@ import androidx.fragment.app.Fragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,7 +32,7 @@ import java.util.Map;
  * @author Kevin Tu, nancy Lin
  */
 
-public class MoodHistoryFragment extends Fragment{
+public class MoodHistoryFragment extends Fragment  {
 
     private ListView moodListView;
 
@@ -43,6 +42,7 @@ public class MoodHistoryFragment extends Fragment{
     private UserProfile loggedInUser;
 
     private FirebaseFirestore db;
+    CollectionReference MoodDB;
 
     public MoodHistoryFragment() {
         super(R.layout.layout_feed);
@@ -56,25 +56,25 @@ public class MoodHistoryFragment extends Fragment{
         moodListView = view.findViewById(R.id.mood_list);
 
 
-
-
         //-----------------get mood from specific user-------------------------
         db = FirebaseFirestore.getInstance();
-        CollectionReference MoodDB = db.collection("MoodDB");
+        MoodDB = db.collection("MoodDB");
 
         //1. get logged in user
         // todo   bruh idk, maybe wait on US 030101
         // set a value for now
         loggedInUser = new UserProfile("User1", "pass1");
         //https://stackoverflow.com/questions/53140913/querying-by-a-field-with-type-reference-in-firestore
-        DocumentReference userDocRef = db.collection("users").document(loggedInUser.getUsername());
+        //DocumentReference userDocRef = db.collection("users").document(loggedInUser.getUsername());
 
 
 
 
         //2. query collection to get all mood from user
         //https://firebase.google.com/docs/firestore/query-data/queries#java_2
-        Query loggedInUserMoodsQuery = MoodDB.whereEqualTo("owner", userDocRef);
+
+
+        Query loggedInUserMoodsQuery = MoodDB.whereEqualTo("owner", loggedInUser.getUsername() );
 
         moodArrayList = new ArrayList<>();
 
@@ -87,16 +87,20 @@ public class MoodHistoryFragment extends Fragment{
 
                                 //remap some items
                                 Map<String, Object> moodDocument = document.getData();
+
                                 moodDocument.replace("owner", loggedInUser);
+
                                 Timestamp timestamp = (Timestamp) moodDocument.get("postedDate");
+
                                 moodDocument.replace("postedDate", timestamp.toDate());
                                 Log.d("NANCY", moodDocument.toString());
 
-                                for (var entry : moodDocument.entrySet()){
-                                    Log.d("NANCY", "Map items: " + entry.getKey() + "/" + entry.getValue() + "/" + entry.getValue().getClass().getName());
-                                }
+                                //for (var entry : moodDocument.entrySet()){
+                                //    Log.d("NANCY", "Map items: " + entry.getKey() + "/" + entry.getValue() + "/" + entry.getValue().getClass().getName());
+                                //}
 
                                 Mood mood = new Mood(moodDocument);
+                                mood.setDocRef(document.getReference());
 
                                 moodArrayList.add(mood);
                             }
@@ -115,7 +119,5 @@ public class MoodHistoryFragment extends Fragment{
 
 
     }
-
-
-
+    
 }

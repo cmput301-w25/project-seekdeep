@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
+ * Unused code
  * https://stackoverflow.com/questions/30092158/set-button-onclick-in-listview-android
  */
 public class MoodEventBaseAdapter extends BaseAdapter {
