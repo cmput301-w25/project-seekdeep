@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 
 import com.google.firebase.firestore.DocumentReference;
 
@@ -21,7 +22,7 @@ public class Mood implements Serializable {
 
     private String trigger;
     private SocialSituations socialSituation;
-    private Bitmap image;
+    private Uri image;
     private Date postedDate;
     private EmotionalStates emotionalState;
     private List<String> followers = new ArrayList<>();
@@ -171,7 +172,7 @@ public class Mood implements Serializable {
      * @return
      *  Current image of this mood
      */
-    public Bitmap getImage() {
+    public Uri getImage() {
         return image;
     }
     /**
@@ -207,12 +208,20 @@ public class Mood implements Serializable {
      *  True if the image is not rejected
      *  False if the image is rejected
      */
-    public boolean setImage(Bitmap image){
+    public void setImage(Uri image){
+
+
+        /*
+
         if (image.getAllocationByteCount()<65536){
             this.image = image;
             return true;
         }
         return false;
+
+         */
+
+        this.image = image;
     }
 
     public String getOwnerString() {

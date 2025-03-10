@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -145,9 +146,17 @@ public class MoodHistoryFragment extends Fragment {
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
                     String reason = (String) snapshot.get("reason");
 
+                   String imageStr = (String) snapshot.get("image");
+                   Uri image = null;
+                   if (imageStr != null){
+                       image = Uri.parse(imageStr);
+                   }
+
+
                     Mood mood = new Mood(loggedInUser, emotionalState, socialSituation, trigger, followers, postedDate, reason);
 
                     mood.setDocRef (snapshot.getReference());
+                    mood.setImage(image);
 
                     moodArrayList.add(mood);
 
