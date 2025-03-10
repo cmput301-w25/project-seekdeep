@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Display selected fragment to screen
         if (selectedFragment != null) {
-            fragManager.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+            fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
         }
         return true;
     };

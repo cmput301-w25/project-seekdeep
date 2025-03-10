@@ -6,8 +6,6 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/user_pfp_req_follow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,8 +29,7 @@
             android:gravity="center"
             android:text="request\nfollow"
             android:textSize="6sp"
-            app:layout_constraintTop_toBottomOf="@+id/profile_picture"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/profile_picture" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -63,16 +60,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/box"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginRight="-10sp"
         android:background="@drawable/layout_rounded_mood_bg"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@id/user_pfp_req_follow"
         app:layout_constraintRight_toRightOf="@id/date"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/username">
 
         <Spinner
@@ -99,9 +93,8 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_weight="1"
-                android:clickable="true"
                 android:gravity="center"
-                app:srcCompat="@drawable/baseline_add_photo_alternate_24" />
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
         </LinearLayout>
 
         <LinearLayout

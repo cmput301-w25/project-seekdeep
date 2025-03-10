@@ -102,7 +102,7 @@ public class CreateMoodScreen extends Fragment {
         view.findViewById(R.id.confirm_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fragManager.beginTransaction().replace(R.id.fragment_container, new CreateMoodEventFragment(mood)).commit();
+                fragManager.beginTransaction().replace(R.id.frameLayout, new CreateMoodEventFragment(mood)).commit();
             }
         });
     }
