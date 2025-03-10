@@ -7,7 +7,7 @@
     <item
         android:id="@+id/following_bottom_nav"
         android:title="Following"
-        android:icon="@drawable/baseline_assist_walker_24"/>
+        android:icon="@drawable/baseline_connect_without_contact_24"/>
     <item
         android:id="@+id/create_mood_bottom_nav"
         android:title="Create Mood"
