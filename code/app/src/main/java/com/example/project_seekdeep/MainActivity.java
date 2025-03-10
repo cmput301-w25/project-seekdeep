@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
     private FragmentManager fragManager;
     private String currentUser;
 
+    //this is bad implementation but no time bruv
+    private UserProfile currentUserProfile;
     private ListView moodListView;
 
     @Override
@@ -69,6 +71,12 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
         // Check which fragment the user clicked on
         if (itemPressed == R.id.History) {
             selectedFragment = new MoodHistoryFragment();
+            //add logged in user's UserProfile to bundle to pass to mood history
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("userProfile", currentUserProfile);
+            bundle.putString("username", getCurrentUsername());
+            selectedFragment.setArguments(bundle);
+
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
             selectedFragment = new FeedFragment();
@@ -95,6 +103,23 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
      */
     public String getCurrentUsername() {
         return currentUser;
+    }
+
+
+    /**
+     * Retrieves the current UserProfile which can be used by any fragment to access the logged-in user's data.
+     * @return : The UserProfile of the current user.
+     */
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    /**
+     * Sets the current UserProfile, which will be used by the fragments.
+     * @param userProfile : The UserProfile of the currently logged-in user.
+     */
+    public void setCurrentUserProfile (UserProfile userProfile){
+        this.currentUserProfile = userProfile;
     }
 
     /**

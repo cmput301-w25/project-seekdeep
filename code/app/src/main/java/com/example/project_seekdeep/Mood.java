@@ -79,11 +79,7 @@ public class Mood implements Serializable {
         this.socialSituation = SocialSituations.valueOf(stringFields[2]);
     }
 
-    /**
-     * This function sets the trigger of the mood
-     * @param trigger
-     *  New trigger for this mood
-     */
+
 
     public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate){
         this.owner = owner;
@@ -112,6 +108,11 @@ public class Mood implements Serializable {
         this.trigger = trigger;
     }
 
+    /**
+     * This function sets the trigger of the mood
+     * @param trigger
+     *  New trigger for this mood
+     */
     public void setTrigger(String trigger){
         this.trigger = trigger;
     }
@@ -221,7 +222,6 @@ public class Mood implements Serializable {
     public UserProfile getOwner() {
         return owner;
     }
-
 
     public DocumentReference getDocRef(){
         return docRef;

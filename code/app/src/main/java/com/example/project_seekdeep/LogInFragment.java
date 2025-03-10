@@ -94,6 +94,9 @@ public class LogInFragment extends Fragment {
                             // Update the username in MainActivity to be used as Primary Key
                             ((MainActivity) requireActivity()).setCurrentUsername(username);
 
+                            //Just straight up adding user and pass to main activity
+                            ((MainActivity) requireActivity()).setCurrentUserProfile(user);
+
                             // Call the successful_login() method to show BottomNavigationView and navigate to FeedFragment
                             ((MainActivity) requireActivity()).successful_login();
 

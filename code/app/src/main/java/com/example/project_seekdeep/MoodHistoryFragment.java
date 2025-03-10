@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -54,17 +55,38 @@ public class MoodHistoryFragment extends Fragment {
 
 
     private FirebaseFirestore db;
-    CollectionReference MoodDB;
+    private CollectionReference moods;
+    private CollectionReference users;
+
 
     public MoodHistoryFragment() {
         super(R.layout.layout_feed);
     }
 
     // add username as variable
+
+    /**
+     * When this history fragment is created, instantiate moodArrayList once
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         moodArrayList = new ArrayList<>();
+
+        // Get the logged in User
+        loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+
+        //Log.d("NANCY", "On Create ->" + loggedInUser.getUsername() + loggedInUser.getPassword());
+
+        //create the firestore
+        db = FirebaseFirestore.getInstance();
+        CollectionReference users = db.collection("UserDB");
+        CollectionReference moods = db.collection("MoodDB");
+
+
 
     }
 
@@ -82,24 +104,19 @@ public class MoodHistoryFragment extends Fragment {
         //set views
         ListView moodListView = view.findViewById(R.id.list_view_mood);
 
-        // Get current user that is currently logged in
-//        loggedInUser = (UserProfile) requireArguments().getSerializable("user");
-
-
-
 
         // Instantiate database for usage
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
         CollectionReference users = db.collection("UserDB");
         CollectionReference moods = db.collection("MoodDB");
 
-        UserProfile user = new UserProfile("User1", "pass1");
+
 
         //2. query collection to get all mood from user
         //https://firebase.google.com/docs/firestore/query-data/queries#java_2
         HashMap<String, Object> userMap = new HashMap<String, Object> ();
-        userMap.put("password", user.getPassword());
-        userMap.put("username", user.getUsername());
+        userMap.put("password", loggedInUser.getPassword());
+        userMap.put("username", loggedInUser.getUsername());
         Query loggedInUserMoodsQuery = moods.whereEqualTo("owner", userMap);
 
         moodArrayAdapter = new UserMoodArrayAdapter(view.getContext(), moodArrayList);
@@ -124,7 +141,7 @@ public class MoodHistoryFragment extends Fragment {
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
                     String reason = (String) snapshot.get("reason");
 
-                    Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate, reason);
+                    Mood mood = new Mood(loggedInUser, emotionalState, socialSituation, trigger, followers, postedDate, reason);
 
                     mood.setDocRef (snapshot.getReference());
 

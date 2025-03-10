@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentManager;
 
 import java.net.ConnectException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * This class is a custom array adapter for the Mood class.
@@ -75,8 +76,7 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
         // i don't know how to do the image and pfp one - jachelle
 
         //if theres no trigger, hide it
-
-        if (currentMood.getTrigger() == null){
+        if (currentMood.getTrigger() == null || Objects.equals(currentMood.getTrigger(), "")){
             trigger.setVisibility(View.GONE);
             view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
         }

@@ -18,6 +18,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * This class is a custom array adapter for the Mood class.
@@ -62,6 +63,22 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
 
         // i don't know how to do the image and pfp one - jachelle
+
+        //if theres no trigger, hide it
+        if (currentMood.getTrigger() == null || Objects.equals(currentMood.getTrigger(), "")){
+            trigger.setVisibility(View.GONE);
+            view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
+        }
+
+        // if no reason, hide it
+        if(currentMood.getReason() == null){
+            reason.setVisibility(View.GONE);
+        }
+        //if no social situation, hide it
+        if(currentMood.getSocialSituation().toString().equals("Social Situations")){
+            socialSit.setVisibility(View.GONE);
+            view.findViewById(R.id.social_situation_icon).setVisibility(View.GONE);
+        }
 
         // if image DNE, then hide the image view?
         if (currentMood.getImage() == null){
