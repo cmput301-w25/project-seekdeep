@@ -2,22 +2,22 @@ package com.example.project_seekdeep;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.media.Image;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -25,32 +25,36 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Objects;
 
 /**
  * This class is a custom array adapter for the Mood class.
+ * Copy of MoodArrayAdapter but modified for User's moods (add edit /delete functionality)
  * @author Jachelle Chan and Nancy Lin
  */
-public class MoodArrayAdapter extends ArrayAdapter<Mood> {
+public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
+
+    //private Context context;
 
     private FirebaseStorage storage;
     private StorageReference storageRef;
 
     /**
-     * Mandatory constructor class for MoodArrayAdapter
-     *
-     * @param context   , type Context
-     * @param moods     , type ArrayList<Mood>
+     * Constructor for UserMoodArrayAdapter
+     * @param context
+     * @param moods
+     *      arraylist of Mood s to display
      */
-    public MoodArrayAdapter(Context context, ArrayList<Mood> moods) {
+    public UserMoodArrayAdapter(Context context, ArrayList<Mood> moods) {
         super(context, 0, moods);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
     }
 
     /**
-     * Create and get the view for each item in a listView for moods
+     * Creates and gets the view of each mood event in a user's mood listview
      *
      *
      * @param position The position of the item within the adapter's data set of the item whose view
@@ -69,7 +73,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view;
         if (convertView == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.layout_feed_mood, parent, false);
+            view = LayoutInflater.from(getContext()).inflate(R.layout.layout_feed_mood_edit_delete_combo, parent, false);
         }
         else {
             view = convertView;
@@ -98,7 +102,11 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
         // i don't know how to do the image and pfp one - jachelle
 
-        //todo set up images for mood events
+        // todo Set up image for mood events
+
+        // Create a reference with an initial file path and name
+
+
 
         //if theres no trigger, hide it
         if (currentMood.getTrigger() == null || Objects.equals(currentMood.getTrigger(), "")){
@@ -119,15 +127,9 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         // if image DNE, then hide the image view?
         if (currentMood.getImage() == null){
             image.setImageDrawable(null);
-
-            Log.d("NANCY", "null image");
         } else{
+            image.setVisibility(View.VISIBLE);
             ; //ToDo for images
-
-
-            //Log.d("NANCY", "non null image: " + splitString.toString());
-
-
             StorageReference pathReference = storageRef.child("Images/" +
                     currentMood.getImage().getLastPathSegment());
 
@@ -143,8 +145,8 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
 
             //Glide.with(getContext())
-            //       .load(imageFire)
-            //      .into(image);
+             //       .load(imageFire)
+              //      .into(image);
 
 
             imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -180,6 +182,39 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         GradientDrawable box_outline = (GradientDrawable) view.findViewById(R.id.mood_details_box).getBackground();
         box_outline.mutate();
         box_outline.setStroke(5, Color.parseColor(currentMood.getEmotionalState().getColour()));
+
+
+        // Create delete button
+        Button editMoodButton = view.findViewById(R.id.edit_mood_button);
+        editMoodButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditMoodFragment editMoodFragment = EditMoodFragment.newInstance(currentMood);
+
+                FragmentActivity activity =  (FragmentActivity) getContext();
+                FragmentManager fm = activity.getSupportFragmentManager();
+
+                editMoodFragment.show(fm, "Mood Details");
+
+            }
+        });
+
+        // create delete button
+        Button deleteMoodButton = view.findViewById(R.id.delete_mood_button);
+        deleteMoodButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("NANCY", "Delete button");
+
+                DeleteMoodFragment deleteMoodFragment = DeleteMoodFragment.newInstance(currentMood);
+
+                FragmentActivity activity = (FragmentActivity) getContext();
+                FragmentManager fm = activity.getSupportFragmentManager();
+
+                deleteMoodFragment.show(fm, "Delete Mood");
+
+            }
+        });
 
 
         return view;

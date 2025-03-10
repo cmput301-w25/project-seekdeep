@@ -14,14 +14,22 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
  * It also sets up the navigation and fragment management for the app's main UI flow.
  */
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements MoodDialogListener, DeleteMoodDialogListener {
     private FragmentManager fragManager;
     private UserProfile currentUser;
+
+
+    private ListView moodListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         fragManager.beginTransaction().replace(R.id.frameLayout, new LogInFragment()).commit();
     }
 
-
     // The following code for Navigation Bar was adapted from GeeksForGeeks' guide on "BottomNavigationView in Android"
     // https://www.geeksforgeeks.org/bottomnavigationview-inandroid/
     // Taken on: 2025-03-03
@@ -63,6 +70,12 @@ public class MainActivity extends AppCompatActivity {
         // Check which fragment the user clicked on
         if (itemPressed == R.id.History) {
             selectedFragment = new MoodHistoryFragment();
+            //add logged in user's UserProfile to bundle to pass to mood history
+            Bundle bundle = new Bundle();
+            bundle.putString("username", getCurrentUsername().getUsername());
+            bundle.putSerializable("userProfile", currentUser);
+            selectedFragment.setArguments(bundle);
+
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
             selectedFragment = new FeedFragment();
@@ -98,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         return currentUser;
     }
 
+
     /**
      * This method is called after a successful login to make the navigation bar visible and indicate that the user has logged in successfully.
      */
@@ -111,5 +125,34 @@ public class MainActivity extends AppCompatActivity {
 //      getParentFragmentManager().beginTransaction()
 //          .replace(R.id.frameLayout, feedFragment)
 //          .commit();
+    }
+
+    //required code to update an edited mood
+
+    /**
+     * This method accesses firestore and edits the mood
+     * @param mood
+     */
+    @Override
+    public void updateMood(Mood mood) {
+        DocumentReference documentReference = mood.getDocRef();
+        documentReference.set(mood);
+
+        //find document reference to users database
+        CollectionReference usersDB = FirebaseFirestore.getInstance().collection("users");
+
+        //documentReference.update("owner", FieldValue.delete());
+        //documentReference.update("owner", mood.getOwner().getUsername());
+
+    }
+
+    /**
+     * This method accesses firestore and deletes the mood
+     * @param mood
+     */
+    @Override
+    public void deleteMood(Mood mood) {
+        DocumentReference docRef = mood.getDocRef();
+        docRef.delete();
     }
 }

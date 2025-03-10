@@ -1,16 +1,17 @@
 package com.example.project_seekdeep;
 
-import android.graphics.Bitmap;
-import android.graphics.ImageDecoder;
+
 import android.net.Uri;
 
-import java.io.File;
+
+import com.google.firebase.firestore.DocumentReference;
+
 import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * This is a class that represents every mood post the user creates.
@@ -28,6 +29,7 @@ public class Mood implements Serializable {
     private List<String> followers = new ArrayList<>();
     private String reason;
     private UserProfile owner;
+    private DocumentReference docRef;
 
     /**
      * This method is a constructor for Mood which takes a User and emotionalState.
@@ -97,11 +99,7 @@ public class Mood implements Serializable {
 
     }
 
-    /**
-     * This function sets the trigger of the mood
-     * @param trigger
-     *  New trigger for this mood
-     */
+
 
     public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate){
         this.owner = owner;
@@ -111,13 +109,30 @@ public class Mood implements Serializable {
         this.trigger = trigger;
     }
 
-    public Mood(Map<String, Object> mapMood){
-        this.setOwner( (UserProfile) mapMood.get("owner"));
-        this.emotionalState = emotionalState.valueOf(mapMood.get("emotionalState").toString());
-        this.postedDate = (Date) mapMood.get("postedDate");
-        this.socialSituation = SocialSituations.valueOf(mapMood.get("socialSituation").toString());
-        this.trigger = mapMood.get("trigger").toString();
+    public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate, String reason){
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+        this.postedDate = postedDate;
+        this.socialSituation = socialSituation;
+        this.trigger = trigger;
+        this.reason = reason;
+        this.followers = followers;
     }
+
+
+    public Mood(EmotionalStates emotionalState, List<String> followers, UserProfile owner, Date postedDate, SocialSituations socialSituation, String trigger){
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+        this.postedDate = postedDate;
+        this.socialSituation = socialSituation;
+        this.trigger = trigger;
+    }
+
+    /**
+     * This function sets the trigger of the mood
+     * @param trigger
+     *  New trigger for this mood
+     */
     public void setTrigger(String trigger){
         this.trigger = trigger;
     }
@@ -153,6 +168,14 @@ public class Mood implements Serializable {
      */
     public void setOwner(UserProfile owner){
         this.owner = owner;
+    }
+
+    public void setReason(String reason){
+        this.reason = reason;
+    }
+
+    public void setDocRef(DocumentReference docRef){
+        this.docRef = docRef;
     }
 
     public String getTrigger() {
@@ -230,5 +253,9 @@ public class Mood implements Serializable {
 
     public UserProfile getOwner() {
         return owner;
+    }
+
+    public DocumentReference getDocRef(){
+        return docRef;
     }
 }

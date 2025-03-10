@@ -40,6 +40,8 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -48,6 +50,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
     implementation("com.google.firebase:firebase-firestore:25.1.1")
     implementation("com.google.android.material:material:1.12.0")
+    // FirebaseUI Storage only
+    implementation ("com.firebaseui:firebase-ui-storage:7.2.0")
 
     // Espresso UI testing library
     testImplementation("junit:junit:4.13.2")
