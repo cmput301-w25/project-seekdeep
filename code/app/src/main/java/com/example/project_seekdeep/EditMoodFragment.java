@@ -53,7 +53,7 @@ public class EditMoodFragment extends DialogFragment {
      //please implement a MoodDialogListener and the rest, refer to lab-07
 
     /**
-     * Modifies onAttach
+     * Modifies onAttach to add a listener that will handle editing moods
      * @param context
      */
     @Override
@@ -68,6 +68,14 @@ public class EditMoodFragment extends DialogFragment {
         }
     }
 
+    /**
+     * Creates a dialog that manages editing an existing mood
+     *
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return dialog
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -97,7 +105,9 @@ public class EditMoodFragment extends DialogFragment {
             // i think the spinners setting previous info may have to be implemented in a different way but that will be dealt with later
             emotionSpinner.setSelection(mood.getEmotionalState().ordinal());  // maybe like this? hard to test currently
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
-            // the spinners and image ...
+            
+
+            //todo add edit image functionality
         }
         else {
             mood = null;
@@ -153,6 +163,8 @@ public class EditMoodFragment extends DialogFragment {
                 mood.setTrigger(trigger);
                 mood.setEmotionalState(emotionalStates);
                 mood.setSocialSituation(socialSituations);
+
+                //todo add edit image functionality
 
                 listener.updateMood(mood);
 

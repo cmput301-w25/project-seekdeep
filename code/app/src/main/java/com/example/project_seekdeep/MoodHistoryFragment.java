@@ -67,6 +67,8 @@ public class MoodHistoryFragment extends Fragment {
 
     /**
      * When this history fragment is created, instantiate moodArrayList once
+     * AS well as the firebase
+     * and the userprofile
      *
      * @param savedInstanceState If the fragment is being re-created from
      * a previous saved state, this is the state.

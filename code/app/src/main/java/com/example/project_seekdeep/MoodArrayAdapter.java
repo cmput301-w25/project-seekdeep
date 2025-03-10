@@ -26,10 +26,31 @@ import java.util.Objects;
  */
 public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
+    /**
+     * Mandatory constructor class for MoodArrayAdapter
+     *
+     * @param context   , type Context
+     * @param moods     , type ArrayList<Mood>
+     */
     public MoodArrayAdapter(Context context, ArrayList<Mood> moods) {
         super(context, 0, moods);
     }
 
+    /**
+     * Create and get the view for each item in a listView for moods
+     *
+     *
+     * @param position The position of the item within the adapter's data set of the item whose view
+     *        we want.
+     * @param convertView The old view to reuse, if possible. Note: You should check that this view
+     *        is non-null and of an appropriate type before using. If it is not possible to convert
+     *        this view to display the correct data, this method can create a new view.
+     *        Heterogeneous lists can specify their number of view types, so that this View is
+     *        always of the right type (see {@link #getViewTypeCount()} and
+     *        {@link #getItemViewType(int)}).
+     * @param parent The parent that this view will eventually be attached to
+     * @return
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -63,6 +84,8 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
 
         // i don't know how to do the image and pfp one - jachelle
+
+        //todo set up images for mood events
 
         //if theres no trigger, hide it
         if (currentMood.getTrigger() == null || Objects.equals(currentMood.getTrigger(), "")){
