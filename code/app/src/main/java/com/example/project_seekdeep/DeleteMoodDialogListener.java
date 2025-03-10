@@ -5,8 +5,7 @@ package com.example.project_seekdeep;
  * Mostly copied from Lab 7
  * @author Nancy
  */
-public interface MoodDialogListener {
+public interface DeleteMoodDialogListener {
 
-    void updateMood(Mood mood);
-
+    void deleteMood(Mood mood);
 }

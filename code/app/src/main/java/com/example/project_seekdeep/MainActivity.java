@@ -24,7 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
  * It also sets up the navigation and fragment management for the app's main UI flow.
  */
 
-public class MainActivity extends AppCompatActivity implements MoodDialogListener {
+public class MainActivity extends AppCompatActivity implements MoodDialogListener, DeleteMoodDialogListener {
     private FragmentManager fragManager;
     private String currentUser;
 
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
     //required code to update an edited mood
 
     /**
-     * This method access firestore and edits the mood
+     * This method accesses firestore and edits the mood
      * @param mood
      */
     @Override
@@ -154,5 +154,15 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
         //documentReference.update("owner", FieldValue.delete());
         //documentReference.update("owner", mood.getOwner().getUsername());
 
+    }
+
+    /**
+     * This method accesses firestore and deletes the mood
+     * @param mood
+     */
+    @Override
+    public void deleteMood(Mood mood) {
+        DocumentReference docRef = mood.getDocRef();
+        docRef.delete();
     }
 }

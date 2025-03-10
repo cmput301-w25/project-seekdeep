@@ -137,13 +137,28 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
         editMoodButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("NANCY", "Click button");
                 EditMoodFragment editMoodFragment = EditMoodFragment.newInstance(currentMood);
 
                 FragmentActivity activity =  (FragmentActivity) getContext();
                 FragmentManager fm = activity.getSupportFragmentManager();
 
                 editMoodFragment.show(fm, "Mood Details");
+
+            }
+        });
+
+        Button deleteMoodButton = view.findViewById(R.id.delete_mood_button);
+        deleteMoodButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("NANCY", "Delete button");
+
+                DeleteMoodFragment deleteMoodFragment = DeleteMoodFragment.newInstance(currentMood);
+
+                FragmentActivity activity = (FragmentActivity) getContext();
+                FragmentManager fm = activity.getSupportFragmentManager();
+
+                deleteMoodFragment.show(fm, "Delete Mood");
 
             }
         });
