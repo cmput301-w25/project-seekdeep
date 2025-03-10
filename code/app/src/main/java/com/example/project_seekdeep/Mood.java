@@ -156,10 +156,20 @@ public class Mood implements Serializable {
         return emotionalState;
     }
 
+    /**
+     * This function returns the followers of the mood
+     *
+     * @return Current list of followers in this mood
+     */
+
     public List<String> getFollowers() {
         return followers;
     }
-
+    /**
+     * This function returns the reason for the mood
+     *
+     * @return Current reason of the mood
+     */
     public String getReason() {
         return reason;
     }
@@ -179,7 +189,11 @@ public class Mood implements Serializable {
         }
         return false;
     }
-
+    /**
+     * This function returns the owner of the mood
+     *
+     * @return Current owner of the mood
+     */
     public String getOwner() {
         return owner;
     }
