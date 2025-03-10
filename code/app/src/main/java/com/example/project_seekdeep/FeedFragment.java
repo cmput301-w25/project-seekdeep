@@ -27,9 +27,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link FeedFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This fragment class is designed to display all the moods in the database.
+ * @author Kevin Tu, Nancy Lin
  */
 public class FeedFragment extends Fragment {
 
@@ -41,11 +40,28 @@ public class FeedFragment extends Fragment {
     private FirebaseFirestore db;
     CollectionReference MoodDB;
 
+    /**
+     * Require empty public constructor for the Feed Fragment
+     */
     public FeedFragment() {
         // Required empty public constructor
     }
 
 
+    /**
+     * Upon creating this fragment, it will create a basic view, as well as
+     * assign value to the firebase/ database references
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -59,6 +75,14 @@ public class FeedFragment extends Fragment {
         return inflatedView;
     }
 
+    /**
+     * When this view is created, it will query the mood database for all of the moods and show them
+     *
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -131,8 +155,9 @@ public class FeedFragment extends Fragment {
                     String trigger = (String) snapshot.get("trigger");
                     List<String> followers = (List<String>) snapshot.get("followers");
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                    String reason = (String) snapshot.get("reason");
 
-                    Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate);
+                    Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate, reason);
 
                     mood.setDocRef(snapshot.getReference());
 

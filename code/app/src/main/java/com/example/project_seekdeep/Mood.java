@@ -93,13 +93,16 @@ public class Mood implements Serializable {
         this.trigger = trigger;
     }
 
-    public Mood(Map<String, Object> mapMood){
-        this.setOwner( (UserProfile) mapMood.get("owner"));
-        this.emotionalState = emotionalState.valueOf(mapMood.get("emotionalState").toString());
-        this.postedDate = (Date) mapMood.get("postedDate");
-        this.socialSituation = SocialSituations.valueOf(mapMood.get("socialSituation").toString());
-        this.trigger = mapMood.get("trigger").toString();
+    public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate, String reason){
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+        this.postedDate = postedDate;
+        this.socialSituation = socialSituation;
+        this.trigger = trigger;
+        this.reason = reason;
+        this.followers = followers;
     }
+
 
     public Mood(EmotionalStates emotionalState, List<String> followers, UserProfile owner, Date postedDate, SocialSituations socialSituation, String trigger){
         this.owner = owner;

@@ -122,8 +122,9 @@ public class MoodHistoryFragment extends Fragment {
                     String trigger = (String) snapshot.get("trigger");
                     List<String> followers = (List<String>) snapshot.get("followers");
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                    String reason = (String) snapshot.get("reason");
 
-                    Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate);
+                    Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate, reason);
 
                     mood.setDocRef (snapshot.getReference());
 
