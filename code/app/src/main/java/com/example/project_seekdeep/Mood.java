@@ -1,7 +1,8 @@
 package com.example.project_seekdeep;
 
-import android.graphics.Bitmap;
+
 import android.net.Uri;
+
 
 import com.google.firebase.firestore.DocumentReference;
 
@@ -10,7 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * This is a class that represents every mood post the user creates.
@@ -77,7 +78,25 @@ public class Mood implements Serializable {
         // position 0 is trigger, position 1 is reason, position 2 is social situation
         this.trigger = stringFields[0];
         this.reason = stringFields[1];
-        this.socialSituation = SocialSituations.valueOf(stringFields[2]);
+        switch (stringFields[2]) {
+            case "Social Situations":
+                this.socialSituation = SocialSituations.TITLE;
+                break;
+            case "Alone":
+                this.socialSituation = SocialSituations.ALONE;
+                break;
+            case "With Another Person":
+                this.socialSituation = SocialSituations.WITH_ANOTHER;
+                break;
+            case "Two or Several People":
+                this.socialSituation = SocialSituations.SEVERAL_PEOPLE;
+                break;
+
+            case "With a Crowd":
+                this.socialSituation = SocialSituations.CROWD;
+                break;
+        }
+
     }
 
 
@@ -126,6 +145,14 @@ public class Mood implements Serializable {
         this.socialSituation = socialSituation;
     }
     /**
+     * This function sets the emotionalState of the mood
+     * @param emotionalState
+     *  New emotionalState for this mood
+     */
+    public void setEmotionalState(EmotionalStates emotionalState) {
+        this.emotionalState = emotionalState;
+    }
+    /**
      * This function sets the postedDate of the mood
      * @param postedDate
      *  New postedDate for this mood
@@ -149,10 +176,6 @@ public class Mood implements Serializable {
 
     public void setDocRef(DocumentReference docRef){
         this.docRef = docRef;
-    }
-
-    public void setEmotionalState(EmotionalStates emotionalState) {
-        this.emotionalState = emotionalState;
     }
 
     public String getTrigger() {

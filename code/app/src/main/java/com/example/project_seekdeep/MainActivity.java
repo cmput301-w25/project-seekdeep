@@ -26,7 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity implements MoodDialogListener, DeleteMoodDialogListener {
     private FragmentManager fragManager;
-    private String currentUser;
+    private UserProfile currentUser;
 
 
     private ListView moodListView;
@@ -72,12 +72,20 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
             selectedFragment = new MoodHistoryFragment();
             //add logged in user's UserProfile to bundle to pass to mood history
             Bundle bundle = new Bundle();
-            bundle.putString("username", getCurrentUsername());
+            bundle.putString("username", getCurrentUsername().getUsername());
+            bundle.putSerializable("userProfile", currentUser);
             selectedFragment.setArguments(bundle);
 
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
             selectedFragment = new FeedFragment();
+        } else if (itemPressed == R.id.create_mood_bottom_nav) {
+            selectedFragment = new CreateMoodEventFragment();
+            //Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("userProfile", currentUser); //make currentUser Serializbale, with key "userProfile"
+//            bundle.putString("username", getCurrentUsername()); //username stored as string in the bundle
+            selectedFragment.setArguments(bundle);  //attach bundle to the fragment
         }
 
         // Display selected fragment to screen
@@ -89,17 +97,17 @@ public class MainActivity extends AppCompatActivity implements MoodDialogListene
 
     /**
      * Sets the current username, which will be used by the fragments.
-     * @param username : he username of the currently logged-in user.
+     * @param user : he username of the currently logged-in user.
      */
-    public void setCurrentUsername(String username) {
-        this.currentUser = username;
+    public void setCurrentUser(UserProfile user) {
+        this.currentUser = user;
     }
 
     /**
      * Retrieves the current username which can be used by any fragment to access the logged-in user's data.
      * @return : The username of the current user.
      */
-    public String getCurrentUsername() {
+    public UserProfile getCurrentUsername() {
         return currentUser;
     }
 

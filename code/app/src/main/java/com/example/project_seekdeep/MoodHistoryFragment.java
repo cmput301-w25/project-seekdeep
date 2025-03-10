@@ -80,8 +80,8 @@ public class MoodHistoryFragment extends Fragment {
         moodArrayList = new ArrayList<>();
 
         // Get the logged in User
-        loggedInUser = new UserProfile(getArguments().getString("username"), "");
-        //loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+        //loggedInUser = new UserProfile(getArguments().getString("username"), "");
+        loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
 
         //Log.d("NANCY", "On Create ->" + loggedInUser.getUsername() + loggedInUser.getPassword());
 

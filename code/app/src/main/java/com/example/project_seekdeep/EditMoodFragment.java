@@ -82,7 +82,7 @@ public class EditMoodFragment extends DialogFragment {
 
         Log.d("NANCY", "Did we get here?");
 
-        View view = getLayoutInflater().inflate(R.layout.fragment_mood_details, null);
+        View view = getLayoutInflater().inflate(R.layout.fragment_edit_mood_details, null);
         editReason = view.findViewById(R.id.edit_reason);
         editTrigger = view.findViewById(R.id.edit_trigger);
         emotionSpinner = view.findViewById(R.id.emotion_spinner);
