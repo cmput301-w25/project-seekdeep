@@ -21,7 +21,7 @@ import com.google.android.material.navigation.NavigationBarView;
  */
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragManager;
-    private String currentUser;
+    private UserProfile currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,17 +85,17 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Sets the current username, which will be used by the fragments.
-     * @param username : he username of the currently logged-in user.
+     * @param user : he username of the currently logged-in user.
      */
-    public void setCurrentUsername(String username) {
-        this.currentUser = username;
+    public void setCurrentUser(UserProfile user) {
+        this.currentUser = user;
     }
 
     /**
      * Retrieves the current username which can be used by any fragment to access the logged-in user's data.
      * @return : The username of the current user.
      */
-    public String getCurrentUsername() {
+    public UserProfile getCurrentUsername() {
         return currentUser;
     }
 

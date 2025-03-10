@@ -91,8 +91,8 @@ public class LogInFragment extends Fragment {
                         if (user != null && user.getPassword().equals(password)) {
                             Toast.makeText(getContext(), "Login Successful!", Toast.LENGTH_SHORT).show();
 
-                            // Update the username in MainActivity to be used as Primary Key
-                            ((MainActivity) requireActivity()).setCurrentUsername(username);
+                            // Update the user object in MainActivity to be used in other fragments
+                            ((MainActivity) requireActivity()).setCurrentUser(user);
 
                             // Call the successful_login() method to show BottomNavigationView and navigate to FeedFragment
                             ((MainActivity) requireActivity()).successful_login();
