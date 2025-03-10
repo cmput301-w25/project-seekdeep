@@ -60,10 +60,11 @@ public class MoodHistoryFragmentTest {
         CollectionReference moodsRef = db.collection("MoodDB");
 
         UserProfile testUser = new UserProfile("kevtu2", "222");
+
         Mood[] moods = {
-                new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food"),
-                new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework"),
-                new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms")
+                new Mood(testUser.getUsername(), EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food"),
+                new Mood(testUser.getUsername(), EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework"),
+                new Mood(testUser.getUsername(), EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms")
         };
 
         usersRef.document().set(testUser);

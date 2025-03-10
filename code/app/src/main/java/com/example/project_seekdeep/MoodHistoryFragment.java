@@ -1,6 +1,8 @@
 package com.example.project_seekdeep;
 
 
+import static android.content.ContentValues.TAG;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,11 +12,16 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -67,9 +74,14 @@ public class MoodHistoryFragment extends Fragment {
 
         UserProfile user = new UserProfile("kevtu2", "222");
 
+        // https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
+        MainActivity mainActivity = (MainActivity) getActivity();
+        assert mainActivity != null;
+        String username = mainActivity.getCurrentUsername();
+
         //2. query collection to get all mood from user
         //https://firebase.google.com/docs/firestore/query-data/queries#java_2
-        Query loggedInUserMoodsQuery = moods.whereEqualTo("ownerString", "kevtu2");
+        Query loggedInUserMoodsQuery = moods.whereEqualTo("ownerString", username);
 
         ArrayList<Mood> moodArrayList = new ArrayList<>();
         ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList);
@@ -87,7 +99,7 @@ public class MoodHistoryFragment extends Fragment {
                     List<String> followers = (List<String>) snapshot.get("followers");
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
 
-                    Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate);
+                    Mood mood = new Mood(username, emotionalState, socialSituation, trigger, followers, postedDate);
 
                     moodArrayList.add(mood);
                }

@@ -55,7 +55,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         // set the text for the mood event (layout_mood.xml)
         reason.setText(currentMood.getReason());
         emotion.setText(currentMood.getEmotionalState().toString());
-        user.setText(currentMood.getOwnerString());
+        user.setText(currentMood.getOwner());
         trigger.setText(currentMood.getTrigger());
         socialSit.setText(currentMood.getSocialSituation().toString());
         date.setText(currentMood.getPostedDate().toString());
