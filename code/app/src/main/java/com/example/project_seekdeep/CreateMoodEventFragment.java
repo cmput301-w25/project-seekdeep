@@ -45,7 +45,7 @@ import java.util.UUID;
 /**
  * This Fragment class is designed to display a Mood Event Card, and let users Create a mood.
  * When the user clicks to select an emotion, a SelectMoodDialogFragment will pop up.
- * @author Sarah Chang
+ * @author Sarah Chang, Nancy Lin
  */
 
 /*
@@ -198,12 +198,17 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         //Retrieve UserProfile from the bundle (to use inside this fragment)
         if (getArguments() != null) {
             //Retrieve UserProfile (must be casted), save it in userProfile class attribute
-            this.userProfile = (UserProfile) getArguments().getSerializable("userProfile");
+            userProfile = (UserProfile) getArguments().getSerializable("userProfile");
 //            String username = getArguments().getString("username");
+        }
+        else {  //Throw error into logcat (use for debugging)
+            String message = "UserProfile was not passed to CreateMoodEventFragment correctly!";
+            Log.e("CreateMoodEventFragment", message);
+            throw new NullPointerException(message);
         }
 
         //Temporarily hardcode userProfile to User1
-        userProfile = new UserProfile("User1", "pass1");
+        //userProfile = new UserProfile("User1", "pass1");
 
 
         //Set a listener for when the imageView is clicked on
@@ -273,7 +278,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                     moodEvent = new Mood(userProfile, selectedEmotion, new String[] {null, null, socialSit.toString()});
                 }
 
-                Log.d("NANCY", imageUri.toString());
+                //Log.d("NANCY", imageUri.toString());
 
 
 
@@ -296,7 +301,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
      */
     public boolean validReasonLength(String reason) {
         //throw new IllegalArgumentException("User's reason must be <=20 chars OR <=3 words!");
-        return reason.length() <= 20 || reason.split(" ").length <= 3; //returns true or false
+        return reason.length() <= 20 && reason.split(" ").length <= 3; //returns true or false
 
     }
 

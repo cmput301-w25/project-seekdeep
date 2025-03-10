@@ -68,12 +68,11 @@ public class MainActivity extends AppCompatActivity {
             selectedFragment = new FeedFragment();
         } else if (itemPressed == R.id.create_mood_bottom_nav) {
             selectedFragment = new CreateMoodEventFragment();
-            //Issue: need to bundle up currentUser as a UserProfile object, not a String, in order for Mood to be created
-            ////Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
-            //Bundle bundle = new Bundle();
-            //bundle.putSerializable("userProfile", currentUser); //make currentUser Serializbale, with key "userProfile"
-            //bundle.putString("username", getCurrentUsername()); //username stored as string in the bundle
-            //selectedFragment.setArguments(bundle);  //attach bundle to the fragment
+            //Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("userProfile", currentUser); //make currentUser Serializbale, with key "userProfile"
+//            bundle.putString("username", getCurrentUsername()); //username stored as string in the bundle
+            selectedFragment.setArguments(bundle);  //attach bundle to the fragment
         }
 
         // Display selected fragment to screen

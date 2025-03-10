@@ -13,7 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-//CURRENTLY: THIS CLASS IS NOT BEING USED, INSTEAD IS REPLACED BY SelectMoodDialogFragment
+/**
+ * This displays the mood wheel as a fragment.
+ * @deprecated CURRENTLY: THIS CLASS IS NOT BEING USED, INSTEAD IS REPLACED BY SelectMoodDialogFragment
+ */
 
 public class CreateMoodScreen extends Fragment {
 
