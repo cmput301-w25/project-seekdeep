@@ -175,9 +175,15 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                 // check if a reason was inputed
                 if (reasonEditText != null) {
                     String reason = reasonEditText.getText().toString().trim();
+                    if (!validReasonLength(reason)) {
+                        reasonEditText.setError("Reason must be ≤ 20 chars or ≤ 3 words!");
+                        return; //this stops execution for the rest of this click method
+                    }
+
                     //Issue, in this constructor: SocialSit can't be null, so temp hardcord social sit to "Alone"
                     SocialSituations socialSit = SocialSituations.ALONE;
                     moodEvent = new Mood(userProfile, selectedEmotion, new String[] {"null", reason, "ALONE"} );
+
                 }
 
                 //Default: create Mood object with only the UserProfile and EmotionalState
@@ -191,7 +197,16 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                 Toast.makeText(requireContext(), "Your mood has been uploaded!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
+    /**
+     * This checks whether a reason is under 20 characters or under 3 words
+     * @param reason
+     * @return true if the reason is ≤ 20 chars or ≤ 3 words, false otherwise
+     */
+    public boolean validReasonLength(String reason) {
+        //throw new IllegalArgumentException("User's reason must be <=20 chars OR <=3 words!");
+        return reason.length() <= 20 || reason.split(" ").length <= 3; //returns true or false
 
     }
 
