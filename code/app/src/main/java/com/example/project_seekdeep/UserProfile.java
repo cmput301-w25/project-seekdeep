@@ -3,7 +3,8 @@ package com.example.project_seekdeep;
 import java.io.Serializable;
 
 /**
- * UserProfile represents users attributes
+ * This is a class to hold user information (pulled from 4-us-030101 on 3/7/25 ~10pm).
+ * @author Saurabh Baghel
  */
 public class UserProfile implements Serializable {
     private String username;

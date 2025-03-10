@@ -2,6 +2,7 @@ package com.example.project_seekdeep;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -64,12 +65,12 @@ public class MainActivity extends AppCompatActivity {
             selectedFragment = new MoodHistoryFragment();
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
-            selectedFragment = new TestFragment();
+            selectedFragment = new FeedFragment();
         }
 
         // Display selected fragment to screen
         if (selectedFragment != null) {
-            fragManager.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+            fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
         }
         return true;
     };
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
     public void successful_login() {
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
         navBar.setVisibility(View.VISIBLE);
+        fragManager.beginTransaction().replace(R.id.frameLayout, new FeedFragment()).commit();
 
         // A placeholder for future functionality
         // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
