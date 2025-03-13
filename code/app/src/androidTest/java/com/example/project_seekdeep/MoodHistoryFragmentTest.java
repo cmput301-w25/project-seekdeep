@@ -4,15 +4,15 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
 
 import android.util.Log;
 
+import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -20,6 +20,7 @@ import androidx.test.filters.LargeTest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.hamcrest.Description;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -44,6 +45,8 @@ public class MoodHistoryFragmentTest {
     public ActivityScenarioRule<MainActivity> scenario =
             new ActivityScenarioRule<MainActivity>(MainActivity.class);
 
+    private UserProfile testUser = new UserProfile("kevtu2", "222");
+
     @BeforeClass
     public static void setup() {
         // Specific address for emulated device to access our localHost
@@ -54,12 +57,11 @@ public class MoodHistoryFragmentTest {
     }
 
     @Before
-    public void seedDatabase() {
+    public void seedDatabase() throws InterruptedException {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference usersRef = db.collection("UserDB");
         CollectionReference moodsRef = db.collection("MoodDB");
 
-        UserProfile testUser = new UserProfile("kevtu2", "222");
         Mood[] moods = {
                 new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food"),
                 new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework"),
@@ -72,6 +74,9 @@ public class MoodHistoryFragmentTest {
             moodsRef.document().set(mood);
         }
 
+        // log in first
+        scenario.getScenario().onActivity(activity -> activity.successful_login());
+        scenario.getScenario().onActivity(activity -> activity.setCurrentUser(testUser));
     }
 
     @After
@@ -100,10 +105,72 @@ public class MoodHistoryFragmentTest {
 
     @Test
     public void appShouldDisplayExistingMoods() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
         onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(5000);
 
-        // Write tests for displaying existing moods..
+        onView(withText("\uD83D\uDE04 Happiness")).check(matches(isDisplayed()));
+        onView(withText("\uD83E\uDD14 Confusion")).check(matches(isDisplayed()));
+        onView(withText("☹️ Sadness")).check(matches(isDisplayed()));
+
+        // click on edit button for sadness mood
+        // The way to click a button inside a listview item is taken from https://stackoverflow.com/a/25373597
+        // Taken by: Jachelle Chan
+        // Taken on: March 13, 2025
+        onData(new BoundedMatcher<Object, Mood>(Mood.class) {
+            @Override
+            protected boolean matchesSafely(Mood mood) {
+                return mood.getEmotionalState().toString().equals("☹️ Sadness");
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with emotion: Sadness");
+            }
+        }).inAdapterView(withId(R.id.history_listview)).onChildView(withId(R.id.edit_mood_button)).perform(click());
+        Thread.sleep(3000);
+
+        // check that the mood details are displayed properly
+        onView(withId(R.id.emotion_spinner)).check(matches(hasDescendant(withText("☹️ Sadness"))));
+        onView(withId(R.id.edit_reason)).check(matches(withText("")));
+        onView(withId(R.id.edit_trigger)).check(matches(withText("Midterms")));
+        onView(withId(R.id.social_situation_spinner)).check(matches(hasDescendant(withText("With a Crowd"))));
     }
 
+
+    @Test
+    public void testAddMood() throws InterruptedException {
+        // we're gonna make this mood a fear mood event
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.create_mood_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // click
+        onView(withId(R.id.edit_emotion_editText)).perform(click());
+        Thread.sleep(1000);
+        // select emotion as fear
+        onView(withId(R.id.buttonFear)).perform(click());
+        onView(withId(android.R.id.button1)).perform(click());
+
+
+    }
+/*
+    @Test
+    public void testDeleteMood() {
+
+    }
+
+    @Test
+    public void testEditMood() {
+
+    }
+
+    @Test
+    public void reasonWithMoreThan200CharShouldThrowError() {
+
+    }
+     */
 
 }
