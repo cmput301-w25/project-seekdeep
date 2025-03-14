@@ -2,9 +2,14 @@ package com.example.project_seekdeep;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -12,6 +17,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.util.Log;
 
+import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -109,7 +116,7 @@ public class MoodHistoryFragmentTest {
         Thread.sleep(2000);
         onView(withId(R.id.History)).perform(click());
         // give time for the history/profile page to show up
-        Thread.sleep(5000);
+        Thread.sleep(2000);
 
         onView(withText("\uD83D\uDE04 Happiness")).check(matches(isDisplayed()));
         onView(withText("\uD83E\uDD14 Confusion")).check(matches(isDisplayed()));
@@ -117,6 +124,7 @@ public class MoodHistoryFragmentTest {
 
         // click on edit button for sadness mood
         // The way to click a button inside a listview item is taken from https://stackoverflow.com/a/25373597
+        // will continue to be used throughout this whole testing file
         // Taken by: Jachelle Chan
         // Taken on: March 13, 2025
         onData(new BoundedMatcher<Object, Mood>(Mood.class) {
@@ -150,27 +158,163 @@ public class MoodHistoryFragmentTest {
         // click
         onView(withId(R.id.edit_emotion_editText)).perform(click());
         Thread.sleep(1000);
-        // select emotion as fear
+        // select emotion as fear and create the mood
         onView(withId(R.id.buttonFear)).perform(click());
         onView(withId(android.R.id.button1)).perform(click());
+        onView(withId(R.id.edit_reason)).perform(ViewActions.typeText("Demo"));
+        onView(withId(R.id.social_situation_spinner)).perform(ViewActions.click());
+        onView(withText("With a Crowd")).perform(click());
+        onView(withId(R.id.confirm_create_button)).perform(click());
 
+        // check that the mood has been created and put in history/profile
+        onView(withId(R.id.History)).perform(click());
+        onView(withText("\uD83D\uDE28 Fear")).check(matches(isDisplayed()));
 
+        onData(new BoundedMatcher<Object, Mood>(Mood.class) {
+            @Override
+            protected boolean matchesSafely(Mood mood) {
+                return mood.getEmotionalState().toString().equals("😨 Fear");
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with emotion: Fear");
+            }
+        }).inAdapterView(withId(R.id.history_listview)).onChildView(withId(R.id.edit_mood_button)).perform(click());
+        Thread.sleep(3000);
+
+        // check that the mood details are displayed properly
+        onView(withId(R.id.emotion_spinner)).check(matches(hasDescendant(withText("😨 Fear"))));
+        onView(withId(R.id.edit_reason)).check(matches(withText("Demo")));
+        onView(withId(R.id.edit_trigger)).check(matches(withText("")));
+        onView(withId(R.id.social_situation_spinner)).check(matches(hasDescendant(withText("With a Crowd"))));
     }
-/*
+
     @Test
-    public void testDeleteMood() {
+    public void testDeleteMood() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(2000);
+        // save the view with the sadness mood event still available
+        ViewInteraction view = onView(withText("☹️ Sadness"));
 
+        // choose the sadness mood to delete and click the delete button associated with that mood event
+        onData(new BoundedMatcher<Object, Mood>(Mood.class) {
+            @Override
+            protected boolean matchesSafely(Mood mood) {
+                return mood.getEmotionalState().toString().equals("☹️ Sadness");
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with emotion: Sadness");
+            }
+        }).inAdapterView(withId(R.id.history_listview)).onChildView(withId(R.id.delete_mood_button)).perform(click());
+        onView(withId(android.R.id.button1)).perform(click());
+
+        // check to see if the mood still exists
+        view.check(doesNotExist());
+
+    }
+
+
+    @Test
+    public void testEditMood() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(2000);
+        // save the view with the sadness mood event still available
+        ViewInteraction view = onView(withText("☹️ Sadness"));
+
+        // choose the sadness mood to edit and press the edit button associated with that mood event
+        onData(new BoundedMatcher<Object, Mood>(Mood.class) {
+            @Override
+            protected boolean matchesSafely(Mood mood) {
+                return mood.getEmotionalState().toString().equals("☹️ Sadness");
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with emotion: Sadness");
+            }
+        }).inAdapterView(withId(R.id.history_listview)).onChildView(withId(R.id.edit_mood_button)).perform(click());
+        // change reason to be Midterms oh no!
+        onView(withId(R.id.edit_reason)).perform(typeText("Midterms oh no!"));
+        // change trigger to be
+        onView(withId(R.id.edit_trigger)).perform(clearText());
+        onView(withId(R.id.edit_trigger)).perform(typeText("Midterm"));
+
+        onView(withId(R.id.emotion_spinner)).perform(click());
+        // change sadness to fear
+        // This next line is taken from https://stackoverflow.com/a/40015436
+        // Taken by: Jachelle Chan
+        // Taken on: March 13, 2025
+        onView(withText("😨 Fear")).inRoot(isPlatformPopup()).perform(click());
+
+        onView(withId(android.R.id.button1)).perform(click());
+        // check to see if the edit has edited those details on the history page
+        onView(withText("😨 Fear")).check(matches(isDisplayed()));
+
+        // check if the edit has edited details when clicking
+        onData(new BoundedMatcher<Object, Mood>(Mood.class) {
+            @Override
+            protected boolean matchesSafely(Mood mood) {
+                return mood.getEmotionalState().toString().equals("😨 Fear");
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with emotion: Fear");
+            }
+        }).inAdapterView(withId(R.id.history_listview)).onChildView(withId(R.id.edit_mood_button)).perform(click());
+        Thread.sleep(3000);
+
+        // check that the mood details are displayed properly
+        onView(withId(R.id.emotion_spinner)).check(matches(hasDescendant(withText("😨 Fear"))));
+        onView(withId(R.id.edit_reason)).check(matches(withText("Midterms oh no!")));
+        onView(withId(R.id.edit_trigger)).check(matches(withText("Midterm")));
+        onView(withId(R.id.social_situation_spinner)).check(matches(hasDescendant(withText("With a Crowd"))));
     }
 
     @Test
-    public void testEditMood() {
-
+    public void reasonWithMoreThan3WordsShouldErrorWhenAdding() throws InterruptedException {
+        // we're gonna make this mood a fear mood event
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.create_mood_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // click on select mood
+        onView(withId(R.id.edit_emotion_editText)).perform(click());
+        Thread.sleep(1000);
+        // select emotion as fear and create the mood
+        onView(withId(R.id.buttonFear)).perform(click());
+        onView(withId(android.R.id.button1)).perform(click());
+        onView(withId(R.id.edit_reason)).perform(ViewActions.typeText("Demo oh no !"));
+        onView(withId(R.id.confirm_create_button)).perform(click());
+        onView(withId(R.id.edit_reason)).check(matches(hasErrorText("Reason must be ≤ 20 chars or ≤ 3 words!")));
     }
 
     @Test
-    public void reasonWithMoreThan200CharShouldThrowError() {
-
+    public void reasonWithMoreThan20CharShouldErrorWhenAdding() throws InterruptedException {
+        // we're gonna make this mood a fear mood event
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.create_mood_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // click on select mood
+        onView(withId(R.id.edit_emotion_editText)).perform(click());
+        Thread.sleep(1000);
+        // select emotion as fear and create the mood
+        onView(withId(R.id.buttonFear)).perform(click());
+        onView(withId(android.R.id.button1)).perform(click());
+        onView(withId(R.id.edit_reason)).perform(ViewActions.typeText("12345678910111213 !!!"));
+        onView(withId(R.id.confirm_create_button)).perform(click());
+        onView(withId(R.id.edit_reason)).check(matches(hasErrorText("Reason must be ≤ 20 chars or ≤ 3 words!")));
     }
-     */
+
 
 }
