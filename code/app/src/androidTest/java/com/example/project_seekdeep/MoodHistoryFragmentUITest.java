@@ -15,6 +15,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 
+import static org.hamcrest.CoreMatchers.anything;
+
 import android.util.Log;
 
 import androidx.test.espresso.ViewInteraction;
@@ -68,18 +70,26 @@ public class MoodHistoryFragmentUITest {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference usersRef = db.collection("UserDB");
         CollectionReference moodsRef = db.collection("MoodDB");
-
+/*
         Mood[] moods = {
                 new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food"),
                 new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework"),
                 new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms")
-        };
+        };*/
+        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food");
+        // give time so we can sort the list
+        Thread.sleep(5000);
+        Mood mood2 = new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework");
+        Thread.sleep(5000);
+        Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms");
+
 
         usersRef.document().set(testUser);
 
-        for (Mood mood : moods) {
-            moodsRef.document().set(mood);
-        }
+        moodsRef.document().set(mood1);
+        moodsRef.document().set(mood2);
+        moodsRef.document().set(mood3);
+
 
         // log in first
         scenario.getScenario().onActivity(activity -> activity.successful_login());
@@ -316,5 +326,25 @@ public class MoodHistoryFragmentUITest {
         onView(withId(R.id.edit_reason)).check(matches(hasErrorText("Reason must be ≤ 20 chars or ≤ 3 words!")));
     }
 
+    @Test
+    public void MoodShouldBeInReverseChronologicalOrder() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(2000);
+        // the order should be ["Sadness", "Confusion", "Happiness] (top to bottom)
+        // the first item in the listview should be a sadness mood event
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText("☹️ Sadness")));
+
+        // next confusion
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText("🤔 Confusion")));
+
+        // next happiness
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText("😄 Happiness")));
+    }
 
 }

@@ -90,10 +90,33 @@ public class MoodProvider {
     public void addMoodEvent(Mood mood) {
         //Create a new document for the mood.  Keep the parameter empty in document() so that firestore generates a unique Key
         DocumentReference moodDocRef = moodCollection.document();
-//        mood.setId(moodDocRef.getId()); //Mood has no id attribute
 
         //Populate the new document with mood
         moodDocRef.set(mood);
+    }
+
+    /**
+     * This method accesses firestore and edits the mood
+     * @param mood
+     */
+    public void updateMood(Mood mood) {
+        DocumentReference documentReference = mood.getDocRef();
+        documentReference.set(mood);
+
+        CollectionReference usersDB = FirebaseFirestore.getInstance().collection("users");
+    }
+
+    /**
+     * This method accesses firestore and deletes the mood
+     * @param mood
+     */
+    public void deleteMood(Mood mood) {
+        DocumentReference docRef = mood.getDocRef();
+        docRef.delete();
+    }
+
+    public static void setInstanceForTesting(FirebaseFirestore firestore) {
+        moodProvider = new MoodProvider(firestore);
     }
 
 
