@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import org.junit.Test;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import java.util.ArrayList;
 
@@ -17,7 +16,7 @@ public class MoodFilteringTest {
     private UserProfile testUser = new UserProfile("jshello", "tofu123");
 
     @Test
-    public void testSortReverseChronological() throws InterruptedException {
+    public void testSortReverseChronological() {
         ArrayList<Mood> moods = getMoods();
 
         // test the .sortReverseChronological method
@@ -68,16 +67,17 @@ public class MoodFilteringTest {
 
     @NonNull
     private ArrayList<Mood> getMoods() {
+        // creating moods to work with
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, -10);  // this one should be out of range
+        calendar.add(Calendar.DAY_OF_YEAR, -10);
         Mood mood1 = new Mood(testUser, EmotionalStates.ANGER, calendar.getTime());
 
         calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, -6); // this one should be in the range
+        calendar.add(Calendar.DAY_OF_YEAR, -6);
         Mood mood2 = new Mood(testUser, EmotionalStates.SHAME, calendar.getTime());
 
         calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, -3); // this one should be in the range
+        calendar.add(Calendar.DAY_OF_YEAR, -3);
         Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, calendar.getTime());
 
         // add moods to an ArrayList
