@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Objects;
 
 
@@ -82,13 +83,18 @@ public class MoodHistoryFragmentUITest {
         Mood mood2 = new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework");
         Thread.sleep(5000);
         Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms");
-
+        // make mood with a date outside of recent week
+        Thread.sleep(2000);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -10);
+        Mood mood4 = new Mood(testUser, EmotionalStates.ANGER, SocialSituations.ALONE, calendar.getTime());
 
         usersRef.document().set(testUser);
 
         moodsRef.document().set(mood1);
         moodsRef.document().set(mood2);
         moodsRef.document().set(mood3);
+        moodsRef.document().set(mood4);
 
 
         // log in first
@@ -131,6 +137,7 @@ public class MoodHistoryFragmentUITest {
         onView(withText("\uD83D\uDE04 Happiness")).check(matches(isDisplayed()));
         onView(withText("\uD83E\uDD14 Confusion")).check(matches(isDisplayed()));
         onView(withText("☹️ Sadness")).check(matches(isDisplayed()));
+        onView(withText("\uD83D\uDE20 Anger")).check(matches(isDisplayed()));
 
         // click on edit button for sadness mood
         // The way to click a button inside a listview item is taken from https://stackoverflow.com/a/25373597
@@ -327,7 +334,7 @@ public class MoodHistoryFragmentUITest {
     }
 
     @Test
-    public void MoodShouldBeInReverseChronologicalOrder() throws InterruptedException {
+    public void moodShouldBeInReverseChronologicalOrder() throws InterruptedException {
         // give time for the login to process
         Thread.sleep(2000);
         onView(withId(R.id.History)).perform(click());
@@ -345,6 +352,40 @@ public class MoodHistoryFragmentUITest {
         // next happiness
         onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(2).onChildView(withId(R.id.emotion))
                 .check(matches(withText("😄 Happiness")));
+
+        // next anger
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText("\uD83D\uDE20 Anger")));
+    }
+
+    @Test
+    public void moodsBeforeRecentWeekShouldNotShowWhenFiltered() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(2000);
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));  // save view that should be gone
+        // the order should be ["Sadness", "Confusion", "Happiness", "Anger"] (top to bottom)
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText("☹️ Sadness")));
+
+        // next confusion
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText("🤔 Confusion")));
+
+        // next happiness
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText("😄 Happiness")));
+
+        // next anger
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText("\uD83D\uDE20 Anger")));
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+
+        // anger should now be gone and left with ["Sadness", "Confusion", "Happiness"] (top to bottom)
+        view.check(doesNotExist());
     }
 
 }

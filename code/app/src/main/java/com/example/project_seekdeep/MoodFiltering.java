@@ -13,8 +13,8 @@ import java.util.Set;
  * How to use: <p>
  *   <pre>
  *   ArrayList<Mood> moods
+ *   MoodFiltering.sortReverseChronological(moods);
  *   MoodFiltering.saveOriginal(moods);
- *   MoodFiltering.applyFilter("rChronological");
  *   MoodFiltering.applyFilter("recent");
  *   ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
  *   Then use filteredMoods for displaying

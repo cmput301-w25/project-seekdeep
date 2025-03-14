@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -50,6 +51,7 @@ public class MoodHistoryFragment extends Fragment {
     // TODO: We need to figure out how to store userID to be used as primary key to access entry in the database.
     private UserProfile loggedInUser;
     private ArrayList<Mood> moodsList;
+    private ArrayList<Mood> filteredMoodList;
 
     private ListView moodListView;
 
@@ -62,6 +64,7 @@ public class MoodHistoryFragment extends Fragment {
     private CollectionReference moods;
     private CollectionReference users;
 
+    private boolean recentFilterFlag = false;
 
     public MoodHistoryFragment() {
         super(R.layout.profile_feed);
@@ -81,6 +84,7 @@ public class MoodHistoryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         moodArrayList = new ArrayList<>();
+        filteredMoodList = new ArrayList<>();
 
         // Get the logged in User
 
@@ -166,9 +170,35 @@ public class MoodHistoryFragment extends Fragment {
                }
 
                if (!(moodArrayList == null)){
+                   MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                    moodArrayAdapter.notifyDataSetChanged();
-                   MoodFiltering.sortReverseChronological(moodArrayList);
-                   moodListView .setAdapter(moodArrayAdapter);
+                   moodListView.setAdapter(moodArrayAdapter);
+
+                   // save original for filters that might remove items from array
+                   MoodFiltering.saveOriginal(moodArrayList);
+                   // reverse chronological doesn't need to do this because it's not a filter
+                   // and the user just wants to view it in reverse chronological
+
+                   // click filter button to add and remove the filter. this will change when UI for the filter dialog fragment is added
+                   ImageButton filterButton = view.findViewById(R.id.filter_button);
+                   filterButton.setOnClickListener(new View.OnClickListener() {
+                       @Override
+                       public void onClick(View view) {
+                           if (!recentFilterFlag) {
+                               MoodFiltering.applyFilter("recent");
+                               recentFilterFlag = true;
+                           }
+                           else {
+                               MoodFiltering.removeFilter("recent");
+                               recentFilterFlag = false;
+                           }
+                           filteredMoodList = MoodFiltering.getFilteredMoods();
+                           moodArrayAdapter.clear();
+                           moodArrayAdapter.addAll(filteredMoodList);
+                           moodArrayAdapter.notifyDataSetChanged();
+                       }
+                   });
+
                }
 
            }
