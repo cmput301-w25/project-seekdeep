@@ -47,7 +47,7 @@ import java.util.Objects;
 // Taken on: 2025-03-08
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class MoodHistoryFragmentTest {
+public class MoodHistoryFragmentUITest {
     @Rule
     public ActivityScenarioRule<MainActivity> scenario =
             new ActivityScenarioRule<MainActivity>(MainActivity.class);

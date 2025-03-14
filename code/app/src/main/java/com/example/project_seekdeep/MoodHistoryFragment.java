@@ -163,12 +163,11 @@ public class MoodHistoryFragment extends Fragment {
                     mood.setImage(image);
 
                     moodArrayList.add(mood);
-
-                    Log.d("NANCY", "UserDoc: " + snapshot.toString());
                }
 
                if (!(moodArrayList == null)){
                    moodArrayAdapter.notifyDataSetChanged();
+                   MoodFiltering.sortReverseChronological(moodArrayList);
                    moodListView .setAdapter(moodArrayAdapter);
                }
 
