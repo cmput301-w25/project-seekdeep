@@ -28,7 +28,7 @@ public class MoodFilteringTest {
     }
 
     @Test
-    public void testSortRecentWeek() throws InterruptedException {
+    public void testSortRecentWeek() {
         ArrayList<Mood> moods = getMoods();
 
         // test the .sortRecentWeek method
@@ -63,6 +63,180 @@ public class MoodFilteringTest {
         assertTrue("Filtered moods should contain shame", containsMood2);
         assertFalse("Filtered moods should NOT contain anger from 10 days ago", containsMood1);
 
+    }
+
+    @Test
+    public void testStackMoods() {
+        ArrayList<Mood> moods = getMoods();
+        MoodFiltering.saveOriginal(moods);
+
+        MoodFiltering.applyFilter("rChronological");
+        MoodFiltering.applyFilter("recent");
+        ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
+        // filteredMoods should now contain [SADNESS, SHAME] in that order
+        // assert to see if the moods are actually in reverse chronological order
+        assertTrue(filteredMoods.get(0).getPostedDate().after(filteredMoods.get(1).getPostedDate()));
+        assertEquals(EmotionalStates.SADNESS.toString(), filteredMoods.get(0).getEmotionalState().toString());
+        assertEquals(EmotionalStates.SHAME.toString(), filteredMoods.get(1).getEmotionalState().toString());
+
+        boolean containsMood1 = false;
+        boolean containsMood2 = false;
+        boolean containsMood3 = false;
+
+        // iterate through the filtered moods to check the emotional states
+        for (Mood mood : filteredMoods) {
+            if (mood.getEmotionalState().equals(EmotionalStates.ANGER)) {
+                containsMood1 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SHAME)) {
+                containsMood2 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SADNESS)) {
+                containsMood3 = true;
+            }
+        }
+
+        // check to see if shame and sadness are there and ensure anger isn't
+        assertTrue("Filtered moods should contain sadness", containsMood3);
+        assertTrue("Filtered moods should contain shame", containsMood2);
+        assertFalse("Filtered moods should NOT contain anger from 10 days ago", containsMood1);
+    }
+
+    @Test
+    public void testRemoveRecentFilter() {
+        ArrayList<Mood> moods = getMoods();
+        MoodFiltering.saveOriginal(moods);
+
+        MoodFiltering.applyFilter("rChronological");
+        MoodFiltering.applyFilter("recent");
+        ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
+        // filteredMoods should now contain [SADNESS, SHAME] in that order
+
+        // assert to see if the moods are actually in reverse chronological order
+        assertTrue(filteredMoods.get(0).getPostedDate().after(filteredMoods.get(1).getPostedDate()));
+        assertEquals(EmotionalStates.SADNESS.toString(), filteredMoods.get(0).getEmotionalState().toString());
+        assertEquals(EmotionalStates.SHAME.toString(), filteredMoods.get(1).getEmotionalState().toString());
+
+        boolean containsMood1 = false;
+        boolean containsMood2 = false;
+        boolean containsMood3 = false;
+
+        // iterate through the filtered moods to check the emotional states
+        for (Mood mood : filteredMoods) {
+            if (mood.getEmotionalState().equals(EmotionalStates.ANGER)) {
+                containsMood1 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SHAME)) {
+                containsMood2 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SADNESS)) {
+                containsMood3 = true;
+            }
+        }
+
+        // check to see if shame and sadness are there and ensure anger isn't
+        assertTrue("Filtered moods should contain sadness", containsMood3);
+        assertTrue("Filtered moods should contain shame", containsMood2);
+        assertFalse("Filtered moods should NOT contain anger from 10 days ago", containsMood1);
+
+        // now remove the recent week filter
+        MoodFiltering.removeFilter("recent");
+        filteredMoods = MoodFiltering.getFilteredMoods();
+        // filteredMoods should now be [SADNESS, SHAME, ANGER] in that order
+
+        // assert to see if the moods are actually in reverse chronological order
+        assertTrue(filteredMoods.get(0).getPostedDate().after(filteredMoods.get(1).getPostedDate()));
+        assertTrue(filteredMoods.get(1).getPostedDate().after(filteredMoods.get(2).getPostedDate()));
+        assertEquals(EmotionalStates.SADNESS.toString(), filteredMoods.get(0).getEmotionalState().toString());
+        assertEquals(EmotionalStates.SHAME.toString(), filteredMoods.get(1).getEmotionalState().toString());
+        assertEquals(EmotionalStates.ANGER.toString(), filteredMoods.get(2).getEmotionalState().toString());
+
+        boolean containsMood10 = false;
+        boolean containsMood20 = false;
+        boolean containsMood30 = false;
+
+        // iterate through the filtered moods to check the emotional states
+        for (Mood mood : filteredMoods) {
+            if (mood.getEmotionalState().equals(EmotionalStates.ANGER)) {
+                containsMood10 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SHAME)) {
+                containsMood20 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SADNESS)) {
+                containsMood30 = true;
+            }
+        }
+
+        // check to see if shame and sadness are there and ensure anger isn't
+        assertTrue("Filtered moods should contain sadness", containsMood30);
+        assertTrue("Filtered moods should contain shame", containsMood20);
+        assertTrue("Filtered moods should 10 days ago", containsMood10);
+    }
+
+    @Test
+    public void testRemoveRChronoFilter() {
+        ArrayList<Mood> moods = getMoods();
+        MoodFiltering.saveOriginal(moods);
+
+        MoodFiltering.applyFilter("rChronological");
+        MoodFiltering.applyFilter("recent");
+        ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
+        // filteredMoods should now contain [SADNESS, SHAME] in that order
+
+        // assert to see if the moods are actually in reverse chronological order
+        assertTrue(filteredMoods.get(0).getPostedDate().after(filteredMoods.get(1).getPostedDate()));
+        assertEquals(EmotionalStates.SADNESS.toString(), filteredMoods.get(0).getEmotionalState().toString());
+        assertEquals(EmotionalStates.SHAME.toString(), filteredMoods.get(1).getEmotionalState().toString());
+
+        boolean containsMood1 = false;
+        boolean containsMood2 = false;
+        boolean containsMood3 = false;
+
+        // iterate through the filtered moods to check the emotional states
+        for (Mood mood : filteredMoods) {
+            if (mood.getEmotionalState().equals(EmotionalStates.ANGER)) {
+                containsMood1 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SHAME)) {
+                containsMood2 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SADNESS)) {
+                containsMood3 = true;
+            }
+        }
+
+        // check to see if shame and sadness are there and ensure anger isn't
+        assertTrue("Filtered moods should contain sadness", containsMood3);
+        assertTrue("Filtered moods should contain shame", containsMood2);
+        assertFalse("Filtered moods should NOT contain anger from 10 days ago", containsMood1);
+
+        // now remove the rChrono filter
+        MoodFiltering.removeFilter("rChronological");
+        filteredMoods = MoodFiltering.getFilteredMoods();
+        // filteredMoods should now be [SADNESS, SHAME]
+
+        boolean containsMood10 = false;
+        boolean containsMood20 = false;
+        boolean containsMood30 = false;
+
+        // iterate through the filtered moods to check the emotional states
+        for (Mood mood : filteredMoods) {
+            if (mood.getEmotionalState().equals(EmotionalStates.ANGER)) {
+                containsMood10 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SHAME)) {
+                containsMood20 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SADNESS)) {
+                containsMood30 = true;
+            }
+        }
+
+        // check to see if shame and sadness are there and ensure anger isn't
+        assertTrue("Filtered moods should contain sadness", containsMood30);
+        assertTrue("Filtered moods should contain shame", containsMood20);
+        assertFalse("Filtered moods should NOT contain 10 days ago", containsMood10);
     }
 
     @NonNull
