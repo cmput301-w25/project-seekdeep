@@ -4,9 +4,12 @@ package com.example.project_seekdeep;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,7 +43,7 @@ import java.util.Map;
 
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
- * @author Kevin Tu, Nancy Lin
+ * @author Kevin Tu, Nancy Lin, modified by Jachelle Chan
  */
 
 public class MoodHistoryFragment extends Fragment {
@@ -61,7 +64,7 @@ public class MoodHistoryFragment extends Fragment {
 
 
     public MoodHistoryFragment() {
-        super(R.layout.layout_feed);
+        super(R.layout.profile_feed);
     }
 
     // add username as variable
@@ -80,10 +83,8 @@ public class MoodHistoryFragment extends Fragment {
         moodArrayList = new ArrayList<>();
 
         // Get the logged in User
-        //loggedInUser = new UserProfile(getArguments().getString("username"), "");
-        loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
 
-        //Log.d("NANCY", "On Create ->" + loggedInUser.getUsername() + loggedInUser.getPassword());
+        loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
 
         //create the firestore
         db = FirebaseFirestore.getInstance();
@@ -106,7 +107,11 @@ public class MoodHistoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //set views
-        ListView moodListView = view.findViewById(R.id.list_view_mood);
+        ListView moodListView = view.findViewById(R.id.history_listview);
+
+        // set Textview for username placeholder to be the logged in user's username
+        TextView username = view.findViewById(R.id.username_profile);
+        username.setText("@" + loggedInUser.getUsername());
 
 
         // Instantiate database for usage
@@ -121,7 +126,6 @@ public class MoodHistoryFragment extends Fragment {
         HashMap<String, Object> userMap = new HashMap<String, Object> ();
         userMap.put("password", loggedInUser.getPassword());
         userMap.put("username", loggedInUser.getUsername());
-        //Query loggedInUserMoodsQuery = moods.whereEqualTo("owner", userMap);
         Query loggedInUserMoodsQuery = moods.whereEqualTo("owner.username", loggedInUser.getUsername());
 
         moodArrayAdapter = new UserMoodArrayAdapter(view.getContext(), moodArrayList);
@@ -159,12 +163,11 @@ public class MoodHistoryFragment extends Fragment {
                     mood.setImage(image);
 
                     moodArrayList.add(mood);
-
-                    Log.d("NANCY", "UserDoc: " + snapshot.toString());
                }
 
                if (!(moodArrayList == null)){
                    moodArrayAdapter.notifyDataSetChanged();
+                   MoodFiltering.sortReverseChronological(moodArrayList);
                    moodListView .setAdapter(moodArrayAdapter);
                }
 
