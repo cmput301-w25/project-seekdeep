@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/moods_to_filter_by"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mood(s) to filter by" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/mood_chip_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/surprise_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\uD83D\uDE2F Surprise" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/anger_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\uD83D\uDE20 Anger" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/confusion_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\uD83E\uDD14 Confusion" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/disgust_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\uD83E\uDD22 Disgust" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/fear_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\uD83D\uDE28 Fear" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/happiness_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\uD83D\uDE04 Happy" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/sadness_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="☹️ Sad" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/shame_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\uD83D\uDE14 Shame" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Timeline" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/timeline_chip_group"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/recent_week_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Past Week" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/last_3_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Last 3 from all users" />
+        </com.google.android.material.chip.ChipGroup>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
