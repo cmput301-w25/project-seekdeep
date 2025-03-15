@@ -12,6 +12,8 @@
         android:layout_height="wrap_content"
         android:text="How are you feeling right now?"
         android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="20dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonSurprise"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
