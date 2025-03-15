@@ -53,8 +53,8 @@ public class MoodProviderTest {
     }
 
     @Test
-    public void testDeleteMovie() {
-        // Create movie and set our id
+    public void testDeleteMood() {
+        // create mood
         Mood mood = new Mood(testUser, EmotionalStates.ANGER);
         mood.setDocRef(mockDocReference);
         // Call the delete mood and verify the firebase delete method was called.
