@@ -53,7 +53,7 @@ public class MoodProviderTest {
     }
 
     @Test
-    public void testDeleteMovie() {
+    public void testDeleteMood() {
         // Create movie and set our id
         Mood mood = new Mood(testUser, EmotionalStates.ANGER);
         mood.setDocRef(mockDocReference);
