@@ -19,5 +19,5 @@
     <item
         android:id="@+id/History"
         android:title="History"
-        android:icon="@drawable/baseline_archive_24"/>
+        android:icon="@drawable/profile_label"/>
 </menu>

@@ -16,4 +16,6 @@
     <color name="sadness_blue">#0055FF</color>
     <color name="shame_purple">#AD2CED</color>
     <color name="surprise_orange">#E4A21F</color>
+    <color name="pastel_lavender">#DCCCFF</color>
+    <color name="light_green">#CAD5CA</color>
 </resources>

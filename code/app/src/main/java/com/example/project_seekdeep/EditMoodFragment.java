@@ -17,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.Dictionary;
 
 /**
@@ -31,7 +33,7 @@ public class EditMoodFragment extends DialogFragment {
     private Spinner emotionSpinner;
     private Spinner socialSituationSpinner;
     private ImageView imageView;
-    private MoodDialogListener listener;
+    private MoodProvider moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
 
 
     //** btw i used seth's lab-07 code for this **//
@@ -50,23 +52,6 @@ public class EditMoodFragment extends DialogFragment {
         return fragment;
     }
 
-     //please implement a MoodDialogListener and the rest, refer to lab-07
-
-    /**
-     * Modifies onAttach to add a listener that will handle editing moods
-     * @param context
-     */
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof MoodDialogListener) {
-            listener = (MoodDialogListener) context;
-        }
-        else {
-
-            throw new RuntimeException( context.toString() + " Implement listener");
-        }
-    }
 
     /**
      * Creates a dialog that manages editing an existing mood
@@ -102,8 +87,7 @@ public class EditMoodFragment extends DialogFragment {
             editReason.setText(mood.getReason());
             editTrigger.setText(mood.getTrigger());
 
-            // i think the spinners setting previous info may have to be implemented in a different way but that will be dealt with later
-            emotionSpinner.setSelection(mood.getEmotionalState().ordinal());  // maybe like this? hard to test currently
+            emotionSpinner.setSelection(mood.getEmotionalState().ordinal());
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
 
 
@@ -155,9 +139,6 @@ public class EditMoodFragment extends DialogFragment {
                         break;
 
                 }
-                
-              
-                //Image image = imageView.getImageAlpha();
 
                 mood.setReason(reason);
                 mood.setTrigger(trigger);
@@ -166,12 +147,11 @@ public class EditMoodFragment extends DialogFragment {
 
                 //todo add edit image functionality
 
-                listener.updateMood(mood);
+                moodProvider.updateMood(mood);
 
                 dialog.dismiss();
 
 
-                // the spinners and image ...
                 // the only required thing is emotional state i believe
             });
         });

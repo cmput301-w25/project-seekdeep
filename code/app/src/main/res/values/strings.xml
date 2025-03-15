@@ -2,4 +2,9 @@
     <string name="app_name">project_seekdeep</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="manage_requests">Manage Requests</string>
+    <string name="myusername">MyUsername</string>
+    <string name="_0_string">0</string>
+    <string name="followers">followers</string>
+    <string name="following">following</string>
 </resources>
