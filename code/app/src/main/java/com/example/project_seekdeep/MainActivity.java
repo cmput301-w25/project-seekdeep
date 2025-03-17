@@ -126,35 +126,4 @@ public class MainActivity extends AppCompatActivity {
 //          .replace(R.id.frameLayout, feedFragment)
 //          .commit();
     }
-
-    //required code to update an edited mood
-
-    /**
-     * This method accesses firestore and edits the mood
-     * @param mood
-     */
-    /*
-    @Override
-    public void updateMood(Mood mood) {
-        DocumentReference documentReference = mood.getDocRef();
-        documentReference.set(mood);
-
-        //find document reference to users database
-        CollectionReference usersDB = FirebaseFirestore.getInstance().collection("users");
-
-        //documentReference.update("owner", FieldValue.delete());
-        //documentReference.update("owner", mood.getOwner().getUsername());
-
-    } */
-
-    /**
-     * This method accesses firestore and deletes the mood
-     * @param mood
-     */
-    /*
-    @Override
-    public void deleteMood(Mood mood) {
-        DocumentReference docRef = mood.getDocRef();
-        docRef.delete();
-    }*/
 }
