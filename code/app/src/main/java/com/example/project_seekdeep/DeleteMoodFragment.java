@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 /**
  * This class is used for deleting moods
  *
@@ -17,7 +19,8 @@ import androidx.fragment.app.DialogFragment;
  */
 public class DeleteMoodFragment extends DialogFragment {
 
-    private DeleteMoodDialogListener listener;
+    //private DeleteMoodDialogListener listener;
+    private MoodProvider moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
 
 
     /**
@@ -35,20 +38,6 @@ public class DeleteMoodFragment extends DialogFragment {
         return fragment;
     }
 
-    /**
-     * On attach, implement the deleteMood dialog listener to list for deleteMood()
-     * @param context
-     */
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof DeleteMoodDialogListener){
-            listener = (DeleteMoodDialogListener) context;
-        }
-        else {
-            throw new RuntimeException("Implement listener");
-        }
-    }
 
     /**
      * On creation, create an alert dialog
@@ -75,7 +64,7 @@ public class DeleteMoodFragment extends DialogFragment {
         return new AlertDialog.Builder(requireContext())
                 .setMessage("Are you sure you want to delete this mood?")
                 .setPositiveButton("Delete", (dialog, which) -> {
-                    listener.deleteMood(mood);
+                    moodProvider.deleteMood(mood);
                 })
                 .create();
     }
