@@ -70,6 +70,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
 
     public void hideLastThreeFilterChip(View view) {
         //TO DO: Check if you are in profile page OR the feed page, if yes, then hide the "Last 3 from all users" chip , because not applicable to either pages
+        // IF THIS DOES NOT WORK, THEN I WILL JUST CREATE TWO SEPARATE XML FILES FOR FILTERING
 
         //If on profile/feed page, hide last_3_chip from the filtering menu:
         //can use:  view.findViewById(R.id.last_3_chip).setVisibility(View.GONE);
