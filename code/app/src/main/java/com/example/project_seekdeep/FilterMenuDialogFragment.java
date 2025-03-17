@@ -18,8 +18,12 @@ import java.util.List;
 
 /**
  * This class displays the filtering menu for Feed, History, and Profile.
+ *
  * All 3 pages display the same options (mood and timeline),
  *      except that Profile and Feed has no option to see "the 3 most recent mood events of the participants I am granted to follow".
+ *
+ * Note: Multiple mood filters can be selected. But only one timeline filter can be selected
+ *       If a user chooses a combination of moods and a timeline filter, they must all be applied.
  */
 public class FilterMenuDialogFragment extends DialogFragment {
     //Attributes
