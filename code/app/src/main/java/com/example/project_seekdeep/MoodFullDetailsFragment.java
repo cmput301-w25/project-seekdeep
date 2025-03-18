@@ -7,5 +7,5 @@ package com.example.project_seekdeep;
  * @author Kevin Tu
  */
 public class MoodFullDetailsFragment {
-    
+
 }
