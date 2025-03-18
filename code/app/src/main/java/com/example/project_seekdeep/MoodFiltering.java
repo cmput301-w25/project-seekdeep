@@ -101,4 +101,14 @@ public class MoodFiltering {
         // remove the mood from the moods arraylist if it happened before the recent week
         moods.removeIf(mood -> mood.getPostedDate().before(recentWeek));
     }
+
+    /**
+     * This method sorts/filters an Arraylist of moods to only include those with perticular emotional state(s)
+     * @param moods: An ArrayList of Mood objects
+     * @param selectedStates: An ArrayList of EmotionalStates objects that are selected
+     */
+    public static void sortEmotionalState(ArrayList<Mood> moods, ArrayList<EmotionalStates> selectedStates) {
+        // remove moods from the arraylist if it's not one of the moods selected and in the selectedStates arraylist
+        moods.removeIf(mood -> !selectedStates.contains(mood.getEmotionalState()));
+    }
 }
