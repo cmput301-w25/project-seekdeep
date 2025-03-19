@@ -1,10 +1,9 @@
 package com.example.project_seekdeep;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.media.Image;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,8 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,6 +24,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * This class is a custom array adapter for the Mood class.
@@ -181,6 +179,20 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         box_outline.mutate();
         box_outline.setStroke(5, Color.parseColor(currentMood.getEmotionalState().getColour()));
 
+
+        /**
+         * This listens for when a user clicks on a mood event's username, which will take them to their profile.
+         */
+        user.setOnClickListener(view1 -> {
+            //Get the username
+            String clickedUsername = currentMood.getOwnerString();
+
+            //Open the profile of the user
+            Intent intent = new Intent(getContext(), OtherUsersProfileActivity.class);
+            //Need to deliver the username into UserProfileActivity through the intent
+            intent.putExtra("USERNAME", clickedUsername);
+            getContext().startActivity(intent);
+        });
 
         return view;
     }

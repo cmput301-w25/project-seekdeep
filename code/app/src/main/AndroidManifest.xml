@@ -22,6 +22,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Declare the UserProfileActivity  -->
+        <activity android:name=".OtherUsersProfileActivity"
+            android:exported="true"
+            />
+
     </application>
 
 </manifest>
