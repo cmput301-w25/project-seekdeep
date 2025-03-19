@@ -31,41 +31,36 @@ import java.util.ArrayList;
  * @author Kevin Tu
  */
 public class ViewMoodDetailsFragment extends Fragment {
-    private ImageButton backButton;
-    private TextView headerText;
-    private RecyclerView commentView;
     private ArrayList<Comment> comments;
-    private Mood clickedOnMood;
-    private FirebaseFirestore db;
     CollectionReference Comments;
     CollectionReference Users;
 
+    ViewMoodDetailsFragment() {
+        super(R.layout.fragment_mood_details_and_comments);
+    }
 
-
-    @SuppressLint("NotifyDataSetChanged")
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         // Set up db
-        db = FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         Comments = db.collection("comments");
         Users = db.collection("users");
         comments = new ArrayList<>();
 
-        View view = inflater.inflate(R.layout.fragment_mood_details_and_comments, container, false);
-        backButton = view.findViewById(R.id.back_button);
-        headerText = view.findViewById(R.id.whose_mood_text);
-        commentView = view.findViewById(R.id.comments_recycler_view);
+        ImageButton backButton = view.findViewById(R.id.back_button);
+        TextView headerText = view.findViewById(R.id.whose_mood_text);
+        RecyclerView commentView = view.findViewById(R.id.comments_recycler_view);
 
         // Get passed data from previous fragment
         Bundle clickedOnMoodBundle = getArguments();
         assert clickedOnMoodBundle != null;
-        clickedOnMood = (Mood) clickedOnMoodBundle.get("mood");
+        Mood clickedOnMood = (Mood) clickedOnMoodBundle.get("mood");
 
         // Get comments for the clicked on mood
         assert clickedOnMood != null;
-        Query CommentsQuery = Comments.whereEqualTo("mood", "MoodDB/" + clickedOnMood.getDocRef().getId());
-        Log.d("DocRef", clickedOnMood.getDocRef().getId());
+        Query CommentsQuery = Comments.whereEqualTo("mood", clickedOnMood.getDocRef());
+        Log.d("Mood clicked on", clickedOnMood.getDocRef().getPath());
 
         // Set adapter for the comments view
         commentView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -73,7 +68,7 @@ public class ViewMoodDetailsFragment extends Fragment {
         commentView.setAdapter(commentAdapter);
 
         // TODO: Need to fix this so it accounts for the user's profile picture (which has yet to be added).
-        Comments.addSnapshotListener((value, error) -> {
+        CommentsQuery.addSnapshotListener((value, error) -> {
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
@@ -84,9 +79,8 @@ public class ViewMoodDetailsFragment extends Fragment {
                     String username = snapshot.getString("username");
                     String comment = snapshot.getString("comment");
 
-                    Log.d("Comment", comment);
-
                     Comment currentComment = new Comment(moodRef, username, comment);
+
 
                     comments.add(currentComment);
                 }
@@ -114,7 +108,8 @@ public class ViewMoodDetailsFragment extends Fragment {
         TextView date = (TextView) view.findViewById(R.id.date_text);
         date.setText(clickedOnMood.getPostedDate().toString());
 
-        Log.d("Comment count", String.valueOf(comments.size()));
-        return view;
+        headerText.setText(clickedOnMood.getOwnerString() + "'s" + " Mood");
+
     }
+
 }
