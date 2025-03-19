@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -60,6 +61,12 @@ public class ViewMoodDetailsFragment extends Fragment {
         TextView social = (TextView) view.findViewById(R.id.social_situation);
         social.setText(clickedOnMood.getSocialSituation().toString());
 
+        TextView date = (TextView) view.findViewById(R.id.date_text);
+        date.setText(clickedOnMood.getPostedDate().toString());
+
+        commentView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        CommentAdapter commentAdapter = new CommentAdapter(comments);
+        commentView.setAdapter(commentAdapter);
 
         return view;
     }

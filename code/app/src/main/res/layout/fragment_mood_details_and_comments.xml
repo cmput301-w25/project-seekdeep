@@ -108,7 +108,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/toolbar"
             app:layout_constraintLeft_toRightOf="@id/user_pfp_req_follow"
-            app:layout_constraintRight_toRightOf="@id/date"
             app:layout_constraintStart_toStartOf="@+id/toolbar"
             app:layout_constraintTop_toBottomOf="@+id/toolbar">
 

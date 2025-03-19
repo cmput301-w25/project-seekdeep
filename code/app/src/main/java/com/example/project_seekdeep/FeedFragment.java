@@ -13,6 +13,7 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
@@ -144,10 +145,24 @@ public class FeedFragment extends Fragment {
                 moodArrayAdapter.notifyDataSetChanged();
             }
         });
-        // From lab 3,
-        moodListView.setOnClickListener(v -> {
+        // From lab 3, and fragment manager documentation
+        // https://developer.android.com/guide/fragments/fragmentmanager
+        moodListView.setOnClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Bundle clickedOnMood = new Bundle();
+                clickedOnMood.putSerializable("mood", moodArrayList.get(position));
 
+                Bundle comments = new Bundle();
+//                comments.putStringArrayList("comments", );
+                Bundle moodAndComments
+                FragmentManager fragManager = getParentFragmentManager();
+                fragManager.beginTransaction()
+                        .replace(R.id.frameLayout, ViewMoodDetailsFragment.class, null)
+                        .setReorderingAllowed(true)
+                        .addToBackStack("view_comments")
+                        .commit();
+            }
         });
     }
-
 }
