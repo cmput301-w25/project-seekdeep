@@ -1,5 +1,6 @@
 package com.example.project_seekdeep;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,29 +22,29 @@ import java.util.List;
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHolder> {
     private ArrayList<Comment> moodCommentsList;
     /**
-     * Required to create a custom ViewHolder to contain the data coming from the comments.
+     * Required to create a custom ViewHolder to contain the data coming from the comment.
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView commenterPfp;
-        private final TextView username;
-        private final TextView comment;
+        private final ImageView commenterPfpView;
+        private final TextView usernameView;
+        private final TextView commentView;
         public ViewHolder(View view) {
             super(view);
-            commenterPfp = (ImageView) view.findViewById(R.id.commenter_pfp);
-            username = (TextView) view.findViewById(R.id.username_text_view);
-            comment = (TextView) view.findViewById(R.id.comment_text_view);
+            commenterPfpView = (ImageView) view.findViewById(R.id.commenter_pfp);
+            usernameView = (TextView) view.findViewById(R.id.username_text_view);
+            commentView = (TextView) view.findViewById(R.id.comment_text_view);
         }
 
-        public ImageView getCommenterPfp() {
-            return commenterPfp;
+        public ImageView getCommenterPfpView() {
+            return commenterPfpView;
         }
 
-        public TextView getUsername() {
-            return username;
+        public TextView getUsernameView() {
+            return usernameView;
         }
 
-        public TextView getComment() {
-            return comment;
+        public TextView getCommentView() {
+            return commentView;
         }
     }
 
@@ -53,15 +54,33 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         }
     }
 
+    /**
+     * Used to specify which layout to use to represent comment data.
+     *
+     * @param parent The ViewGroup into which the new View will be added after it is bound to
+     *               an adapter position.
+     * @param viewType The view type of the new View.
+     *
+     * @return a ViewHolder to represent the data
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        // View takes on the layout_comment specified in the layout_comment.xml file.
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_comment, parent, false);
+        return new ViewHolder(view);
     }
 
+    /**
+     * This binds the comment data from a given mood to the ViewHolder to display.
+     *
+     * @param holder The ViewHolder which should be updated to represent the contents of the
+     *        item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull CommentAdapter.ViewHolder holder, int position) {
-
+        holder.getCommenterPfpView().setImageDrawable();
     }
 
     @Override
