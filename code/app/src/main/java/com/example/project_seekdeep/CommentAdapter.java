@@ -1,5 +1,6 @@
 package com.example.project_seekdeep;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,11 +81,17 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
      */
     @Override
     public void onBindViewHolder(@NonNull CommentAdapter.ViewHolder holder, int position) {
-        holder.getCommenterPfpView().setImageDrawable();
+        Comment currentComment = moodCommentsList.get(position);
+        holder.getCommenterPfpView().setImageURI(currentComment.getCommenterPfp());
+        holder.getUsernameView().setText(currentComment.getUsername());
+        holder.getCommentView().setText(currentComment.getComment());
     }
 
+    /**
+     * @return The item count in the dataset that was bounded
+     */
     @Override
     public int getItemCount() {
-        return 0;
+        return moodCommentsList.size();
     }
 }
