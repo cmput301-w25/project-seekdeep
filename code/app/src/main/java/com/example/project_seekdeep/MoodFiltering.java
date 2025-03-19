@@ -38,6 +38,7 @@ public class MoodFiltering {
     private static Set<String> filters = new HashSet<>(); // the filters applied
 
     private static Set<EmotionalStates> selectedStates = new HashSet<>(); // the selected emotional state(s) to filter by
+    private static String keyword;
 
     /**
      * This method saves a copy of the original array
@@ -76,6 +77,10 @@ public class MoodFiltering {
         selectedStates.addAll(states);
     }
 
+    public static void addKeyword(String word) {
+        keyword = word;
+    }
+
     /**
      * This method removes all filters that were selected by the user.
      */
@@ -101,6 +106,9 @@ public class MoodFiltering {
             }
             if (filter.equals("states")) {
                 sortEmotionalState(filteredMoods);
+            }
+            if(filter.equals("keyword")) {
+                sortKeyword(filteredMoods);
             }
         }
         return filteredMoods;
@@ -135,5 +143,11 @@ public class MoodFiltering {
     public static void sortEmotionalState(ArrayList<Mood> moods) {
         // remove moods from the arraylist if it's not one of the moods selected and in the selectedStates arraylist
         moods.removeIf(mood -> !selectedStates.contains(mood.getEmotionalState()));
+    }
+
+    public static void sortKeyword(ArrayList<Mood> moods) {
+        // remove moods from the arraylist if it doesn't contain the keyword
+        moods.removeIf(mood -> !mood.getReason().toLowerCase().matches(".*\\b" + keyword.toLowerCase().trim() + "\\b.*"));  // matches whole word
+        //moods.removeIf(mood -> !mood.getReason().toLowerCase().contains(keyword.toLowerCase().trim()));  // matches if it has it at all no matter where
     }
 }

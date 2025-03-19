@@ -382,7 +382,7 @@ public class MoodFilteringTest {
         MoodFiltering.applyFilter("states");
         ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
 
-        // filteredMoods should now contain [ANGER] only
+        // filteredMoods should now contain [sadness] only
         boolean containsMood1 = false;
         boolean containsMood2 = false;
         boolean containsMood3 = false;
@@ -434,20 +434,51 @@ public class MoodFilteringTest {
         assertTrue(filteredMoods.get(1).getPostedDate().after(filteredMoods.get(2).getPostedDate()));
     }
 
+    @Test
+    public void testSortKeyword() {
+        ArrayList<Mood> moods = getMoods();
+        MoodFiltering.saveOriginal(moods);
+        MoodFiltering.addKeyword("123 ");
+        MoodFiltering.applyFilter("keyword");
+
+        ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
+        // filteredMoods should now contain [ANGER] only
+        boolean containsMood1 = false;
+        boolean containsMood2 = false;
+        boolean containsMood3 = false;
+
+        // iterate through the filtered moods to check the emotional states
+        for (Mood mood : filteredMoods) {
+            if (mood.getEmotionalState().equals(EmotionalStates.ANGER)) {
+                containsMood1 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SHAME)) {
+                containsMood2 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SADNESS)) {
+                containsMood3 = true;
+            }
+        }
+        // check to see if anger is the only one
+        assertTrue("Filtered moods should contain anger", containsMood1);
+        assertFalse("Filtered moods should NOT contain sadness", containsMood3);
+        assertFalse("Filtered moods NOT should contain shame", containsMood2);
+    }
+
     @NonNull
     private ArrayList<Mood> getMoods() {
         // creating moods to work with
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -10);
-        Mood mood1 = new Mood(testUser, EmotionalStates.ANGER, calendar.getTime());
+        Mood mood1 = new Mood(testUser, EmotionalStates.ANGER, calendar.getTime(), "123 me");
 
         calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -6);
-        Mood mood2 = new Mood(testUser, EmotionalStates.SHAME, calendar.getTime());
+        Mood mood2 = new Mood(testUser, EmotionalStates.SHAME, calendar.getTime(), "guys im scared123");
 
         calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -3);
-        Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, calendar.getTime());
+        Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, calendar.getTime(), "crashing out rn");
 
         // add moods to an ArrayList
         ArrayList<Mood> moods = new ArrayList<>();

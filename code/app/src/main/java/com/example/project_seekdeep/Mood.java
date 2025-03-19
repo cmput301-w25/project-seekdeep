@@ -114,6 +114,14 @@ public class Mood implements Serializable {
         this.postedDate = date;
     }
 
+    // this is used for testing ***
+    public Mood(UserProfile owner, EmotionalStates emotionalState, Date date, String reason) {
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+        this.postedDate = date;
+        this.reason = reason;
+    }
+
 
 
     public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate){
