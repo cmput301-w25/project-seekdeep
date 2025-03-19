@@ -81,8 +81,10 @@ public class ViewMoodDetailsFragment extends Fragment {
                 comments.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     DocumentReference moodRef = snapshot.getDocumentReference("mood");
-                    String username = "@" + snapshot.getString("username");
+                    String username = snapshot.getString("username");
                     String comment = snapshot.getString("comment");
+
+                    Log.d("Comment", comment);
 
                     Comment currentComment = new Comment(moodRef, username, comment);
 
@@ -112,6 +114,7 @@ public class ViewMoodDetailsFragment extends Fragment {
         TextView date = (TextView) view.findViewById(R.id.date_text);
         date.setText(clickedOnMood.getPostedDate().toString());
 
+        Log.d("Comment count", String.valueOf(comments.size()));
         return view;
     }
 }
