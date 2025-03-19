@@ -65,6 +65,7 @@ public class MoodHistoryFragment extends Fragment {
     private CollectionReference users;
 
     private boolean recentFilterFlag = false;
+    //private MoodFiltering moodFilter;
 
     public MoodHistoryFragment() {
         super(R.layout.profile_feed);
@@ -184,18 +185,23 @@ public class MoodHistoryFragment extends Fragment {
                    filterButton.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View view) {
+                           /*
                            if (!recentFilterFlag) {
                                MoodFiltering.applyFilter("recent");
+                               //moodFilter.applyFilter("recent");
                                recentFilterFlag = true;
                            }
                            else {
                                MoodFiltering.removeFilter("recent");
+                               //moodFilter.removeFilter("recent");
                                recentFilterFlag = false;
                            }
                            filteredMoodList = MoodFiltering.getFilteredMoods();
+                           MoodFiltering.getFilteredMoods();
                            moodArrayAdapter.clear();
                            moodArrayAdapter.addAll(filteredMoodList);
-                           moodArrayAdapter.notifyDataSetChanged();
+                           moodArrayAdapter.notifyDataSetChanged();*/
+                           new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
                        }
                    });
 

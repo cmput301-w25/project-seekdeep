@@ -14,7 +14,10 @@ import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.chip.ChipGroup;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class displays the filtering menu for Feed, History, and Profile.
@@ -74,6 +77,9 @@ public class FilterMenuDialogFragment extends DialogFragment {
 
         //If on profile/feed page, hide last_3_chip from the filtering menu:
         //can use:  view.findViewById(R.id.last_3_chip).setVisibility(View.GONE);
+        if(Objects.equals(getTag(), "profile")) {
+            view.findViewById(R.id.last_3_chip).setVisibility(View.GONE);
+        }
     }
 
 }

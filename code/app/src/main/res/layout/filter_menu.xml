@@ -14,48 +14,50 @@
             android:id="@+id/moods_to_filter_by"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:text="Mood(s) to filter by" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/mood_chip_group"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/surprise_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\uD83D\uDE2F Surprise" />
+                android:text="😯 Surprise" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/anger_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\uD83D\uDE20 Anger" />
+                android:text="😠 Anger" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/confusion_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\uD83E\uDD14 Confusion" />
+                android:text="🤔 Confusion" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/disgust_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\uD83E\uDD22 Disgust" />
+                android:text="🤢 Disgust" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/fear_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\uD83D\uDE28 Fear" />
+                android:text="😨 Fear" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/happiness_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\uD83D\uDE04 Happy" />
+                android:text="😄 Happy" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/sadness_chip"
@@ -67,19 +69,21 @@
                 android:id="@+id/shame_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\uD83D\uDE14 Shame" />
+                android:text="😔 Shame" />
         </com.google.android.material.chip.ChipGroup>
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/timeline_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:text="Timeline" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/timeline_chip_group"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="19dp"
             app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
@@ -94,6 +98,34 @@
                 android:layout_height="wrap_content"
                 android:text="Last 3 from all users" />
         </com.google.android.material.chip.ChipGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/reset_filters_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@android:color/transparent"
+                android:text="Reset Filters"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/apply_filters_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@android:color/transparent"
+                android:text="Apply filters"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

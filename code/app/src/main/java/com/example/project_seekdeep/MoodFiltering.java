@@ -8,7 +8,7 @@ import java.util.Set;
 
 /**
  * This class is for filtering mood events across screens.
- * When using this class, use saveOriginal method first
+ * When using this class, use saveOriginal method first (after sorting reverse chronologically)
  * <p>
  * How to use: <p>
  *   <pre>
@@ -34,6 +34,8 @@ import java.util.Set;
 public class MoodFiltering {
     private static ArrayList<Mood> originalMoods; // og list of moods
     private static Set<String> filters = new HashSet<>(); // the filters applied
+
+    private static ArrayList<EmotionalStates> selectedStates; // the selected emotional state(s) to filter by
 
     /**
      * This method saves a copy of the original array
@@ -61,6 +63,16 @@ public class MoodFiltering {
         filters.remove(filterName);
     }
 
+    public static void addStates(ArrayList<EmotionalStates> states) {
+        selectedStates.clear();
+        selectedStates.addAll(states);
+    }
+
+    public static void removeAllFilters() {
+        // reverse chronological should NOT be removed ever
+        filters.remove("recent");
+        filters.remove("states");
+    }
     /**
      * This method gets the moods that matches the filters that were applied
      * @return
@@ -76,6 +88,9 @@ public class MoodFiltering {
             if (filter.equals("recent")) {
                 sortRecentWeek(filteredMoods);
             }
+            /*if (filter.equals("states")) {
+                sortEmotionalState(filteredMoods, );
+            }*/
         }
         return filteredMoods;
     }
@@ -105,9 +120,8 @@ public class MoodFiltering {
     /**
      * This method sorts/filters an Arraylist of moods to only include those with perticular emotional state(s)
      * @param moods: An ArrayList of Mood objects
-     * @param selectedStates: An ArrayList of EmotionalStates objects that are selected
      */
-    public static void sortEmotionalState(ArrayList<Mood> moods, ArrayList<EmotionalStates> selectedStates) {
+    public static void sortEmotionalState(ArrayList<Mood> moods) {
         // remove moods from the arraylist if it's not one of the moods selected and in the selectedStates arraylist
         moods.removeIf(mood -> !selectedStates.contains(mood.getEmotionalState()));
     }
