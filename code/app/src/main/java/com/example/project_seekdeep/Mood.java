@@ -20,7 +20,7 @@ import java.util.List;
  */
 
 public class Mood implements Serializable {
-
+    private DocumentReference docRef;
     private String trigger;
     private SocialSituations socialSituation;
     private Uri image;
@@ -29,7 +29,7 @@ public class Mood implements Serializable {
     private List<String> followers = new ArrayList<>();
     private String reason;
     private UserProfile owner;
-    private DocumentReference docRef;
+
 
     /**
      * This method is a constructor for Mood which takes a User and emotionalState.

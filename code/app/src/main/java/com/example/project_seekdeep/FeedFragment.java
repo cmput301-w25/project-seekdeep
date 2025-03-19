@@ -133,7 +133,6 @@ public class FeedFragment extends Fragment {
                     if (imageStr != null){
                         image = Uri.parse(imageStr);
                     }
-                    
 
                     Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate, reason);
 
@@ -155,7 +154,7 @@ public class FeedFragment extends Fragment {
 
                 Bundle comments = new Bundle();
 //                comments.putStringArrayList("comments", );
-                Bundle moodAndComments
+//                Bundle moodAndComments
                 FragmentManager fragManager = getParentFragmentManager();
                 fragManager.beginTransaction()
                         .replace(R.id.frameLayout, ViewMoodDetailsFragment.class, null)
