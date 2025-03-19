@@ -50,9 +50,7 @@ public class FeedFragment extends Fragment {
     private FirebaseStorage storage;
     private StorageReference storageRef;
     CollectionReference MoodDB;
-    CollectionReference Comments;
-    CollectionReference Users;
-    private ArrayList<Comment> commentsData;
+
 
     /**
      * Require empty public constructor for the Feed Fragment
@@ -83,8 +81,6 @@ public class FeedFragment extends Fragment {
         //initialize variables
         db = FirebaseFirestore.getInstance();
         MoodDB = db.collection("MoodDB");
-        Comments = db.collection("comments");
-        Users = db.collection("users");
 
 
         // Inflate the layout for this fragment
@@ -161,7 +157,7 @@ public class FeedFragment extends Fragment {
                 moodBundle.putSerializable("mood", moodArrayList.get(position));
 
                 FragmentManager fragManager = getParentFragmentManager();
-                fragManager.setFragmentResult("mood", moodBundle);
+                setArguments(moodBundle);
 
                 fragManager.beginTransaction()
                         .replace(R.id.frameLayout, ViewMoodDetailsFragment.class, null)

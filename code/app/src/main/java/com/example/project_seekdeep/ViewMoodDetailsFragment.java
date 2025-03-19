@@ -1,5 +1,6 @@
 package com.example.project_seekdeep;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +16,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -33,32 +36,48 @@ public class ViewMoodDetailsFragment extends Fragment {
     private RecyclerView commentView;
     private ArrayList<Comment> comments;
     private Mood clickedOnMood;
+    private FirebaseFirestore db;
+    CollectionReference Comments;
+    CollectionReference Users;
 
+
+
+    @SuppressLint("NotifyDataSetChanged")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Set up db
+        Comments = db.collection("comments");
+        Users = db.collection("users");
+        comments = new ArrayList<>();
+
         View view = inflater.inflate(R.layout.fragment_mood_details_and_comments, container, false);
         backButton = view.findViewById(R.id.back_button);
         headerText = view.findViewById(R.id.whose_mood_text);
         commentView = view.findViewById(R.id.comments_recycler_view);
 
         // Get passed data from previous fragment
-        assert savedInstanceState != null;
-        Bundle commentsBundle =  savedInstanceState.getBundle("comments");
-        Bundle clickedOnMoodBundle = savedInstanceState.getBundle("mood");
-        comments = (ArrayList<Comment>) commentsBundle.get("comments");
+        Bundle clickedOnMoodBundle = getArguments();
+        assert clickedOnMoodBundle != null;
         clickedOnMood = (Mood) clickedOnMoodBundle.get("mood");
 
         // Get comments for the clicked on mood
-        Query CommentsQuery = Comments.whereEqualTo("mood", clickedMood.getDocRef());
-        System.out.println("Clicked Mood: " + clickedMood.getDocRef().toString());
+        assert clickedOnMood != null;
+        Query CommentsQuery = Comments.whereEqualTo("mood", clickedOnMood.getDocRef());
+        System.out.println("Clicked Mood: " + clickedOnMood.getDocRef().toString());
 
+        // Set adapter for the comments view
+        commentView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        CommentAdapter commentAdapter = new CommentAdapter(comments);
+        commentView.setAdapter(commentAdapter);
+
+        // TODO: Need to fix this so it accounts for the user's profile picture (which has yet to be added).
         Comments.addSnapshotListener((value, error) -> {
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
             if (value != null) {
-                commentsData.clear();
+                comments.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     DocumentReference moodRef = snapshot.getDocumentReference("mood");
                     String username = snapshot.getString("username");
@@ -66,9 +85,10 @@ public class ViewMoodDetailsFragment extends Fragment {
 
                     Comment currentComment = new Comment(moodRef, username, comment);
 
-                    commentsData.add(currentComment);
+                    comments.add(currentComment);
                 }
             }
+            commentAdapter.notifyDataSetChanged();
         });
 
         // Set mood details
@@ -90,10 +110,6 @@ public class ViewMoodDetailsFragment extends Fragment {
 
         TextView date = (TextView) view.findViewById(R.id.date_text);
         date.setText(clickedOnMood.getPostedDate().toString());
-
-        commentView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        CommentAdapter commentAdapter = new CommentAdapter(comments);
-        commentView.setAdapter(commentAdapter);
 
         return view;
     }
