@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -49,6 +50,9 @@ public class FeedFragment extends Fragment {
     private FirebaseStorage storage;
     private StorageReference storageRef;
     CollectionReference MoodDB;
+    CollectionReference Comments;
+    CollectionReference Users;
+    private ArrayList<Comment> commentsData;
 
     /**
      * Require empty public constructor for the Feed Fragment
@@ -79,6 +83,8 @@ public class FeedFragment extends Fragment {
         //initialize variables
         db = FirebaseFirestore.getInstance();
         MoodDB = db.collection("MoodDB");
+        Comments = db.collection("comments");
+        Users = db.collection("users");
 
 
         // Inflate the layout for this fragment
@@ -144,18 +150,19 @@ public class FeedFragment extends Fragment {
                 moodArrayAdapter.notifyDataSetChanged();
             }
         });
+
         // From lab 3, and fragment manager documentation
         // https://developer.android.com/guide/fragments/fragmentmanager
-        moodListView.setOnClickListener(new AdapterView.OnItemClickListener() {
+        moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Bundle clickedOnMood = new Bundle();
-                clickedOnMood.putSerializable("mood", moodArrayList.get(position));
+                // Bundle up the original Mood object that was clicked on
+                Bundle moodBundle = new Bundle();
+                moodBundle.putSerializable("mood", moodArrayList.get(position));
 
-                Bundle comments = new Bundle();
-//                comments.putStringArrayList("comments", );
-//                Bundle moodAndComments
                 FragmentManager fragManager = getParentFragmentManager();
+                fragManager.setFragmentResult("mood", moodBundle);
+
                 fragManager.beginTransaction()
                         .replace(R.id.frameLayout, ViewMoodDetailsFragment.class, null)
                         .setReorderingAllowed(true)

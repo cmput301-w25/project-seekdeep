@@ -3,28 +3,33 @@ package com.example.project_seekdeep;
 
 import android.net.Uri;
 
+import com.google.firebase.firestore.DocumentReference;
+
+import org.w3c.dom.Document;
+
 /**
  * This is a wrapper class used to represent comments that are made inside of a mood event.
  * @author Kevin Tu
  */
 public class Comment {
-    private Uri commenterPfp;
+//    private Uri commenterPfp; Currently no support for pfp for user profiles
+    DocumentReference mood;
     private String username;
     private String comment;
 
-    public Comment(Uri commenterPfp, String username, String comment) {
-        this.commenterPfp = commenterPfp;
+    public Comment(DocumentReference mood, String username, String comment) {
+        this.mood = mood;
         this.username = username;
         this.comment = comment;
     }
 
-    public Uri getCommenterPfp() {
-        return commenterPfp;
-    }
-
-    public void setCommenterPfp(Uri commenterPfp) {
-        this.commenterPfp = commenterPfp;
-    }
+//    public Uri getCommenterPfp() {
+//        return commenterPfp;
+//    }
+//
+//    public void setCommenterPfp(Uri commenterPfp) {
+//        this.commenterPfp = commenterPfp;
+//    }
 
     public String getUsername() {
         return username;

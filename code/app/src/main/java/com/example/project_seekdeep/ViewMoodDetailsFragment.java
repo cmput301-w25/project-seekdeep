@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
@@ -43,6 +48,28 @@ public class ViewMoodDetailsFragment extends Fragment {
         Bundle clickedOnMoodBundle = savedInstanceState.getBundle("mood");
         comments = (ArrayList<Comment>) commentsBundle.get("comments");
         clickedOnMood = (Mood) clickedOnMoodBundle.get("mood");
+
+        // Get comments for the clicked on mood
+        Query CommentsQuery = Comments.whereEqualTo("mood", clickedMood.getDocRef());
+        System.out.println("Clicked Mood: " + clickedMood.getDocRef().toString());
+
+        Comments.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.e("Firestore", error.toString());
+            }
+            if (value != null) {
+                commentsData.clear();
+                for (QueryDocumentSnapshot snapshot : value) {
+                    DocumentReference moodRef = snapshot.getDocumentReference("mood");
+                    String username = snapshot.getString("username");
+                    String comment = snapshot.getString("comment");
+
+                    Comment currentComment = new Comment(moodRef, username, comment);
+
+                    commentsData.add(currentComment);
+                }
+            }
+        });
 
         // Set mood details
         // Owner of mood currently does not store their pfp :(
