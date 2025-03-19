@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -202,6 +204,30 @@ public class MoodHistoryFragment extends Fragment {
                }
 
            }
+        });
+
+        // From lab 3, and fragment manager documentation
+        // https://developer.android.com/guide/fragments/fragmentmanager
+        // Ideas for the solution was adapted from the link below, surprisingly from the question itself and not an answer (lol)
+        // https://stackoverflow.com/questions/46148117/listview-and-onitemclick-create-transparent-fragment?rq=1
+        // Taken by: Kevin Tu on 2025-03-19
+        moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Bundle moodBundle = new Bundle();
+                moodBundle.putSerializable("mood", moodArrayList.get(position));
+
+                FragmentManager fragManager = getParentFragmentManager();
+
+                ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
+                viewMoodDetailsFragment.setArguments(moodBundle);
+
+                fragManager.beginTransaction()
+                        .replace(R.id.frameLayout, viewMoodDetailsFragment)
+                        .setReorderingAllowed(true)
+                        .addToBackStack("feed")
+                        .commit();
+            }
         });
     }
 }

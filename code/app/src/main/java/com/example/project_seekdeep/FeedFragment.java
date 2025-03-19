@@ -159,8 +159,10 @@ public class FeedFragment extends Fragment {
                 Bundle moodBundle = new Bundle();
                 moodBundle.putSerializable("mood", moodArrayList.get(position));
 
+                // This is used to navigate back and forth between a mood comment section and the feed or history
                 FragmentManager fragManager = getParentFragmentManager();
 
+                // Create new fragment and send Mood off into new fragment
                 ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
                 viewMoodDetailsFragment.setArguments(moodBundle);
 
