@@ -27,48 +27,56 @@
                 android:id="@+id/surprise_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:text="😯 Surprise" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/anger_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:text="😠 Anger" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/confusion_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:text="🤔 Confusion" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/disgust_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:text="🤢 Disgust" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/fear_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:text="😨 Fear" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/happiness_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:text="😄 Happy" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/sadness_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:text="☹️ Sad" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/shame_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:text="😔 Shame" />
         </com.google.android.material.chip.ChipGroup>
 
@@ -90,12 +98,14 @@
                 android:id="@+id/recent_week_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:text="Past Week" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/last_3_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:text="Last 3 from all users" />
         </com.google.android.material.chip.ChipGroup>
 

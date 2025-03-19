@@ -35,7 +35,7 @@ public class MoodFiltering {
     private static ArrayList<Mood> originalMoods; // og list of moods
     private static Set<String> filters = new HashSet<>(); // the filters applied
 
-    private static ArrayList<EmotionalStates> selectedStates; // the selected emotional state(s) to filter by
+    private static Set<EmotionalStates> selectedStates = new HashSet<>(); // the selected emotional state(s) to filter by
 
     /**
      * This method saves a copy of the original array
@@ -48,8 +48,9 @@ public class MoodFiltering {
 
     /**
      * This method puts the filter name into a set
-     * @param filterName: The filter applied
-     *                    Filter names include: "rChronological", "recent", "😄 Happiness" etc
+     * <p><STRONG>Please note that you must use the addStates method before using applyFilter("states") </STRONG></p>
+     * @param filterName: The filter applied <p>
+     *                    Filter names include: "rChronological", "recent", "states"
      */
     public static void applyFilter(String filterName) {
         filters.add(filterName);
@@ -63,11 +64,19 @@ public class MoodFiltering {
         filters.remove(filterName);
     }
 
+    /**
+     * This method MUST be used before using applyFilter("states")
+     * @param states
+     */
+
     public static void addStates(ArrayList<EmotionalStates> states) {
         selectedStates.clear();
         selectedStates.addAll(states);
     }
 
+    /**
+     * This method removes all filters that were selected by the user.
+     */
     public static void removeAllFilters() {
         // reverse chronological should NOT be removed ever
         filters.remove("recent");
@@ -88,9 +97,9 @@ public class MoodFiltering {
             if (filter.equals("recent")) {
                 sortRecentWeek(filteredMoods);
             }
-            /*if (filter.equals("states")) {
-                sortEmotionalState(filteredMoods, );
-            }*/
+            if (filter.equals("states")) {
+                sortEmotionalState(filteredMoods);
+            }
         }
         return filteredMoods;
     }
@@ -118,7 +127,7 @@ public class MoodFiltering {
     }
 
     /**
-     * This method sorts/filters an Arraylist of moods to only include those with perticular emotional state(s)
+     * This method sorts/filters an Arraylist of moods to only include those with particular emotional state(s)
      * @param moods: An ArrayList of Mood objects
      */
     public static void sortEmotionalState(ArrayList<Mood> moods) {
