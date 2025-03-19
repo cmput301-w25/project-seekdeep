@@ -149,6 +149,9 @@ public class FeedFragment extends Fragment {
 
         // From lab 3, and fragment manager documentation
         // https://developer.android.com/guide/fragments/fragmentmanager
+        // Ideas for the solution was adapted from the link below, surprisingly from the question itself and not an answer (lol)
+        // https://stackoverflow.com/questions/46148117/listview-and-onitemclick-create-transparent-fragment?rq=1
+        // Taken by: Kevin Tu on 2025-03-19
         moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -157,12 +160,14 @@ public class FeedFragment extends Fragment {
                 moodBundle.putSerializable("mood", moodArrayList.get(position));
 
                 FragmentManager fragManager = getParentFragmentManager();
-                setArguments(moodBundle);
+
+                ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
+                viewMoodDetailsFragment.setArguments(moodBundle);
 
                 fragManager.beginTransaction()
-                        .replace(R.id.frameLayout, ViewMoodDetailsFragment.class, null)
+                        .replace(R.id.frameLayout, viewMoodDetailsFragment)
                         .setReorderingAllowed(true)
-                        .addToBackStack("view_comments")
+                        .addToBackStack("feed")
                         .commit();
             }
         });

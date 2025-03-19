@@ -47,6 +47,7 @@ public class ViewMoodDetailsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Set up db
+        db = FirebaseFirestore.getInstance();
         Comments = db.collection("comments");
         Users = db.collection("users");
         comments = new ArrayList<>();
@@ -63,8 +64,8 @@ public class ViewMoodDetailsFragment extends Fragment {
 
         // Get comments for the clicked on mood
         assert clickedOnMood != null;
-        Query CommentsQuery = Comments.whereEqualTo("mood", clickedOnMood.getDocRef());
-        System.out.println("Clicked Mood: " + clickedOnMood.getDocRef().toString());
+        Query CommentsQuery = Comments.whereEqualTo("mood", "MoodDB/" + clickedOnMood.getDocRef().getId());
+        Log.d("DocRef", clickedOnMood.getDocRef().getId());
 
         // Set adapter for the comments view
         commentView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -80,7 +81,7 @@ public class ViewMoodDetailsFragment extends Fragment {
                 comments.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     DocumentReference moodRef = snapshot.getDocumentReference("mood");
-                    String username = snapshot.getString("username");
+                    String username = "@" + snapshot.getString("username");
                     String comment = snapshot.getString("comment");
 
                     Comment currentComment = new Comment(moodRef, username, comment);

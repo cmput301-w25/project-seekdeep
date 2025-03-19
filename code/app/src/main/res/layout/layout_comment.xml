@@ -5,13 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="411dp"
+        android:layout_height="78dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+
     <ImageView
         android:id="@+id/commenter_pfp"
         android:layout_width="20sp"
         android:layout_height="20sp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
@@ -20,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:fontFamily="@font/noto_sans"
+        android:fontFamily="@font/noto_sans_semibold"
         android:text="Username"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="@+id/commenter_pfp"
@@ -29,13 +37,19 @@
 
     <TextView
         android:id="@+id/comment_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
         android:fontFamily="@font/noto_sans"
+        android:lineBreakWordStyle="phrase"
         android:text="Comment"
         android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="@+id/commenter_pfp"
-        app:layout_constraintStart_toEndOf="@+id/username_text_view"
-        app:layout_constraintTop_toTopOf="@+id/commenter_pfp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/username_text_view"
+        app:layout_constraintTop_toBottomOf="@+id/username_text_view"
+        app:layout_constraintVertical_bias="0.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

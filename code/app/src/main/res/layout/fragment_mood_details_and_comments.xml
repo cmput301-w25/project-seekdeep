@@ -89,7 +89,7 @@
             android:layout_width="259dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_horizontal"
-            android:fontFamily="@font/noto_sans"
+            android:fontFamily="@font/noto_sans_bold"
             android:text="User's Mood"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/toolbar"

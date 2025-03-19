@@ -82,7 +82,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull CommentAdapter.ViewHolder holder, int position) {
         Comment currentComment = moodCommentsList.get(position);
-        holder.getCommenterPfpView().setImageURI(currentComment.getCommenterPfp());
+//        holder.getCommenterPfpView().setImageURI(currentComment.getCommenterPfp());
         holder.getUsernameView().setText(currentComment.getUsername());
         holder.getCommentView().setText(currentComment.getComment());
     }
