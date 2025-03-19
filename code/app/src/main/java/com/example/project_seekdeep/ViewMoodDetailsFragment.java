@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +40,8 @@ public class ViewMoodDetailsFragment extends Fragment {
         super(R.layout.fragment_mood_details_and_comments);
     }
 
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -51,6 +54,14 @@ public class ViewMoodDetailsFragment extends Fragment {
         ImageButton backButton = view.findViewById(R.id.back_button);
         TextView headerText = view.findViewById(R.id.whose_mood_text);
         RecyclerView commentView = view.findViewById(R.id.comments_recycler_view);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getParentFragmentManager();
+                fragmentManager.popBackStack();
+            }
+        });
 
         // Get passed data from previous fragment
         Bundle clickedOnMoodBundle = getArguments();
