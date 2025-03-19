@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,13 +21,12 @@ import java.util.ArrayList;
  * the original details of who posted, when, etc, and the comments associated with the mood.
  * @author Kevin Tu
  */
-public class MoodFullDetailsFragment extends Fragment {
+public class ViewMoodDetailsFragment extends Fragment {
     private ImageButton backButton;
     private TextView headerText;
     private RecyclerView commentView;
     private ArrayList<Comment> comments;
     private Mood clickedOnMood;
-    private MoodArrayAdapter moodArrayAdapter;
 
     @Nullable
     @Override
@@ -43,6 +43,22 @@ public class MoodFullDetailsFragment extends Fragment {
         comments = (ArrayList<Comment>) commentsBundle.get("comments");
         clickedOnMood = (Mood) clickedOnMoodBundle.get("mood");
 
+        // Set mood details
+        // Owner of mood currently does not store their pfp :(
+//        ImageView moodPfp = (ImageView) view.findViewById(R.id.profile_picture);
+//        moodPfp.setImageURI(clickedOnMood.getOwner());
+
+        TextView reason = (TextView) view.findViewById(R.id.reason);
+        reason.setText(clickedOnMood.getReason());
+
+        TextView emotion = (TextView) view.findViewById(R.id.emotion);
+        emotion.setText(clickedOnMood.getEmotionalState().toString());
+
+        TextView trigger = (TextView) view.findViewById(R.id.trigger);
+        trigger.setText(clickedOnMood.getTrigger());
+
+        TextView social = (TextView) view.findViewById(R.id.social_situation);
+        social.setText(clickedOnMood.getSocialSituation().toString());
 
 
         return view;
