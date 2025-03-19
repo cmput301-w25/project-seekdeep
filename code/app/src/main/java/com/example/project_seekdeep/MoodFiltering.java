@@ -16,6 +16,8 @@ import java.util.Set;
  *   MoodFiltering.sortReverseChronological(moods);
  *   MoodFiltering.saveOriginal(moods);
  *   MoodFiltering.applyFilter("recent");
+ *   MoodFilter.addStates(ArrayList of EmotionalStates);
+ *   MoodFiltering.applyFilter("states");
  *   ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
  *   Then use filteredMoods for displaying
  *   </pre>
