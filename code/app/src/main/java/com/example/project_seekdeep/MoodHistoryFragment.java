@@ -205,32 +205,5 @@ public class MoodHistoryFragment extends Fragment {
 
            }
         });
-
-        // From lab 3, and fragment manager documentation
-        // https://developer.android.com/guide/fragments/fragmentmanager
-        // Ideas for the solution was adapted from the link below, surprisingly from the question itself and not an answer (lol)
-        // https://stackoverflow.com/questions/46148117/listview-and-onitemclick-create-transparent-fragment?rq=1
-        // Taken by: Kevin Tu on 2025-03-19
-        moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Bundle up the original Mood object that was clicked on
-                Bundle moodBundle = new Bundle();
-                moodBundle.putSerializable("mood", moodArrayList.get(position));
-
-                // This is used to navigate back and forth between a mood comment section and the feed or history
-                FragmentManager fragManager = getParentFragmentManager();
-
-                // Create new fragment and send Mood off into new fragment
-                ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
-                viewMoodDetailsFragment.setArguments(moodBundle);
-
-                fragManager.beginTransaction()
-                        .replace(R.id.frameLayout, viewMoodDetailsFragment)
-                        .setReorderingAllowed(true)
-                        .addToBackStack("feed")
-                        .commit();
-            }
-        });
     }
 }
