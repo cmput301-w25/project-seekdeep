@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
@@ -119,7 +120,9 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
         navBar.setVisibility(View.VISIBLE);
         fragManager.beginTransaction().replace(R.id.frameLayout, new FeedFragment()).commit();
-
+        // FROM https://firebase.google.com/docs/database/android/offline-capabilities
+        // Accessed by Deryk Fong on March 20th
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         // A placeholder for future functionality
         // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
 //      getParentFragmentManager().beginTransaction()
