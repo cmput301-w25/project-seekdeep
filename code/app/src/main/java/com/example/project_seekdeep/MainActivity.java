@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -84,12 +85,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Display selected fragment to screen
         if (selectedFragment != null) {
-            fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
             //add logged in user's UserProfile to bundle to pass to mood history
             Bundle bundle = new Bundle();
             bundle.putString("username", getCurrentUsername().getUsername());
             bundle.putSerializable("userProfile", currentUser);
             selectedFragment.setArguments(bundle);
+            fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
         }
         return true;
     };
@@ -116,8 +117,13 @@ public class MainActivity extends AppCompatActivity {
      */
     public void successful_login() {
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
+        FeedFragment feedFragment = new FeedFragment();
         navBar.setVisibility(View.VISIBLE);
-        fragManager.beginTransaction().replace(R.id.frameLayout, new FeedFragment()).commit();
+        Bundle bundle = new Bundle();
+        bundle.putString("username", getCurrentUsername().getUsername());
+        bundle.putSerializable("userProfile", currentUser);
+        feedFragment.setArguments(bundle);
+        fragManager.beginTransaction().replace(R.id.frameLayout, feedFragment).commit();
 
         // A placeholder for future functionality
         // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android

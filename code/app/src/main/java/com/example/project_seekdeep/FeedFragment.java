@@ -82,7 +82,6 @@ public class FeedFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         MoodDB = db.collection("MoodDB");
 
-
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.layout_feed, container, false);
         return inflatedView;
@@ -158,6 +157,17 @@ public class FeedFragment extends Fragment {
                 // Bundle up the original Mood object that was clicked on
                 Bundle moodBundle = new Bundle();
                 moodBundle.putSerializable("mood", moodArrayList.get(position));
+
+                if (getArguments() == null) {
+                    Log.d("getArguments()", "null");
+                    return;
+                }
+                if (getArguments().getSerializable("userProfile") == null) {
+                    Log.d("getArguments().getSerializable()", "null");
+                    return;
+
+                }
+//                UserProfile loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
 
 //                Bundle userBundle = new Bundle();
 //                userBundle.putString("user", );
