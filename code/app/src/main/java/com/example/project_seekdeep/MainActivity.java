@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putSerializable("userProfile", currentUser);
         feedFragment.setArguments(bundle);
         fragManager.beginTransaction().replace(R.id.frameLayout, feedFragment).commit();
-
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true); //magic code to enable disk persistence
         // A placeholder for future functionality
         // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
 //      getParentFragmentManager().beginTransaction()
