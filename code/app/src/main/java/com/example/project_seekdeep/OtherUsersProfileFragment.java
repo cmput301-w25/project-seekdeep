@@ -10,9 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This activity displays another user's profile. Including their username, mood history, number of followers & following, and a button to follow them.
@@ -25,6 +31,7 @@ import androidx.fragment.app.FragmentManager;
 public class OtherUsersProfileFragment extends Fragment {
     private TextView usernameTextView;
     private FirebaseFirestore db; //Need access to the database to retrieve all the user's moods
+    private CollectionReference followingsAndRequestsRef;
     private ImageButton backButton;
 
     private Button followButton;
@@ -47,6 +54,8 @@ public class OtherUsersProfileFragment extends Fragment {
 
         //Get instance of db
         db = FirebaseFirestore.getInstance();
+        //Assign the collection reference (if DNE, it'll create a new one)
+        followingsAndRequestsRef = db.collection("followings_and_requests");
 
         //Setup the username
         usernameTextView = view.findViewById(R.id.username_profile);
@@ -72,6 +81,69 @@ public class OtherUsersProfileFragment extends Fragment {
                 fragManager.popBackStack();
             }
         });
+
+        //Fetch the state of the button
+        isFollowing = false;
+        isPending = false;
+        updateButtonStatus();
+
+        //Implement the follow button
+        followButton = view.findViewById(R.id.follow_button);
+        followButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isFollowing && !isPending) {
+                sendFollowRequestToDataBase();
+            }
+            }
+        });
+    }
+
+    private void updateButtonStatus() {
+        followButton = getView().findViewById(R.id.follow_button);
+
+        followingsAndRequestsRef
+                .whereEqualTo("follower", loggedInUser.getUsername())
+                .whereEqualTo("followee", userBeingViewed.getUsername())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (!task.getResult().isEmpty()) {
+                            DocumentSnapshot doc = task.getResult().getDocuments().get(0);
+                            String status = doc.getString("status");
+                            if ("following".equals(status)) {
+                                isFollowing = true;
+                                followButton.setText("Following");
+                            }
+                            if ("pending".equals(status)) {
+                                isPending = true;
+                                followButton.setText("Pending");
+                            }
+                        }
+                        else {
+                            isFollowing = false;
+                            isPending = false;
+                        }
+                    }
+                });
+    }
+
+    private void sendFollowRequestToDataBase() {
+        //Create a new doc with a uniquely generated id
+        DocumentReference newDocRef = followingsAndRequestsRef.document();
+
+        Map<String, Object> followData = new HashMap<>();
+        followData.put("follower", loggedInUser.getUsername());
+        followData.put("followee", userBeingViewed.getUsername());
+        followData.put("status", "pending");
+
+        newDocRef.set(followData);
+
+        //Update isPending
+        isPending = true;
+
+        followButton = getView().findViewById(R.id.follow_button);
+        followButton.setText("Pending");
     }
 
 
