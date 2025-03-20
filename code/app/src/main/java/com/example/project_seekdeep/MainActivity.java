@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -70,12 +71,6 @@ public class MainActivity extends AppCompatActivity {
         // Check which fragment the user clicked on
         if (itemPressed == R.id.History) {
             selectedFragment = new MoodHistoryFragment();
-            //add logged in user's UserProfile to bundle to pass to mood history
-            Bundle bundle = new Bundle();
-            bundle.putString("username", getCurrentUsername().getUsername());
-            bundle.putSerializable("userProfile", currentUser);
-            selectedFragment.setArguments(bundle);
-
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
             selectedFragment = new FeedFragment();
@@ -90,6 +85,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Display selected fragment to screen
         if (selectedFragment != null) {
+            //add logged in user's UserProfile to bundle to pass to mood history
+            Bundle bundle = new Bundle();
+            bundle.putString("username", getCurrentUsername().getUsername());
+            bundle.putSerializable("userProfile", currentUser);
+            selectedFragment.setArguments(bundle);
             fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
         }
         return true;
@@ -117,8 +117,13 @@ public class MainActivity extends AppCompatActivity {
      */
     public void successful_login() {
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
+        FeedFragment feedFragment = new FeedFragment();
         navBar.setVisibility(View.VISIBLE);
-        fragManager.beginTransaction().replace(R.id.frameLayout, new FeedFragment()).commit();
+        Bundle bundle = new Bundle();
+        bundle.putString("username", getCurrentUsername().getUsername());
+        bundle.putSerializable("userProfile", currentUser);
+        feedFragment.setArguments(bundle);
+        fragManager.beginTransaction().replace(R.id.frameLayout, feedFragment).commit();
 
         // A placeholder for future functionality
         // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android

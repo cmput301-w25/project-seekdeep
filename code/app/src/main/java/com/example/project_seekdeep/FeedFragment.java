@@ -6,15 +6,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -48,6 +51,8 @@ public class FeedFragment extends Fragment {
     private StorageReference storageRef;
     CollectionReference MoodDB;
 
+
+
     /**
      * Require empty public constructor for the Feed Fragment
      */
@@ -77,7 +82,6 @@ public class FeedFragment extends Fragment {
         //initialize variables
         db = FirebaseFirestore.getInstance();
         MoodDB = db.collection("MoodDB");
-
 
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.layout_feed, container, false);
@@ -131,7 +135,6 @@ public class FeedFragment extends Fragment {
                     if (imageStr != null){
                         image = Uri.parse(imageStr);
                     }
-                    
 
                     Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate, reason);
 
@@ -143,6 +146,35 @@ public class FeedFragment extends Fragment {
                 moodArrayAdapter.notifyDataSetChanged();
             }
         });
-    }
 
+        // From lab 3, and fragment manager documentation
+        // https://developer.android.com/guide/fragments/fragmentmanager
+        // Ideas for the solution was adapted from the link below, surprisingly from the question itself and not an answer (lol)
+        // https://stackoverflow.com/questions/46148117/listview-and-onitemclick-create-transparent-fragment?rq=1
+        // Taken by: Kevin Tu on 2025-03-19
+        moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Bundle up the original Mood object that was clicked on
+                Bundle moodAndUserBundle = new Bundle();
+                moodAndUserBundle.putSerializable("mood", moodArrayList.get(position));
+
+                UserProfile loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+                moodAndUserBundle.putSerializable("userProfile", loggedInUser);
+
+                // This is used to navigate back and forth between a mood comment section and the feed or history
+                FragmentManager fragManager = getParentFragmentManager();
+
+                // Create new fragment and send Mood off into new fragment
+                ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
+                viewMoodDetailsFragment.setArguments(moodAndUserBundle);
+
+                fragManager.beginTransaction()
+                        .replace(R.id.frameLayout, viewMoodDetailsFragment)
+                        .setReorderingAllowed(true)
+                        .addToBackStack("feed")
+                        .commit();
+            }
+        });
+    }
 }
