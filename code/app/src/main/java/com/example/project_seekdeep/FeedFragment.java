@@ -52,6 +52,7 @@ public class FeedFragment extends Fragment {
     CollectionReference MoodDB;
 
 
+
     /**
      * Require empty public constructor for the Feed Fragment
      */
@@ -155,29 +156,18 @@ public class FeedFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Bundle up the original Mood object that was clicked on
-                Bundle moodBundle = new Bundle();
-                moodBundle.putSerializable("mood", moodArrayList.get(position));
+                Bundle moodAndUserBundle = new Bundle();
+                moodAndUserBundle.putSerializable("mood", moodArrayList.get(position));
 
-                if (getArguments() == null) {
-                    Log.d("getArguments()", "null");
-                    return;
-                }
-                if (getArguments().getSerializable("userProfile") == null) {
-                    Log.d("getArguments().getSerializable()", "null");
-                    return;
-
-                }
-//                UserProfile loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
-
-//                Bundle userBundle = new Bundle();
-//                userBundle.putString("user", );
+                UserProfile loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+                moodAndUserBundle.putSerializable("userProfile", loggedInUser);
 
                 // This is used to navigate back and forth between a mood comment section and the feed or history
                 FragmentManager fragManager = getParentFragmentManager();
 
                 // Create new fragment and send Mood off into new fragment
                 ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
-                viewMoodDetailsFragment.setArguments(moodBundle);
+                viewMoodDetailsFragment.setArguments(moodAndUserBundle);
 
                 fragManager.beginTransaction()
                         .replace(R.id.frameLayout, viewMoodDetailsFragment)

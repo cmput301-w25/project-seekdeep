@@ -20,6 +20,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.CollectionReference;
@@ -29,6 +31,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -54,6 +58,11 @@ public class ViewMoodDetailsFragment extends Fragment {
         Comments = db.collection("comments");
         Users = db.collection("users");
         comments = new ArrayList<>();
+        // Get passed data from previous fragment
+
+        assert getArguments() != null;
+        Mood clickedOnMood = (Mood) getArguments().getSerializable("mood");
+        UserProfile loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
 
         ImageButton backButton = view.findViewById(R.id.back_button);
         TextView headerText = view.findViewById(R.id.whose_mood_text);
@@ -73,6 +82,25 @@ public class ViewMoodDetailsFragment extends Fragment {
                     usageToast.show();
                     return;
                 }
+                // Refer to Firebase's guide on adding a document:
+                // https://firebase.google.com/docs/firestore/manage-data/add-data
+                Map<String, Object> newComment = new HashMap<>();
+                newComment.put("comment", comment);
+                newComment.put("mood", clickedOnMood.getDocRef());
+                newComment.put("username",  loggedInUser.getUsername());
+                Comments.add(newComment)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                Log.d("Added to comments DB", "DocumentSnapshot written with ID: " + documentReference.getId());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("Failed to add to comments DB", "Error adding document", e);
+                            }
+                        });
             }
         });
 
@@ -83,11 +111,6 @@ public class ViewMoodDetailsFragment extends Fragment {
                 fragmentManager.popBackStack();
             }
         });
-
-        // Get passed data from previous fragment
-        Bundle clickedOnMoodBundle = getArguments();
-        assert clickedOnMoodBundle != null;
-        Mood clickedOnMood = (Mood) clickedOnMoodBundle.get("mood");
 
         // Get comments for the clicked on mood
         assert clickedOnMood != null;
