@@ -70,12 +70,6 @@ public class MainActivity extends AppCompatActivity {
         // Check which fragment the user clicked on
         if (itemPressed == R.id.History) {
             selectedFragment = new MoodHistoryFragment();
-            //add logged in user's UserProfile to bundle to pass to mood history
-            Bundle bundle = new Bundle();
-            bundle.putString("username", getCurrentUsername().getUsername());
-            bundle.putSerializable("userProfile", currentUser);
-            selectedFragment.setArguments(bundle);
-
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
             selectedFragment = new FeedFragment();
@@ -91,6 +85,11 @@ public class MainActivity extends AppCompatActivity {
         // Display selected fragment to screen
         if (selectedFragment != null) {
             fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
+            //add logged in user's UserProfile to bundle to pass to mood history
+            Bundle bundle = new Bundle();
+            bundle.putString("username", getCurrentUsername().getUsername());
+            bundle.putSerializable("userProfile", currentUser);
+            selectedFragment.setArguments(bundle);
         }
         return true;
     };

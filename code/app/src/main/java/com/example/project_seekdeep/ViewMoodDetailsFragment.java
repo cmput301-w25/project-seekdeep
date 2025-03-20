@@ -3,12 +3,15 @@ package com.example.project_seekdeep;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +20,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -24,6 +29,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * This fragment class is used to show the full details of a mood that the user has tapped on
@@ -40,8 +46,6 @@ public class ViewMoodDetailsFragment extends Fragment {
         super(R.layout.fragment_mood_details_and_comments);
     }
 
-
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -54,6 +58,23 @@ public class ViewMoodDetailsFragment extends Fragment {
         ImageButton backButton = view.findViewById(R.id.back_button);
         TextView headerText = view.findViewById(R.id.whose_mood_text);
         RecyclerView commentView = view.findViewById(R.id.comments_recycler_view);
+
+        // Cool solution for the TextInput by Gabriele Mariotti:
+        // https://stackoverflow.com/questions/57689127/how-to-put-a-button-in-an-edittext
+        // Taken by: Kevin Tu on 2025-03-19
+        TextInputLayout addCommentLayout = view.findViewById(R.id.add_comment_layout);
+        TextInputEditText addCommentInput = view.findViewById(R.id.add_comment_input);
+        addCommentLayout.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String comment = Objects.requireNonNull(addCommentInput.getText()).toString();
+                if (comment.isBlank() || comment.isEmpty()) {
+                    Toast usageToast = Toast.makeText(getContext(), "Type in something to comment!", Toast.LENGTH_LONG);
+                    usageToast.show();
+                    return;
+                }
+            }
+        });
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
