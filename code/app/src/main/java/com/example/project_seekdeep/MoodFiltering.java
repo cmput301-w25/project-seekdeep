@@ -136,4 +136,8 @@ public class MoodFiltering {
         // remove moods from the arraylist if it's not one of the moods selected and in the selectedStates arraylist
         moods.removeIf(mood -> !selectedStates.contains(mood.getEmotionalState()));
     }
+
+    public static Set<String> getFilters() {
+        return filters;
+    }
 }

@@ -75,4 +75,32 @@ public enum EmotionalStates {
     public void setColour(String colour) {
         this.colour = colour;
     }
+
+    public static EmotionalStates mapChipToState(int chipId) {
+        if(chipId == R.id.anger_chip) {
+            return EmotionalStates.ANGER;
+        }
+        else if (chipId == R.id.confusion_chip) {
+            return EmotionalStates.CONFUSION;
+        }
+        else if (chipId == R.id.disgust_chip) {
+            return EmotionalStates.DISGUST;
+        }
+        else if (chipId == R.id.fear_chip) {
+            return EmotionalStates.FEAR;
+        }
+        else if (chipId == R.id.happiness_chip) {
+            return EmotionalStates.HAPPINESS;
+        }
+        else if (chipId == R.id.sadness_chip) {
+            return EmotionalStates.SADNESS;
+        }
+        else if (chipId == R.id.shame_chip) {
+            return EmotionalStates.SHAME;
+        }
+        else if (chipId == R.id.surprise_chip) {
+            return EmotionalStates.SURPRISE;
+        }
+        else return null;
+    }
 }

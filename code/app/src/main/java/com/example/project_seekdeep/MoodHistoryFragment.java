@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import java.util.Objects;
@@ -41,13 +42,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
  * @author Kevin Tu, Nancy Lin, modified by Jachelle Chan
  */
 
-public class MoodHistoryFragment extends Fragment {
+public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFragment.OnFilterSelectedListener{
     // TODO: We need to figure out how to store userID to be used as primary key to access entry in the database.
     private UserProfile loggedInUser;
     private ArrayList<Mood> moodsList;
@@ -64,8 +66,9 @@ public class MoodHistoryFragment extends Fragment {
     private CollectionReference moods;
     private CollectionReference users;
 
-    private boolean recentFilterFlag = false;
-    //private MoodFiltering moodFilter;
+    private ArrayList<EmotionalStates> states = new ArrayList<>();
+    private String timeline = "";
+    private ArrayList<Integer> selectedMoodIds = new ArrayList<>();
 
     public MoodHistoryFragment() {
         super(R.layout.profile_feed);
@@ -185,29 +188,59 @@ public class MoodHistoryFragment extends Fragment {
                    filterButton.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View view) {
-                           /*
-                           if (!recentFilterFlag) {
-                               MoodFiltering.applyFilter("recent");
-                               //moodFilter.applyFilter("recent");
-                               recentFilterFlag = true;
-                           }
-                           else {
-                               MoodFiltering.removeFilter("recent");
-                               //moodFilter.removeFilter("recent");
-                               recentFilterFlag = false;
-                           }
-                           filteredMoodList = MoodFiltering.getFilteredMoods();
-                           MoodFiltering.getFilteredMoods();
-                           moodArrayAdapter.clear();
-                           moodArrayAdapter.addAll(filteredMoodList);
-                           moodArrayAdapter.notifyDataSetChanged();*/
+                           //FilterMenuDialogFragment.newInstance(new ArrayList<>(selectedMoodIds)).show(getChildFragmentManager(), "profile");
                            new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
                        }
                    });
-
                }
 
            }
         });
+    }
+
+    /**
+     * This method is called when filters are applied in the FilterMenuDialogFragment
+     * @param selectedMoods
+     * @param selectedTimeline
+     */
+    @Override
+    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, ArrayList<Integer> selectedMoodIds) {
+        // apply the selected filters if they arent empty
+        MoodFiltering.removeAllFilters();
+        if(!selectedMoods.isEmpty()) {
+            this.states = selectedMoods;
+            MoodFiltering.addStates(states);
+            MoodFiltering.applyFilter("states");
+        } else {
+            MoodFiltering.removeFilter("states");
+        }
+        filteredMoodList = MoodFiltering.getFilteredMoods();
+        moodArrayAdapter.clear();
+        moodArrayAdapter.addAll(filteredMoodList);
+        moodArrayAdapter.notifyDataSetChanged();
+        if(!selectedTimeline.isBlank()) {
+            this.timeline = selectedTimeline;
+            MoodFiltering.applyFilter(selectedTimeline);
+            filteredMoodList = MoodFiltering.getFilteredMoods();
+            moodArrayAdapter.clear();
+            moodArrayAdapter.addAll(filteredMoodList);
+            moodArrayAdapter.notifyDataSetChanged();
+        } else {
+            MoodFiltering.removeFilter("recent");
+        }
+        this.selectedMoodIds = selectedMoodIds;
+    }
+
+    /**
+     * This method is called when filters are reset in the FilterMenuDialogFragment
+     */
+    @Override
+    public void onFiltersReset() {
+        MoodFiltering.removeAllFilters();
+        selectedMoodIds.clear();
+        filteredMoodList = MoodFiltering.getFilteredMoods();
+        moodArrayAdapter.clear();
+        moodArrayAdapter.addAll(filteredMoodList);
+        moodArrayAdapter.notifyDataSetChanged();
     }
 }
