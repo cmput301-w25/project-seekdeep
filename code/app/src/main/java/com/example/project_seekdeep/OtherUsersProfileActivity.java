@@ -25,6 +25,11 @@ public class OtherUsersProfileActivity extends AppCompatActivity {
     private FirebaseFirestore db; //Need access to the database to retrieve all the user's moods
     private ImageButton backButton;
 
+    private Button followButton;
+
+    //Fetch the state of the button
+    boolean isFollowing;
+    boolean isPending;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +53,52 @@ public class OtherUsersProfileActivity extends AppCompatActivity {
                 getOnBackPressedDispatcher().onBackPressed();
             }
         });
+
+        //Fetch the state of the button
+        // TO DO: see if user is following or already requested this user from database
+
+        /*
+        The button has 3 states:
+        1. "Follow" : isFollowing == true, isPending == false
+        2. "Pending" : isFollowing == false, isPending == true
+        3. "Following" : both are false
+         */
+        isFollowing = false;
+        isPending = false;
+
+        //Implement the follow button
+        followButton = findViewById(R.id.follow_button);
+        //Change the state of the follow button (in the current view) depending on the current state
+        followButton.setOnClickListener(view -> {
+            //If user is neither following nor pending, then they will see a Follow button that they can click
+            if (!isFollowing && !isPending) {
+                isPending = true;
+                updateFollowButton(followButton, isFollowing, isPending);
+                sendFollowRequestToDataBase();
+            }
+        });
+    }
+
+    /**
+     * This method changes the state of the follow button on the UI of profile that the user is viewing.
+     * @param followButton is the UI element that will be changed to either "Follow", "Pending", or "Following"
+     * @param isFollowing declares if the user is already following this profile
+     * @param isPending declares if the user has already requested to follow this profile
+     */
+    public void updateFollowButton(Button followButton, boolean isFollowing, boolean isPending) {
+        if (isFollowing && !isPending) {
+            followButton.setText("Following");
+        }
+        else if (isPending && !isFollowing) {
+            followButton.setText("Pending");
+        }
+        else {
+            followButton.setText("Follow");
+        }
+    }
+
+    private void sendFollowRequestToDataBase() {
+
     }
 
 }
