@@ -1,5 +1,8 @@
 package com.example.project_seekdeep;
 
+import static android.view.View.VISIBLE;
+
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -97,6 +100,9 @@ public class OtherUsersProfileFragment extends Fragment {
             }
             }
         });
+
+        //TO DO: Constantly listen to the database to see if a user accepts another user's requests
+
     }
 
     private void updateButtonStatus() {
@@ -113,11 +119,11 @@ public class OtherUsersProfileFragment extends Fragment {
                             String status = doc.getString("status");
                             if ("following".equals(status)) {
                                 isFollowing = true;
-                                followButton.setText("Following");
+                                changeButton("Following");
                             }
                             if ("pending".equals(status)) {
                                 isPending = true;
-                                followButton.setText("Pending");
+                                changeButton("Pending");
                             }
                         }
                         else {
@@ -129,6 +135,9 @@ public class OtherUsersProfileFragment extends Fragment {
     }
 
     private void sendFollowRequestToDataBase() {
+        //Change the button to "Pending"
+        changeButton("Pending");
+
         //Create a new doc with a uniquely generated id
         DocumentReference newDocRef = followingsAndRequestsRef.document();
 
@@ -140,10 +149,22 @@ public class OtherUsersProfileFragment extends Fragment {
         newDocRef.set(followData);
 
         //Update isPending
+        isFollowing = false;
         isPending = true;
 
+    }
+
+    private void changeButton(String newStatus) {
         followButton = getView().findViewById(R.id.follow_button);
-        followButton.setText("Pending");
+        followButton.setText(newStatus);
+        if (newStatus.equals("Pending")) {
+            getView().findViewById(R.id.follow_button).setVisibility(View.GONE);
+            getView().findViewById(R.id.pending_button).setVisibility(View.VISIBLE);
+        }
+        if (newStatus.equals("Following")) {
+            getView().findViewById(R.id.pending_button).setVisibility(View.GONE);
+            getView().findViewById(R.id.following_button).setVisibility(View.VISIBLE);
+        }
     }
 
 

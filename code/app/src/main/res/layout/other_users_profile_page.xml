@@ -37,6 +37,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="5dp"
+                android:layout_gravity="center_vertical"
                 app:srcCompat="@drawable/profile_pic" />
 
             <TextView
@@ -44,19 +45,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingStart="10dp"
-                android:paddingTop="25dp"
+                android:layout_gravity="center_vertical"
                 android:text="@string/myusername"
                 android:textColor="@color/raisin_black"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/follow_button"
+            <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="40dp"
-                android:text="Follow" />
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="40dp">
+
+                <Button
+                    android:id="@+id/follow_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Follow" />
+
+                <Button
+                    android:id="@+id/pending_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height = "wrap_content"
+                    android:text="Pending"
+                    android:visibility="gone"/>
+
+                <Button
+                    android:id="@+id/following_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Following"
+                    android:visibility="gone" />
+            </FrameLayout>
+
         </LinearLayout>
 
         <LinearLayout
