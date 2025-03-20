@@ -24,7 +24,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * This class is a custom array adapter for the Mood class.
@@ -34,6 +33,15 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
     private FirebaseStorage storage;
     private StorageReference storageRef;
+    private OnUsernameClickListener listener;
+
+    /**
+     * This interface will be implemented by FeedFragment when the user clicks on a mood event's username
+     */
+    public interface OnUsernameClickListener {
+        void onUsernameClick(UserProfile user);
+    }
+
 
     /**
      * Mandatory constructor class for MoodArrayAdapter
@@ -41,10 +49,11 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
      * @param context   , type Context
      * @param moods     , type ArrayList<Mood>
      */
-    public MoodArrayAdapter(Context context, ArrayList<Mood> moods) {
+    public MoodArrayAdapter(Context context, ArrayList<Mood> moods, OnUsernameClickListener listener) {
         super(context, 0, moods);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+        this.listener = listener;
     }
 
     /**
@@ -181,17 +190,13 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
 
         /**
-         * This listens for when a user clicks on a mood event's username, which will take them to their profile.
+         * This listens for when a user clicks on a mood event's username, which will trigger the listener implemented by FeedFragment.
          */
+        //When the username clicks the listener, it calls the onUsernameClick method defined in FeedFragment.
         user.setOnClickListener(view1 -> {
-            //Get the username
-            String clickedUsername = currentMood.getOwnerString();
-
-            //Open the profile of the user
-            Intent intent = new Intent(getContext(), OtherUsersProfileActivity.class);
-            //Need to deliver the username into UserProfileActivity through the intent
-            intent.putExtra("USERNAME", clickedUsername);
-            getContext().startActivity(intent);
+            if (listener != null) {
+                listener.onUsernameClick(currentMood.getOwner());
+            }
         });
 
         return view;

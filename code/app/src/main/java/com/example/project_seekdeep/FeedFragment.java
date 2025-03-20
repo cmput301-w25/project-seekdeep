@@ -38,7 +38,7 @@ import java.util.Objects;
  * This fragment class is designed to display all the moods in the database.
  * @author Kevin Tu, Nancy Lin
  */
-public class FeedFragment extends Fragment {
+public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernameClickListener {
 
     private ListView moodListView;
 
@@ -102,7 +102,7 @@ public class FeedFragment extends Fragment {
         //set views
         moodListView = view.findViewById(R.id.list_view_mood);
         ArrayList<Mood> moodArrayList = new ArrayList<>();
-        ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList);
+        ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, this); //"this" passes current instance of feedFragment
         moodListView.setAdapter(moodArrayAdapter);
 
         Query MoodsQuery = MoodDB;
@@ -176,5 +176,46 @@ public class FeedFragment extends Fragment {
                         .commit();
             }
         });
+    }
+
+    /**
+     * Implementation of the OnUsernameClickListener from the MoodArrayAdapter's interface
+     * @param clickUsername the username that was clicked on
+     */
+    @Override
+    public void onUsernameClick(UserProfile clickUsername) {
+        //Check if the clickedUsername is the same as the logged-in user.
+        String clickedUsernameString = clickUsername.getUsername();
+        String loggedInUser = (String) getArguments().getString("username");
+
+        //Only open a user's profile if it is not the user's own username
+        if (!clickedUsernameString.equals(loggedInUser)) {
+            openUserProfile(clickUsername); }
+    }
+
+    /**
+     * This opens the profile of another user. Happens when a user clicks on someone else's username.
+     * @param user
+     */
+    public void openUserProfile(UserProfile user) {
+        //Create a new bundle, and put the user being viewed in it
+        Bundle loggedInUserAndOtherUser = new Bundle();
+        loggedInUserAndOtherUser.putSerializable("userBeingViewed", user);
+
+        //Get the logged-in user from the bundle passed from MainActivity, put it in loggedInUserAndOtherUser
+        UserProfile loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+        loggedInUserAndOtherUser.putSerializable("loggedInUser", loggedInUser);
+
+        FragmentManager fragManager = getParentFragmentManager();
+
+        //Create view fragment, send the user being viewed and the current logged-in user
+        OtherUsersProfileFragment userProfileFragment = new OtherUsersProfileFragment();
+        userProfileFragment.setArguments(loggedInUserAndOtherUser);
+
+        fragManager.beginTransaction()
+                .replace(R.id.frameLayout, userProfileFragment)
+                .setReorderingAllowed(true)
+                .addToBackStack("feed")
+                .commit();
     }
 }
