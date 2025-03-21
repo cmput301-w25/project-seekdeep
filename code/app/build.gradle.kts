@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
     //id("com.android.application")     //Not used in Lab 5 so not sure about it.
 }
 
@@ -31,6 +32,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -42,6 +46,7 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
+    implementation(libs.play.services.maps)
     testImplementation(libs.junit)
     testImplementation(libs.ext.junit)
     androidTestImplementation(libs.ext.junit)
@@ -71,4 +76,8 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.7.0")
     testImplementation("org.mockito:mockito-inline:5.2.0")
     implementation("net.bytebuddy:byte-buddy:1.17.1")
+
+    // Maps SDK for Android
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 }
