@@ -91,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
         else if (itemPressed == R.id.Map) {
             selectedFragment = new MapsFragment();
         }
+        else if (itemPressed == R.id.Map) {
+            selectedFragment = new MapsFragment();
+        }
 
         // Display selected fragment to screen
         if (selectedFragment != null) {
