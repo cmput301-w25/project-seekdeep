@@ -87,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
 //            bundle.putString("username", getCurrentUsername()); //username stored as string in the bundle
             selectedFragment.setArguments(bundle);  //attach bundle to the fragment
         }
+        else if (itemPressed == R.id.Map) {
+            selectedFragment = new MapsFragment();
+        }
 
         // Display selected fragment to screen
         if (selectedFragment != null) {
