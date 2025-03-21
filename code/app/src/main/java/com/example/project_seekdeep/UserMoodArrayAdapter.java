@@ -108,11 +108,10 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 
 
 
-        //if theres no trigger, hide it
-        if (currentMood.getTrigger() == null || Objects.equals(currentMood.getTrigger(), "")){
-            trigger.setVisibility(View.GONE);
-            view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
-        }
+        //hide all trigger
+        trigger.setVisibility(View.GONE);
+        view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
+
 
         // if no reason, hide it
         if(currentMood.getReason() == null){

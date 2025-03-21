@@ -201,6 +201,12 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         //intialize the SocialSituations socialSit
         socialSit = SocialSituations.TITLE.toString();
 
+
+        // hide the trigger (US 1.01.01 UPDATED)
+        triggerEditText.setVisibility(View.GONE);
+        view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
+
+
         //Retrieve UserProfile from the bundle (to use inside this fragment)
         if (getArguments() != null) {
             //Retrieve UserProfile (must be casted), save it in userProfile class attribute

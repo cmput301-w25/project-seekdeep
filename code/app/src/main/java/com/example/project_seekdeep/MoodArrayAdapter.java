@@ -98,13 +98,11 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
         // i don't know how to do the image and pfp one - jachelle
 
-        //todo set up images for mood events
 
-        //if theres no trigger, hide it
-        if (currentMood.getTrigger() == null || Objects.equals(currentMood.getTrigger(), "")){
-            trigger.setVisibility(View.GONE);
-            view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
-        }
+
+        // Hide the trigger
+        trigger.setVisibility(View.GONE);
+        view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
 
         // if no reason, hide it
         if(currentMood.getReason() == null){
