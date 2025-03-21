@@ -108,6 +108,11 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         if(currentMood.getReason() == null){
             reason.setVisibility(View.GONE);
         }
+
+        //fix bug where when you scroll past it hides all social situations
+        socialSit.setVisibility(View.VISIBLE);
+        view.findViewById(R.id.social_situation_icon).setVisibility(View.VISIBLE);
+
         //if no social situation, hide it
         if(currentMood.getSocialSituation().toString().equals("Social Situations")){
             socialSit.setVisibility(View.GONE);
