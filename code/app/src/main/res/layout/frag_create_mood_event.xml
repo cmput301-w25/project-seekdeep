@@ -107,9 +107,21 @@
 
             <Spinner
                 android:id="@+id/social_situation_spinner"
-                android:layout_width="match_parent"
+                android:layout_width="165dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0" />
+
+            <ImageView
+                android:id="@+id/location_icon"
+                android:layout_width="15sp"
+                android:layout_height="15sp"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/ic_location_pin"/>
+            <Switch
+                android:id="@+id/location_switch"
+                android:layout_width="45sp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"/>
 
         </LinearLayout>
 
