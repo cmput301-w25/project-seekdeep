@@ -85,7 +85,6 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
         TextView reason = view.findViewById(R.id.reason);
         TextView emotion = view.findViewById(R.id.emotion);
         TextView user = view.findViewById(R.id.username);
-        TextView trigger = view.findViewById(R.id.trigger);
         TextView socialSit = view.findViewById(R.id.social_situation);
         TextView date = view.findViewById(R.id.date);
         ImageView image = view.findViewById(R.id.image);
@@ -95,7 +94,6 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
         reason.setText(currentMood.getReason());
         emotion.setText(currentMood.getEmotionalState().toString());
         user.setText(currentMood.getOwnerString());
-        trigger.setText(currentMood.getTrigger());
         socialSit.setText(currentMood.getSocialSituation().toString());
         date.setText(currentMood.getPostedDate().toString());
 
@@ -107,10 +105,6 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
         // Create a reference with an initial file path and name
 
 
-
-        //hide all trigger
-        trigger.setVisibility(View.GONE);
-        view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
 
 
         // if no reason, hide it

@@ -177,7 +177,7 @@ public class Mood implements Serializable {
         this.docRef = docRef;
     }
 
-    
+
 
     /**
      * This function gets the socialSituation of the mood

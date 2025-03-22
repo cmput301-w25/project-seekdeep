@@ -81,7 +81,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         TextView reason = view.findViewById(R.id.reason);
         TextView emotion = view.findViewById(R.id.emotion);
         TextView user = view.findViewById(R.id.username);
-        TextView trigger = view.findViewById(R.id.trigger);
+
         TextView socialSit = view.findViewById(R.id.social_situation);
         TextView date = view.findViewById(R.id.date);
         ImageView image = view.findViewById(R.id.image);
@@ -91,7 +91,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         reason.setText(currentMood.getReason());
         emotion.setText(currentMood.getEmotionalState().toString());
         user.setText(currentMood.getOwnerString());
-        trigger.setText(currentMood.getTrigger());
+
         socialSit.setText(currentMood.getSocialSituation().toString());
         date.setText(currentMood.getPostedDate().toString());
 
@@ -99,10 +99,6 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         // i don't know how to do the image and pfp one - jachelle
 
 
-
-        // Hide the trigger
-        trigger.setVisibility(View.GONE);
-        view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
 
         // if no reason, hide it
         if(currentMood.getReason() == null){
