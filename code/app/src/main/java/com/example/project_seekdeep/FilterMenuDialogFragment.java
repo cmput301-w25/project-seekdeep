@@ -38,7 +38,6 @@ import java.util.Set;
  */
 public class FilterMenuDialogFragment extends DialogFragment {
     //Attributes
-    private ArrayList<Integer> selectedMoodsId = new ArrayList<>();
     private ArrayList<EmotionalStates> selectedStates = new ArrayList<>();
     private OnFilterSelectedListener listener;
     private String selectedTimeline = "";
@@ -168,7 +167,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
      * You will need to implement your own interface for this because every fragment has different needs.
      */
     public interface OnFilterSelectedListener {
-        void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, ArrayList<Integer> selectedMoodIds);
+        void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline);
         void onFiltersReset();
     }
 
@@ -190,7 +189,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
     private void applyFilters() {
         // send the selected filters back to the parent fragment
         if (listener != null) {
-            listener.onFiltersApplied(selectedStates, selectedTimeline, selectedMoodsId);
+            listener.onFiltersApplied(selectedStates, selectedTimeline);
         }
         dismiss(); // close the dialog after applying the filters
     }

@@ -193,11 +193,11 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
 
     /**
      * This method is called when filters are applied in the FilterMenuDialogFragment
-     * @param selectedMoods
-     * @param selectedTimeline
+     * @param selectedMoods: An arraylist of emotional state(s) that are selected by the user
+     * @param selectedTimeline: A string of what the user wants to filter the timeline by in terms of the MoodFiltering class
      */
     @Override
-    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, ArrayList<Integer> selectedMoodIds) {
+    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline) {
         // apply the selected filters if they arent empty
         MoodFiltering.removeAllFilters();
         if(!selectedMoods.isEmpty()) {
