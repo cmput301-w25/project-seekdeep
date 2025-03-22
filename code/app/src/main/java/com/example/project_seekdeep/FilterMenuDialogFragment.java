@@ -38,36 +38,11 @@ import java.util.Set;
  */
 public class FilterMenuDialogFragment extends DialogFragment {
     //Attributes
-    private ChipGroup moodFiltersChipGroup; //User can select multiple moods to filter by
-    private ChipGroup timelineChipGroup; //User can only select 1 timeline filter (either "Past week" or "Last 3 from all users" )
     private ArrayList<Integer> selectedMoodsId = new ArrayList<>();
     private ArrayList<EmotionalStates> selectedStates = new ArrayList<>();
-    private int selectedTimelineId;
     private OnFilterSelectedListener listener;
     private String selectedTimeline = "";
 
-
-    // This constructor is taken from https://stackoverflow.com/a/15459259
-    // Author: JafarKhQ
-    // Taken by: Jachelle Chan
-    // Taken on: March 19, 2025
-    /*
-    public static FilterMenuDialogFragment newInstance(ArrayList<Integer> selectedChipIds) {
-
-        FilterMenuDialogFragment fragment = new FilterMenuDialogFragment();
-        Bundle args = new Bundle();
-        args.putIntegerArrayList("chip ids", selectedChipIds);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            selectedMoodsId = getArguments().getIntegerArrayList("chip ids");
-        }
-    }*/
     @Override
     public void onAttach(@NonNull android.content.Context context) {
         super.onAttach(context);
@@ -88,31 +63,10 @@ public class FilterMenuDialogFragment extends DialogFragment {
         builder.setView(view);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-        // restore the checked chips if the user reopens the dialog fragment
-        moodFiltersChipGroup = view.findViewById(R.id.mood_chip_group);
-        if(!selectedMoodsId.isEmpty()) {
-            for (int chipId : selectedMoodsId) {
-                Chip chip = view.findViewById(chipId);
-                if (chip != null) {
-                    chip.setChecked(true);
-                }
-            }
-        }
-
-        // add back the states into selectedStates array based on the ids when given to the fragment
-        moodFiltersChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            selectedStates.clear();
-            for (int id : checkedIds) {
-                EmotionalStates state = EmotionalStates.mapChipToState(id);
-                if (state != null) {
-                    selectedStates.add(state);
-                }
-            }
-        });*/
 
         // set up listeners for each individual chip in the chip group
         // check if it's checked so that we can add or remove them from the array list
+        //User can select multiple moods to filter by
         Chip surpriseChip = view.findViewById(R.id.surprise_chip);
         surpriseChip.setOnCheckedChangeListener((chip, isChecked) -> {
             if (isChecked) {
@@ -170,7 +124,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
             else selectedStates.remove(EmotionalStates.SADNESS);
         });
 
-
+        //User can only select 1 timeline filter (either "Past week" or "Last 3 from all users" )
         Chip recentChip = view.findViewById(R.id.recent_week_chip);
         recentChip.setOnCheckedChangeListener((chip, isChecked) -> {
             if(isChecked) {
@@ -190,7 +144,6 @@ public class FilterMenuDialogFragment extends DialogFragment {
                 selectedTimeline = "";
             }
         });
-        timelineChipGroup = view.findViewById(R.id.timeline_chip_group);
 
         //Adjust filtering menu if on profile OR feed page
         hideLastThreeFilterChip(view);
@@ -211,18 +164,19 @@ public class FilterMenuDialogFragment extends DialogFragment {
     }
 
     /**
-     * This interface allows for FilterMenuDialogFragment to interact with the parent fragment it's attached to
+     * This interface allows for FilterMenuDialogFragment to interact with the parent fragment it's attached to.
+     * You will need to implement your own interface for this because every fragment has different needs.
      */
     public interface OnFilterSelectedListener {
         void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, ArrayList<Integer> selectedMoodIds);
         void onFiltersReset();
     }
 
-
+    /**
+     * This method is used to hide a chip if the user is on certain pages depending on the tag attached
+     * @param view: The view the user is on.
+     */
     public void hideLastThreeFilterChip(View view) {
-        //TO DO: Check if you are in profile page OR the feed page, if yes, then hide the "Last 3 from all users" chip , because not applicable to either pages
-        // IF THIS DOES NOT WORK, THEN I WILL JUST CREATE TWO SEPARATE XML FILES FOR FILTERING
-
         //If on profile/feed page, hide last_3_chip from the filtering menu:
         //can use:  view.findViewById(R.id.last_3_chip).setVisibility(View.GONE);
         if(Objects.equals(getTag(), "profile")) {
@@ -230,17 +184,20 @@ public class FilterMenuDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * This method sends the information of the filters applied to the fragment it was called from.
+     */
     private void applyFilters() {
         // send the selected filters back to the parent fragment
         if (listener != null) {
-            //selectedMoodsId.clear();
-            //selectedMoodsId.addAll(moodFiltersChipGroup.getCheckedChipIds());
-             Log.d("jshello", selectedMoodsId.toString());
-             Log.d("jshello", selectedStates.toString());
             listener.onFiltersApplied(selectedStates, selectedTimeline, selectedMoodsId);
         }
         dismiss(); // close the dialog after applying the filters
     }
+
+    /**
+     * This method sends to the fragment it was called from that the user wants to reset all filters
+     */
     private void resetFilters() {
         if (listener != null) {
             listener.onFiltersReset();

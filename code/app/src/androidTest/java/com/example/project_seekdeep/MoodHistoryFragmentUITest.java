@@ -687,4 +687,125 @@ public class MoodHistoryFragmentUITest {
         // check if confusion is there
         onView(withText("🤔 Confusion")).check(matches(isDisplayed()));
     }
+
+    @Test
+    public void filteringMoodButDeselectingShouldNotFilterByDeselected() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(2000);
+        // save views that should be gone
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        views.add(view);
+        view = onView(withText("😄 Happiness"));
+        views.add(view);
+        view = onView(withText("☹️ Sadness"));
+        views.add(view);
+
+        // the order should be ["Sadness", "Confusion", "Happiness", "Anger"] (top to bottom)
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText("☹️ Sadness")));
+
+        // next confusion
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText("🤔 Confusion")));
+
+        // next happiness
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText("😄 Happiness")));
+
+        // next anger
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText("\uD83D\uDE20 Anger")));
+
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // click anger and confusion and then click anger again
+        onView(withId(R.id.anger_chip)).perform((click()));
+        onView(withId(R.id.confusion_chip)).perform((click()));
+        onView(withId(R.id.anger_chip)).perform((click()));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if other views are gone including anger
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+
+        // check if confusion is there
+        onView(withText("🤔 Confusion")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void filterAndThenResetFiltersShouldReturnToOriginalState() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(2000);
+        // save views that should be gone for the initial filter
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        views.add(view);
+        view = onView(withText("😄 Happiness"));
+        views.add(view);
+        view = onView(withText("☹️ Sadness"));
+        views.add(view);
+
+        // the order should be ["Sadness", "Confusion", "Happiness", "Anger"] (top to bottom)
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText("☹️ Sadness")));
+
+        // next confusion
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText("🤔 Confusion")));
+
+        // next happiness
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText("😄 Happiness")));
+
+        // next anger
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText("\uD83D\uDE20 Anger")));
+
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // click anger and confusion and recent week on the dialog fragment
+        onView(withId(R.id.anger_chip)).perform((click()));
+        onView(withId(R.id.confusion_chip)).perform((click()));
+        onView(withId(R.id.recent_week_chip)).perform((click()));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if other views are gone
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+
+        // check if confusion is there
+        onView(withText("🤔 Confusion")).check(matches(isDisplayed()));
+
+        // now we reset filters
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // click reset filters
+        onView(withId(R.id.reset_filters_button)).perform(click());
+
+        // now everything should be back again
+        // the order should be ["Sadness", "Confusion", "Happiness", "Anger"] (top to bottom)
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText("☹️ Sadness")));
+
+        // next confusion
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText("🤔 Confusion")));
+
+        // next happiness
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText("😄 Happiness")));
+
+        // next anger
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText("\uD83D\uDE20 Anger")));
+    }
 }

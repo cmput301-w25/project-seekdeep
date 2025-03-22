@@ -52,10 +52,7 @@ import java.util.Set;
 public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFragment.OnFilterSelectedListener{
     // TODO: We need to figure out how to store userID to be used as primary key to access entry in the database.
     private UserProfile loggedInUser;
-    private ArrayList<Mood> moodsList;
     private ArrayList<Mood> filteredMoodList;
-
-    private ListView moodListView;
 
     private ArrayList<Mood> moodArrayList;
     private ArrayAdapter<Mood> moodArrayAdapter;
@@ -66,9 +63,6 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
     private CollectionReference moods;
     private CollectionReference users;
 
-    private ArrayList<EmotionalStates> states = new ArrayList<>();
-    private String timeline = "";
-    private ArrayList<Integer> selectedMoodIds = new ArrayList<>();
 
     public MoodHistoryFragment() {
         super(R.layout.profile_feed);
@@ -188,7 +182,6 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                    filterButton.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View view) {
-                           //FilterMenuDialogFragment.newInstance(new ArrayList<>(selectedMoodIds)).show(getChildFragmentManager(), "profile");
                            new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
                        }
                    });
@@ -208,27 +201,21 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         // apply the selected filters if they arent empty
         MoodFiltering.removeAllFilters();
         if(!selectedMoods.isEmpty()) {
-            this.states = selectedMoods;
-            MoodFiltering.addStates(states);
+            MoodFiltering.addStates(selectedMoods);
             MoodFiltering.applyFilter("states");
-        } else {
-            MoodFiltering.removeFilter("states");
         }
         filteredMoodList = MoodFiltering.getFilteredMoods();
         moodArrayAdapter.clear();
         moodArrayAdapter.addAll(filteredMoodList);
         moodArrayAdapter.notifyDataSetChanged();
+
         if(!selectedTimeline.isBlank()) {
-            this.timeline = selectedTimeline;
             MoodFiltering.applyFilter(selectedTimeline);
             filteredMoodList = MoodFiltering.getFilteredMoods();
             moodArrayAdapter.clear();
             moodArrayAdapter.addAll(filteredMoodList);
             moodArrayAdapter.notifyDataSetChanged();
-        } else {
-            MoodFiltering.removeFilter("recent");
         }
-        this.selectedMoodIds = selectedMoodIds;
     }
 
     /**
@@ -237,7 +224,6 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
     @Override
     public void onFiltersReset() {
         MoodFiltering.removeAllFilters();
-        selectedMoodIds.clear();
         filteredMoodList = MoodFiltering.getFilteredMoods();
         moodArrayAdapter.clear();
         moodArrayAdapter.addAll(filteredMoodList);
