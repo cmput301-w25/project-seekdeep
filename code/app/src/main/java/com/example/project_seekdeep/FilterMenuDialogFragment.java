@@ -4,20 +4,27 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * This class displays the filtering menu for Feed, History, and Profile.
@@ -27,14 +34,24 @@ import java.util.Objects;
  *
  * Note: Multiple mood filters can be selected. But only one timeline filter can be selected
  *       If a user chooses a combination of moods and a timeline filter, they must all be applied.
+ * @author Sarah Chang and Jachelle Chan
  */
 public class FilterMenuDialogFragment extends DialogFragment {
     //Attributes
-    ChipGroup moodFiltersChipGroup; //User can select multiple moods to filter by
-    ChipGroup timelineChipGroup; //User can only select 1 timeline filter (either "Past week" or "Last 3 from all users" )
-    List<Integer> selectedMoods;
-    int selectedTimeline;
+    private ArrayList<EmotionalStates> selectedStates = new ArrayList<>();
+    private OnFilterSelectedListener listener;
+    private String selectedTimeline = "";
 
+    @Override
+    public void onAttach(@NonNull android.content.Context context) {
+        super.onAttach(context);
+        if (getParentFragment() instanceof FilterMenuDialogFragment.OnFilterSelectedListener) {   //the parent fragment is CreateMoodEventFragment
+            listener = (FilterMenuDialogFragment.OnFilterSelectedListener) getParentFragment();
+            // add an else if statement for the other pages
+        } else {
+            throw new RuntimeException("Parent fragment did not implement OnFilterSelectedListener!!");
+        }
+    }
 
     @NonNull
     @Override
@@ -46,20 +63,95 @@ public class FilterMenuDialogFragment extends DialogFragment {
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        moodFiltersChipGroup = view.findViewById(R.id.mood_chip_group);
-        timelineChipGroup = view.findViewById(R.id.timeline_chip_group);
+        // set up listeners for each individual chip in the chip group
+        // check if it's checked so that we can add or remove them from the array list
+        //User can select multiple moods to filter by
+        Chip surpriseChip = view.findViewById(R.id.surprise_chip);
+        surpriseChip.setOnCheckedChangeListener((chip, isChecked) -> {
+            if (isChecked) {
+                selectedStates.add(EmotionalStates.SURPRISE);
+            }
+            else selectedStates.remove(EmotionalStates.SURPRISE);
+        });
+        Chip angerChip = view.findViewById(R.id.anger_chip);
+        angerChip.setOnCheckedChangeListener((chip, isChecked) -> {
+            if (isChecked) {
+                selectedStates.add(EmotionalStates.ANGER);
+            }
+            else selectedStates.remove(EmotionalStates.ANGER);
+        });
+        Chip confusionChip = view.findViewById(R.id.confusion_chip);
+        confusionChip.setOnCheckedChangeListener((chip, isChecked) -> {
+            if (isChecked) {
+                selectedStates.add(EmotionalStates.CONFUSION);
+            }
+            else selectedStates.remove(EmotionalStates.CONFUSION);
+        });
+        Chip disgustChip = view.findViewById(R.id.disgust_chip);
+        disgustChip.setOnCheckedChangeListener((chip, isChecked) -> {
+            if(isChecked) {
+                selectedStates.add(EmotionalStates.DISGUST);
+            }
+            else selectedStates.remove(EmotionalStates.DISGUST);
+        });
+        Chip fearChip = view.findViewById(R.id.fear_chip);
+        fearChip.setOnCheckedChangeListener((chip, isChecked) -> {
+            if (isChecked) {
+                selectedStates.add(EmotionalStates.FEAR);
+            }
+            else selectedStates.remove(EmotionalStates.FEAR);
+        });
+        Chip happyChip = view.findViewById(R.id.happiness_chip);
+        happyChip.setOnCheckedChangeListener((chip, isChecked) -> {
+            if(isChecked) {
+                selectedStates.add(EmotionalStates.HAPPINESS);
+            }
+            else selectedStates.remove(EmotionalStates.HAPPINESS);
+        });
+        Chip sadChip = view.findViewById(R.id.sadness_chip);
+        sadChip.setOnCheckedChangeListener((chip, isChecked) -> {
+            if(isChecked) {
+                selectedStates.add(EmotionalStates.SADNESS);
+            }
+            else selectedStates.remove(EmotionalStates.SADNESS);
+        });
+        Chip shameChip = view.findViewById(R.id.shame_chip);
+        shameChip.setOnCheckedChangeListener((chip, isChecked) -> {
+            if(isChecked) {
+                selectedStates.add(EmotionalStates.SHAME);
+            }
+            else selectedStates.remove(EmotionalStates.SADNESS);
+        });
+
+        //User can only select 1 timeline filter (either "Past week" or "Last 3 from all users" )
+        Chip recentChip = view.findViewById(R.id.recent_week_chip);
+        recentChip.setOnCheckedChangeListener((chip, isChecked) -> {
+            if(isChecked) {
+                selectedTimeline = "recent";
+            }
+            else {
+                selectedTimeline = "";
+            }
+        });
+
+        Chip last3chip = view.findViewById(R.id.last_3_chip);
+        last3chip.setOnCheckedChangeListener((chip, isChecked) -> {
+            if(isChecked) {
+                selectedTimeline = "last 3";  // or something like that
+            }
+            else {
+                selectedTimeline = "";
+            }
+        });
 
         //Adjust filtering menu if on profile OR feed page
         hideLastThreeFilterChip(view);
 
-        //Get a list of chip IDs that were selected for moods
-        // (ie. [R.id.surprise_chip, R.id.happiness_chip],  [] if nothing selected )
-        selectedMoods = moodFiltersChipGroup.getCheckedChipIds();
+        Button applyFiltersButton = view.findViewById(R.id.apply_filters_button);
+        applyFiltersButton.setOnClickListener(v -> applyFilters());
 
-        //Get the chip IDs that were selected for timeline
-        //  (ie. R.id.recent_week_chip,  View.NO_ID if nothing selected )
-        selectedTimeline = timelineChipGroup.getCheckedChipId();
-
+        Button resetFiltersButton = view.findViewById(R.id.reset_filters_button);
+        resetFiltersButton.setOnClickListener(v -> resetFilters());
 
         //TO DO: Apply both moods and timeline filters on the current list of moods events (either in Feed, Following, or Profile)
         //Use filtering functions, from another class?
@@ -70,11 +162,20 @@ public class FilterMenuDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    /**
+     * This interface allows for FilterMenuDialogFragment to interact with the parent fragment it's attached to.
+     * You will need to implement your own interface for this because every fragment has different needs.
+     */
+    public interface OnFilterSelectedListener {
+        void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline);
+        void onFiltersReset();
+    }
 
+    /**
+     * This method is used to hide a chip if the user is on certain pages depending on the tag attached
+     * @param view: The view the user is on.
+     */
     public void hideLastThreeFilterChip(View view) {
-        //TO DO: Check if you are in profile page OR the feed page, if yes, then hide the "Last 3 from all users" chip , because not applicable to either pages
-        // IF THIS DOES NOT WORK, THEN I WILL JUST CREATE TWO SEPARATE XML FILES FOR FILTERING
-
         //If on profile/feed page, hide last_3_chip from the filtering menu:
         //can use:  view.findViewById(R.id.last_3_chip).setVisibility(View.GONE);
         if(Objects.equals(getTag(), "profile")) {
@@ -82,4 +183,24 @@ public class FilterMenuDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * This method sends the information of the filters applied to the fragment it was called from.
+     */
+    private void applyFilters() {
+        // send the selected filters back to the parent fragment
+        if (listener != null) {
+            listener.onFiltersApplied(selectedStates, selectedTimeline);
+        }
+        dismiss(); // close the dialog after applying the filters
+    }
+
+    /**
+     * This method sends to the fragment it was called from that the user wants to reset all filters
+     */
+    private void resetFilters() {
+        if (listener != null) {
+            listener.onFiltersReset();
+        }
+        dismiss();
+    }
 }

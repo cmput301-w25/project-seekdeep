@@ -150,4 +150,8 @@ public class MoodFiltering {
         moods.removeIf(mood -> !mood.getReason().toLowerCase().matches(".*\\b" + keyword.toLowerCase().trim() + "\\b.*"));  // matches whole word
         //moods.removeIf(mood -> !mood.getReason().toLowerCase().contains(keyword.toLowerCase().trim()));  // matches if it has it at all no matter where
     }
+
+    public static Set<String> getFilters() {
+        return filters;
+    }
 }
