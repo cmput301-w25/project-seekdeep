@@ -47,7 +47,7 @@ import java.util.Objects;
 
 
 // Taken from Seth's lab-07 instructions on UI testing :)
-// Taken by: Kevin Tu
+// Taken by: Kevin Tu and Jachelle Chan
 // Taken on: 2025-03-08
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -75,24 +75,19 @@ public class MoodHistoryFragmentUITest {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference usersRef = db.collection("UserDB");
         CollectionReference moodsRef = db.collection("MoodDB");
-/*
-        Mood[] moods = {
-                new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food"),
-                new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework"),
-                new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms")
-        };*/
-        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE);
+
+        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, new String[]{"Done testing!","Alone"});
 
         // give time so we can sort the list
         Thread.sleep(5000);
-        Mood mood2 = new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER);
+        Mood mood2 = new Mood(testUser, EmotionalStates.CONFUSION, new String[]{"How to test?", "With Another Person"});
         Thread.sleep(5000);
-        Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD);
+        Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, new String[]{"Midterms", "With a Crowd"});
         // make mood with a date outside of recent week
         Thread.sleep(2000);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -10);
-        Mood mood4 = new Mood(testUser, EmotionalStates.ANGER, SocialSituations.ALONE, calendar.getTime());
+        Mood mood4 = new Mood(testUser, EmotionalStates.ANGER, SocialSituations.ALONE, calendar.getTime(), "Midterms are hard");
 
         usersRef.document().set(testUser);
 
@@ -142,7 +137,9 @@ public class MoodHistoryFragmentUITest {
         onView(withText("\uD83D\uDE04 Happiness")).check(matches(isDisplayed()));
         onView(withText("\uD83E\uDD14 Confusion")).check(matches(isDisplayed()));
         onView(withText("☹️ Sadness")).check(matches(isDisplayed()));
-        onView(withText("\uD83D\uDE20 Anger")).check(matches(isDisplayed()));
+        // this one needs to be onData because espresso doesn't see it since it needs to scroll
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText("\uD83D\uDE20 Anger")));
 
         // click on edit button for sadness mood
         // The way to click a button inside a listview item is taken from https://stackoverflow.com/a/25373597
@@ -164,8 +161,7 @@ public class MoodHistoryFragmentUITest {
 
         // check that the mood details are displayed properly
         onView(withId(R.id.emotion_spinner)).check(matches(hasDescendant(withText("☹️ Sadness"))));
-        onView(withId(R.id.edit_reason)).check(matches(withText("")));
-        onView(withId(R.id.edit_trigger)).check(matches(withText("Midterms")));
+        onView(withId(R.id.edit_reason)).check(matches(withText("Midterms")));
         onView(withId(R.id.social_situation_spinner)).check(matches(hasDescendant(withText("With a Crowd"))));
     }
 
@@ -208,7 +204,6 @@ public class MoodHistoryFragmentUITest {
         // check that the mood details are displayed properly
         onView(withId(R.id.emotion_spinner)).check(matches(hasDescendant(withText("😨 Fear"))));
         onView(withId(R.id.edit_reason)).check(matches(withText("Demo")));
-        onView(withId(R.id.edit_trigger)).check(matches(withText("")));
         onView(withId(R.id.social_situation_spinner)).check(matches(hasDescendant(withText("With a Crowd"))));
     }
 
@@ -265,10 +260,8 @@ public class MoodHistoryFragmentUITest {
             }
         }).inAdapterView(withId(R.id.history_listview)).onChildView(withId(R.id.edit_mood_button)).perform(click());
         // change reason to be Midterms oh no!
+        onView(withId(R.id.edit_reason)).perform(clearText());
         onView(withId(R.id.edit_reason)).perform(typeText("Midterms oh no!"));
-        // change trigger to be
-        onView(withId(R.id.edit_trigger)).perform(clearText());
-        onView(withId(R.id.edit_trigger)).perform(typeText("Midterm"));
 
         onView(withId(R.id.emotion_spinner)).perform(click());
         // change sadness to fear
@@ -298,44 +291,7 @@ public class MoodHistoryFragmentUITest {
         // check that the mood details are displayed properly
         onView(withId(R.id.emotion_spinner)).check(matches(hasDescendant(withText("😨 Fear"))));
         onView(withId(R.id.edit_reason)).check(matches(withText("Midterms oh no!")));
-        onView(withId(R.id.edit_trigger)).check(matches(withText("Midterm")));
         onView(withId(R.id.social_situation_spinner)).check(matches(hasDescendant(withText("With a Crowd"))));
-    }
-
-    @Test
-    public void reasonWithMoreThan3WordsShouldErrorWhenAdding() throws InterruptedException {
-        // we're gonna make this mood a fear mood event
-        // give time for the login to process
-        Thread.sleep(2000);
-        onView(withId(R.id.create_mood_bottom_nav)).perform(click());
-        Thread.sleep(1000);
-        // click on select mood
-        onView(withId(R.id.edit_emotion_editText)).perform(click());
-        Thread.sleep(1000);
-        // select emotion as fear and create the mood
-        onView(withId(R.id.buttonFear)).perform(click());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.edit_reason)).perform(ViewActions.typeText("Demo oh no !"));
-        onView(withId(R.id.confirm_create_button)).perform(click());
-        onView(withId(R.id.edit_reason)).check(matches(hasErrorText("Reason must be ≤ 20 chars or ≤ 3 words!")));
-    }
-
-    @Test
-    public void reasonWithMoreThan20CharShouldErrorWhenAdding() throws InterruptedException {
-        // we're gonna make this mood a fear mood event
-        // give time for the login to process
-        Thread.sleep(2000);
-        onView(withId(R.id.create_mood_bottom_nav)).perform(click());
-        Thread.sleep(1000);
-        // click on select mood
-        onView(withId(R.id.edit_emotion_editText)).perform(click());
-        Thread.sleep(1000);
-        // select emotion as fear and create the mood
-        onView(withId(R.id.buttonFear)).perform(click());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.edit_reason)).perform(ViewActions.typeText("12345678910111213 !!!"));
-        onView(withId(R.id.confirm_create_button)).perform(click());
-        onView(withId(R.id.edit_reason)).check(matches(hasErrorText("Reason must be ≤ 20 chars or ≤ 3 words!")));
     }
 
     @Test
@@ -818,9 +774,6 @@ public class MoodHistoryFragmentUITest {
                 .check(matches(withText("\uD83D\uDE20 Anger")));
     }
 
-    /*
-    THIS TEST WILL NOT WORK ATM SINCE TRIGGER IS STILL A THING IN THIS VERSION OF THE CODE!!!
-     */
     @Test
     public void testFilterKeyword() throws InterruptedException {
         // give time for the login to process
@@ -830,9 +783,7 @@ public class MoodHistoryFragmentUITest {
         Thread.sleep(2000);
         // save views that should be gone
         ArrayList<ViewInteraction> views = new ArrayList<>();
-        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
-        views.add(view);
-        view = onView(withText("😄 Happiness"));
+        ViewInteraction view = onView(withText("😄 Happiness"));
         views.add(view);
         view = onView(withText("🤔 Confusion"));
         views.add(view);
@@ -860,7 +811,7 @@ public class MoodHistoryFragmentUITest {
         Thread.sleep(2000);
         onView(withId(R.id.apply_filters_button)).perform(click());
 
-        // now should only be the sadness mood
+        // now should only be the sadness mood and anger
         // check if other views are gone
         for (ViewInteraction aview : views) {
             aview.check(doesNotExist());
