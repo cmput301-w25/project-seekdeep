@@ -37,8 +37,8 @@ public class FollowingUsersTest {
 
     }
 
-    @Test
-    public void testGoIntoProfile
+//    @Test
+//    public void testGoIntoProfile
 
 
 }
