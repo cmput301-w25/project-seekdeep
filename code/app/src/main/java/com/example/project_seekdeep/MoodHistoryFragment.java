@@ -168,6 +168,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                }
 
                if (!(moodArrayList == null)){
+                   MoodFiltering.removeAllFilters();  // as a preventative to having other fragment's filters
                    MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                    moodArrayAdapter.notifyDataSetChanged();
                    moodListView.setAdapter(moodArrayAdapter);
@@ -197,7 +198,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
      * @param selectedTimeline: A string of what the user wants to filter the timeline by in terms of the MoodFiltering class
      */
     @Override
-    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline) {
+    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
         // apply the selected filters if they arent empty
         MoodFiltering.removeAllFilters();
         if(!selectedMoods.isEmpty()) {
@@ -211,6 +212,15 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
 
         if(!selectedTimeline.isBlank()) {
             MoodFiltering.applyFilter(selectedTimeline);
+            filteredMoodList = MoodFiltering.getFilteredMoods();
+            moodArrayAdapter.clear();
+            moodArrayAdapter.addAll(filteredMoodList);
+            moodArrayAdapter.notifyDataSetChanged();
+        }
+
+        if(!keyword.isBlank()) {
+            MoodFiltering.addKeyword(keyword);
+            MoodFiltering.applyFilter("keyword");
             filteredMoodList = MoodFiltering.getFilteredMoods();
             moodArrayAdapter.clear();
             moodArrayAdapter.addAll(filteredMoodList);

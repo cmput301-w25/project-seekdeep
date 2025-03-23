@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +42,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
     private ArrayList<EmotionalStates> selectedStates = new ArrayList<>();
     private OnFilterSelectedListener listener;
     private String selectedTimeline = "";
+    private String keyword = "";
 
     @Override
     public void onAttach(@NonNull android.content.Context context) {
@@ -148,10 +150,27 @@ public class FilterMenuDialogFragment extends DialogFragment {
         hideChipsAndLabels(view);
 
         Button applyFiltersButton = view.findViewById(R.id.apply_filters_button);
-        applyFiltersButton.setOnClickListener(v -> applyFilters());
+        //applyFiltersButton.setOnClickListener(v -> applyFilters());
+        applyFiltersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText keywordTextView = view.findViewById(R.id.dialog_keyword_search);
+                // the code for input handling has been reused from CreateMoodEvenFragment by Sarah Chang
+                // Taken by: Jachelle Chan
+                // Taken on: March 22, 2025
+                keyword = keywordTextView.getText().toString().trim();
+                if(keyword.split(" ").length > 1) {
+                    keywordTextView.setError("1 keyword only!");
+                    return;  // stop the execution for the rest of this click method
+                }
+                applyFilters();
+            }
+        });
 
         Button resetFiltersButton = view.findViewById(R.id.reset_filters_button);
         resetFiltersButton.setOnClickListener(v -> resetFilters());
+
+
 
         //TO DO: Apply both moods and timeline filters on the current list of moods events (either in Feed, Following, or Profile)
         //Use filtering functions, from another class?
@@ -167,7 +186,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
      * You will need to implement your own interface for this because every fragment has different needs.
      */
     public interface OnFilterSelectedListener {
-        void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline);
+        void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword);
         void onFiltersReset();
     }
 
@@ -194,7 +213,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
     private void applyFilters() {
         // send the selected filters back to the parent fragment
         if (listener != null) {
-            listener.onFiltersApplied(selectedStates, selectedTimeline);
+            listener.onFiltersApplied(selectedStates, selectedTimeline, keyword);
         }
         dismiss(); // close the dialog after applying the filters
     }
