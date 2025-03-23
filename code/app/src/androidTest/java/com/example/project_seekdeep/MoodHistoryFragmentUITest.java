@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.anything;
 
 import android.util.Log;
 
+import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.matcher.BoundedMatcher;
@@ -72,10 +73,6 @@ public class MoodHistoryFragmentUITest {
 
     @Before
     public void seedDatabase() throws InterruptedException {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersRef = db.collection("UserDB");
-        CollectionReference moodsRef = db.collection("MoodDB");
-
         Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, new String[]{"Done testing!","Alone"});
 
         // give time so we can sort the list
@@ -829,7 +826,6 @@ public class MoodHistoryFragmentUITest {
         onView(withId(R.id.filter_button)).perform(click());
         // type keyword "Midterms"
         onView(withId(R.id.dialog_keyword_search)).perform(typeText("Midterms"));
-        Thread.sleep(2000);
         onView(withId(R.id.apply_filters_button)).perform(click());
 
         // now should only be the sadness mood and anger
@@ -840,6 +836,64 @@ public class MoodHistoryFragmentUITest {
 
         // check if sadness is there
         onView(withText("☹️ Sadness")).check(matches(isDisplayed()));
+    }
 
+    @Test
+    public void testFilterKeywordShouldErrorWhenMoreThanOneWord() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(1000);
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // type 2 words
+        onView(withId(R.id.dialog_keyword_search)).perform(typeText("testing code"));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+        // check that the error is shown to user
+        onView(withId(R.id.dialog_keyword_search)).check(matches(hasErrorText("1 keyword only!")));
+
+    }
+
+    @Test
+    public void testKeywordFilterAndEmotionalState() throws InterruptedException {
+        // add another anger mood to test with
+        Mood mood = new Mood(testUser, EmotionalStates.ANGER, new String[]{"What??", "With Another Person"});
+        usersRef.document().set(testUser);
+        moodsRef.document().set(mood);
+        // so now the listview will look like ["Anger', "Sadness", "Confusion", "Happiness", "Anger"]
+        // give time
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(1000);
+        // save views that should be gone
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("😄 Happiness"));
+        views.add(view);
+        view = onView(withText("🤔 Confusion"));
+        views.add(view);
+        view = onView(withText("What??"));
+        views.add(view);
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // click on the anger filter
+        onView(withId(R.id.anger_chip)).perform(click());
+        // type "Midterms"
+        onView(withId(R.id.dialog_keyword_search)).perform(typeText("Midterms"));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // Should now only have 1 anger , which is the one that includes "Midterms" in the reason
+        // check if other views are gone
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+
+        // check if the anger event with the midterms reason is there
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText("\uD83D\uDE20 Anger")));
+
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.reason))
+                .check(matches(withText("Midterms are hard")));
     }
 }
