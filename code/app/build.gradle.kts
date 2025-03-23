@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
     testImplementation(libs.junit)
+    testImplementation(libs.ext.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
@@ -65,4 +66,9 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.firebase.firestore)
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    // Mockito testing dependencies
+    testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    implementation("net.bytebuddy:byte-buddy:1.17.1")
 }

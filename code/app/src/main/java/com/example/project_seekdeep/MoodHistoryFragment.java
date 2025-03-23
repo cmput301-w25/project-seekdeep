@@ -4,9 +4,13 @@ package com.example.project_seekdeep;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,13 +44,14 @@ import java.util.Map;
 
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
- * @author Kevin Tu, Nancy Lin
+ * @author Kevin Tu, Nancy Lin, modified by Jachelle Chan
  */
 
 public class MoodHistoryFragment extends Fragment {
     // TODO: We need to figure out how to store userID to be used as primary key to access entry in the database.
     private UserProfile loggedInUser;
     private ArrayList<Mood> moodsList;
+    private ArrayList<Mood> filteredMoodList;
 
     private ListView moodListView;
 
@@ -59,9 +64,10 @@ public class MoodHistoryFragment extends Fragment {
     private CollectionReference moods;
     private CollectionReference users;
 
+    private boolean recentFilterFlag = false;
 
     public MoodHistoryFragment() {
-        super(R.layout.layout_feed);
+        super(R.layout.profile_feed);
     }
 
     // add username as variable
@@ -78,12 +84,11 @@ public class MoodHistoryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         moodArrayList = new ArrayList<>();
+        filteredMoodList = new ArrayList<>();
 
         // Get the logged in User
-        //loggedInUser = new UserProfile(getArguments().getString("username"), "");
-        loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
 
-        //Log.d("NANCY", "On Create ->" + loggedInUser.getUsername() + loggedInUser.getPassword());
+        loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
 
         //create the firestore
         db = FirebaseFirestore.getInstance();
@@ -106,7 +111,11 @@ public class MoodHistoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //set views
-        ListView moodListView = view.findViewById(R.id.list_view_mood);
+        ListView moodListView = view.findViewById(R.id.history_listview);
+
+        // set Textview for username placeholder to be the logged in user's username
+        TextView username = view.findViewById(R.id.username_profile);
+        username.setText("@" + loggedInUser.getUsername());
 
 
         // Instantiate database for usage
@@ -121,7 +130,6 @@ public class MoodHistoryFragment extends Fragment {
         HashMap<String, Object> userMap = new HashMap<String, Object> ();
         userMap.put("password", loggedInUser.getPassword());
         userMap.put("username", loggedInUser.getUsername());
-        //Query loggedInUserMoodsQuery = moods.whereEqualTo("owner", userMap);
         Query loggedInUserMoodsQuery = moods.whereEqualTo("owner.username", loggedInUser.getUsername());
 
         moodArrayAdapter = new UserMoodArrayAdapter(view.getContext(), moodArrayList);
@@ -159,13 +167,38 @@ public class MoodHistoryFragment extends Fragment {
                     mood.setImage(image);
 
                     moodArrayList.add(mood);
-
-                    Log.d("NANCY", "UserDoc: " + snapshot.toString());
                }
 
                if (!(moodArrayList == null)){
+                   MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                    moodArrayAdapter.notifyDataSetChanged();
-                   moodListView .setAdapter(moodArrayAdapter);
+                   moodListView.setAdapter(moodArrayAdapter);
+
+                   // save original for filters that might remove items from array
+                   MoodFiltering.saveOriginal(moodArrayList);
+                   // reverse chronological doesn't need to do this because it's not a filter
+                   // and the user just wants to view it in reverse chronological
+
+                   // click filter button to add and remove the filter. this will change when UI for the filter dialog fragment is added
+                   ImageButton filterButton = view.findViewById(R.id.filter_button);
+                   filterButton.setOnClickListener(new View.OnClickListener() {
+                       @Override
+                       public void onClick(View view) {
+                           if (!recentFilterFlag) {
+                               MoodFiltering.applyFilter("recent");
+                               recentFilterFlag = true;
+                           }
+                           else {
+                               MoodFiltering.removeFilter("recent");
+                               recentFilterFlag = false;
+                           }
+                           filteredMoodList = MoodFiltering.getFilteredMoods();
+                           moodArrayAdapter.clear();
+                           moodArrayAdapter.addAll(filteredMoodList);
+                           moodArrayAdapter.notifyDataSetChanged();
+                       }
+                   });
+
                }
 
            }
