@@ -208,6 +208,27 @@ public class MoodHistoryFragmentUITest {
     }
 
     @Test
+    public void testAddMoodWithInvalidReasonShouldShowError() throws InterruptedException {
+        //give time for setup
+        Thread.sleep(2000);
+        //Click Create Mood
+        onView(withId(R.id.create_mood_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        //Choose an emotion
+        onView(withId(R.id.edit_emotion_editText)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.buttonFear)).perform(click());
+        onView(withId(android.R.id.button1)).perform(click());
+        //Write an invalid reason (over 200 characters long - not including whitespaces)
+        String invalidReason = "A".repeat(201);
+        onView(withId(R.id.edit_reason)).perform(ViewActions.typeText(invalidReason));
+        //Click the Create button
+        onView(withId(R.id.confirm_create_button)).perform(click());
+        //Check that the error is shown to user
+        onView(withId(R.id.edit_reason)).check(matches(hasErrorText("Reason must be ≤ 200 characters")));
+    }
+
+    @Test
     public void testDeleteMood() throws InterruptedException {
         // give time for the login to process
         Thread.sleep(2000);
