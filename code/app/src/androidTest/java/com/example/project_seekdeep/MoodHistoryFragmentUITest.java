@@ -4,6 +4,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -895,5 +896,50 @@ public class MoodHistoryFragmentUITest {
 
         onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.reason))
                 .check(matches(withText("Midterms are hard")));
+    }
+
+    @Test
+    public void testKeywordFilterAndEmotionalStateAndRecentWeek() throws InterruptedException {
+        // add another anger mood to test with
+        Mood mood = new Mood(testUser, EmotionalStates.SADNESS, new String[]{"What??", "With Another Person"});
+        usersRef.document().set(testUser);
+        moodsRef.document().set(mood);
+        // so now the listview will look like ["Sadness', "Sadness", "Confusion", "Happiness", "Anger"]
+        // give time
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(1000);
+        // save views that should be gone
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("😄 Happiness"));
+        views.add(view);
+        view = onView(withText("What??"));
+        views.add(view);
+        view = onView(withText("🤔 Confusion"));
+        views.add(view);
+        view = onView(withText("\uD83D\uDE20 Anger"));
+        views.add(view);
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // click on the anger filter and the recent week filter
+        onView(withId(R.id.sadness_chip)).perform(click());
+        onView(withId(R.id.recent_week_chip)).perform(click());
+        // type "Midterms"
+        onView(withId(R.id.dialog_keyword_search)).perform(typeText("Midterms"));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // now should only have the sadness mood that includes midterms in it
+        // check if other views are gone
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+
+        // check if the sadness event with the midterms reason is there
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText("☹️ Sadness")));
+
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.reason))
+                .check(matches(withText("Midterms")));
     }
 }
