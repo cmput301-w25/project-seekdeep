@@ -3,7 +3,9 @@ package com.example.project_seekdeep;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,13 +14,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.FileNotFoundException;
 import java.util.Dictionary;
 
 /**
@@ -32,8 +46,11 @@ public class EditMoodFragment extends DialogFragment {
     private Spinner emotionSpinner;
     private Spinner socialSituationSpinner;
     private ImageView imageView;
+    private Uri imageUri;
     private MoodProvider moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
 
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
 
     //** btw i used seth's lab-07 code for this **//
 
@@ -52,6 +69,75 @@ public class EditMoodFragment extends DialogFragment {
     }
 
 
+
+    //This launches the chosen image into the imageView
+    //Taken from createMoodEventFragment
+    ActivityResultLauncher<PickVisualMediaRequest> launcher = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), new ActivityResultCallback<Uri>() {
+        @Override
+        public void onActivityResult(Uri imageUriActivty) {
+            if (imageUriActivty == null) {
+                Toast.makeText(requireContext(), "No image Selected", Toast.LENGTH_SHORT).show();
+            } else {
+                //Load the image into the mood event card (UI component)
+                imageUri = imageUriActivty;
+
+                AssetFileDescriptor fileDescriptor = null;
+                try {
+                    fileDescriptor = getContext().getContentResolver().openAssetFileDescriptor(imageUri, "r");
+                } catch (FileNotFoundException e) {
+                    Log.d("NANCY", "check file zie error");
+                    throw new RuntimeException(e);
+                }
+                long fileSize = fileDescriptor.getLength();
+
+                if (fileSize > 65536) {
+                    Toast.makeText(requireContext(), "Image too large, must be under 65536 bytes", Toast.LENGTH_SHORT).show();
+                } else {
+                    Glide.with(requireContext()).load(imageUriActivty).into(imageView);
+                }
+
+                Log.d("NANCY", "did the glide work at least? imguri" + imageUri.toString());
+                //TO DO: Implement a method that'll upload the image to Firebase
+                //uploadImageToFirebase(imageUri);
+            }
+
+        }
+    });
+
+    /**
+     * This uploads the image that a user selects into Firebase Storage
+     * @param selectedImage
+     */
+    private void uploadImageToFirebase(Uri selectedImage) {
+        //Initialize a MoodProvider object and pass in the firebase
+
+        Log.d("NANCY", "do we ever get here in uploadimage?");
+
+        moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
+
+        StorageReference selectedImageRef = storageRef.child("Images/" + selectedImage.getLastPathSegment());
+        UploadTask uploadTask = selectedImageRef.putFile(selectedImage);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                Log.d("nancy", "unsuccessful upload");
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+                Log.d("nancy", "working image upload");
+            }
+        });
+
+
+    }
+
+
     /**
      * Creates a dialog that manages editing an existing mood
      *
@@ -64,17 +150,19 @@ public class EditMoodFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
-        Log.d("NANCY", "Did we get here?");
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
         View view = getLayoutInflater().inflate(R.layout.fragment_edit_mood_details, null);
         editReason = view.findViewById(R.id.edit_reason);
         emotionSpinner = view.findViewById(R.id.emotion_spinner);
         socialSituationSpinner = view.findViewById(R.id.social_situation_spinner);
         imageView = view.findViewById(R.id.image);
-
         emotionSpinner.setAdapter(new ArrayAdapter<EmotionalStates>(getContext(), android.R.layout.simple_spinner_item, EmotionalStates.values()));
-
         socialSituationSpinner.setAdapter(new ArrayAdapter<SocialSituations>(getContext(), android.R.layout.simple_spinner_item, SocialSituations.values()));
+
+
+
 
         String tag = getTag();
         Bundle bundle = getArguments();
@@ -83,16 +171,58 @@ public class EditMoodFragment extends DialogFragment {
         if (tag != null && tag.equals("Mood Details") && bundle != null){
             mood = (Mood) bundle.getSerializable("Mood");
             editReason.setText(mood.getReason());
-
             emotionSpinner.setSelection(mood.getEmotionalState().ordinal());
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
 
 
             //todo add edit image functionality
+
+
+            // if image DNE, then hide the image view?
+            if (mood.getImage() != null){
+                imageView.setVisibility(View.VISIBLE);
+
+
+                StorageReference imageFire = storage.getReference("Images/" +
+                        mood.getImage().getLastPathSegment());
+
+                Log.d("NANCY", "Non null image fire/ " + imageFire);
+
+                imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        // Got the download URL for 'users/me/profile.png'
+                        Glide.with(getContext())
+                                .load(uri)
+                                .into(imageView);
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+            }
         }
         else {
             mood = null;
         }
+
+
+
+
+
+        //Set a listener for when the imageView is clicked on
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //launch the gallery
+                launcher.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build());
+            }
+        });
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -134,6 +264,11 @@ public class EditMoodFragment extends DialogFragment {
                         break;
 
                 }
+
+                if (imageUri != null) {
+                    uploadImageToFirebase(imageUri);
+                }
+                mood.setImage(imageUri);
 
                 mood.setReason(reason);
                 mood.setEmotionalState(emotionalStates);
