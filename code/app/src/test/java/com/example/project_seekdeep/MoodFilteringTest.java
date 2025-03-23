@@ -269,8 +269,8 @@ public class MoodFilteringTest {
 
         // check to see if anger is there and shame and sadness are NOT there
         assertTrue("Filtered moods should contain anger", containsMood1);
-        assertFalse("Filtered moods NOT should contain sadness", containsMood3);
-        assertFalse("Filtered moods NOT should contain shame", containsMood2);
+        assertFalse("Filtered moods should NOT contain sadness", containsMood3);
+        assertFalse("Filtered moods should NOT contain shame", containsMood2);
     }
 
     @Test
@@ -305,7 +305,7 @@ public class MoodFilteringTest {
         // check to see if anger is there and shame and sadness are NOT there
         assertTrue("Filtered moods should contain anger", containsMood1);
         assertTrue("Filtered moods should contain sadness", containsMood3);
-        assertFalse("Filtered moods NOT should contain shame", containsMood2);
+        assertFalse("Filtered moods should NOT contain shame", containsMood2);
     }
 
     @Test
@@ -339,7 +339,7 @@ public class MoodFilteringTest {
         // check to see if anger and sadness is there and shame isnt there
         assertTrue("Filtered moods should contain anger", containsMood1);
         assertTrue("Filtered moods should contain sadness", containsMood3);
-        assertFalse("Filtered moods NOT should contain shame", containsMood2);
+        assertFalse("Filtered moods should NOT contain shame", containsMood2);
         // now remove one of the emotional state filters
         states.remove(EmotionalStates.SADNESS);  // should only have ANGER now
         MoodFiltering.addStates(states);
@@ -365,7 +365,7 @@ public class MoodFilteringTest {
         // check to see if anger is there and shame and sadness are NOT there
         assertTrue("Filtered moods should contain anger", containsMood10);
         assertFalse("Filtered moods should NOT contain sadness", containsMood30);
-        assertFalse("Filtered moods NOT should contain shame", containsMood20);
+        assertFalse("Filtered moods should NOT contain shame", containsMood20);
     }
 
     @Test
@@ -402,7 +402,7 @@ public class MoodFilteringTest {
         // check to see if sadness is the only one there
         assertFalse("Filtered moods should NOT contain anger", containsMood1);
         assertTrue("Filtered moods should contain sadness", containsMood3);
-        assertFalse("Filtered moods NOT should contain shame", containsMood2);
+        assertFalse("Filtered moods should NOT contain shame", containsMood2);
 
         // remove all filters, should NOT remove the chronological order
         MoodFiltering.removeAllFilters();
@@ -462,7 +462,43 @@ public class MoodFilteringTest {
         // check to see if anger is the only one
         assertTrue("Filtered moods should contain anger", containsMood1);
         assertFalse("Filtered moods should NOT contain sadness", containsMood3);
-        assertFalse("Filtered moods NOT should contain shame", containsMood2);
+        assertFalse("Filtered moods should NOT contain shame", containsMood2);
+    }
+
+    @Test
+    public void testFilterEmotionalStateAndRecentWeek() {
+        ArrayList<Mood> moods = getMoods();
+        MoodFiltering.saveOriginal(moods);
+        ArrayList<EmotionalStates> states = new ArrayList<>();
+        states.add(EmotionalStates.ANGER);
+
+        MoodFiltering.addStates(states);
+        MoodFiltering.applyFilter("states");
+        MoodFiltering.applyFilter("recent");
+        ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
+        // filteredMoods should contain nothing since anger is not in the recent week
+        boolean containsMood1 = false;
+        boolean containsMood2 = false;
+        boolean containsMood3 = false;
+
+        // iterate through the filtered moods to check the emotional states
+        for (Mood mood : filteredMoods) {
+            if (mood.getEmotionalState().equals(EmotionalStates.ANGER)) {
+                containsMood1 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SHAME)) {
+                containsMood2 = true;
+            }
+            if (mood.getEmotionalState().equals(EmotionalStates.SADNESS)) {
+                containsMood3 = true;
+            }
+        }
+
+        // check to see if anger is there and shame and sadness are NOT there
+        assertFalse("Filtered moods should NOT contain anger", containsMood1);
+        assertFalse("Filtered moods should NOT contain sadness", containsMood3);
+        assertFalse("Filtered moods should NOT contain shame", containsMood2);
+
     }
 
     @NonNull

@@ -57,8 +57,6 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
     private ArrayList<Mood> moodArrayList;
     private ArrayAdapter<Mood> moodArrayAdapter;
 
-
-
     private FirebaseFirestore db;
     private CollectionReference moods;
     private CollectionReference users;
