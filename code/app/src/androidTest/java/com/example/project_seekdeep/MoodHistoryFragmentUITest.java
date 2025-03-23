@@ -77,12 +77,12 @@ public class MoodHistoryFragmentUITest {
                 new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework"),
                 new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms")
         };*/
-        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food");
+        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE);
         // give time so we can sort the list
         Thread.sleep(5000);
-        Mood mood2 = new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework");
+        Mood mood2 = new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER);
         Thread.sleep(5000);
-        Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms");
+        Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD);
         // make mood with a date outside of recent week
         Thread.sleep(2000);
         Calendar calendar = Calendar.getInstance();

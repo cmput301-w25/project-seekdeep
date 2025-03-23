@@ -130,14 +130,6 @@
             android:textOn="@string/public_mode" />
 
 
-        <EditText
-            android:id="@+id/edit_trigger"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:hint="trigger"
-            android:textSize="10sp" />
-
     </LinearLayout>
 
     <LinearLayout
