@@ -29,7 +29,6 @@ import java.util.Dictionary;
  */
 public class EditMoodFragment extends DialogFragment {
     private EditText editReason;
-    private EditText editTrigger;
     private Spinner emotionSpinner;
     private Spinner socialSituationSpinner;
     private ImageView imageView;
@@ -69,7 +68,6 @@ public class EditMoodFragment extends DialogFragment {
 
         View view = getLayoutInflater().inflate(R.layout.fragment_edit_mood_details, null);
         editReason = view.findViewById(R.id.edit_reason);
-        editTrigger = view.findViewById(R.id.edit_trigger);
         emotionSpinner = view.findViewById(R.id.emotion_spinner);
         socialSituationSpinner = view.findViewById(R.id.social_situation_spinner);
         imageView = view.findViewById(R.id.image);
@@ -85,7 +83,6 @@ public class EditMoodFragment extends DialogFragment {
         if (tag != null && tag.equals("Mood Details") && bundle != null){
             mood = (Mood) bundle.getSerializable("Mood");
             editReason.setText(mood.getReason());
-            editTrigger.setText(mood.getTrigger());
 
             emotionSpinner.setSelection(mood.getEmotionalState().ordinal());
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
@@ -111,8 +108,6 @@ public class EditMoodFragment extends DialogFragment {
             Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             positiveButton.setOnClickListener(v -> {
                 String reason = editReason.getText().toString().trim();
-                
-                String trigger = editTrigger.getText().toString().trim();
                 
                 String[] emoStateBreak = emotionSpinner.getSelectedItem().toString().split(" ");
                 EmotionalStates emotionalStates = EmotionalStates.valueOf(
@@ -141,7 +136,6 @@ public class EditMoodFragment extends DialogFragment {
                 }
 
                 mood.setReason(reason);
-                mood.setTrigger(trigger);
                 mood.setEmotionalState(emotionalStates);
                 mood.setSocialSituation(socialSituations);
 

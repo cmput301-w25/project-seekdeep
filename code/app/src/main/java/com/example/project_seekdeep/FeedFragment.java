@@ -121,7 +121,7 @@ public class FeedFragment extends Fragment {
                             ownerSnapshot.get("password").toString());
                     EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
                     SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
-                    String trigger = (String) snapshot.get("trigger");
+
                     List<String> followers = (List<String>) snapshot.get("followers");
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
                     String reason = (String) snapshot.get("reason");
@@ -133,7 +133,7 @@ public class FeedFragment extends Fragment {
                     }
                     
 
-                    Mood mood = new Mood(user, emotionalState, socialSituation, trigger, followers, postedDate, reason);
+                    Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
 
                     mood.setImage(image);
                     mood.setDocRef(snapshot.getReference());

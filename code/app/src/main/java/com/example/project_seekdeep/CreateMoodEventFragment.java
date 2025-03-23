@@ -81,7 +81,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     private ImageView uploadImageHere;  //this imageView is set to be clickable
     private Button createConfirmButton;
     private EditText reasonEditText;
-    private EditText triggerEditText;
+
     private Mood moodEvent;
     private Uri imageUri; //this is where selected image is assigned
     private MoodProvider moodProvider;
@@ -181,7 +181,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
     /**
      * When this view is created, it will collect all the fields from the UI to create a new mood
-     * Fields collected: EmotionalState, trigger, SocialSituation, and reason
+     * Fields collected: EmotionalState, SocialSituation, and reason
      * @param view The View returned.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
@@ -205,8 +205,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
         //Initialize the EditText where user inputs reason
         reasonEditText = view.findViewById(R.id.edit_reason);
-        //Initialize the EditText for trigger
-        triggerEditText = view.findViewById(R.id.edit_trigger);
+
         //Initialize the image UI element
         uploadImageHere = view.findViewById(R.id.image);
         //Initialize selectMood to UI element
@@ -218,6 +217,10 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
         //intialize the SocialSituations socialSit
         socialSit = SocialSituations.TITLE.toString();
+
+
+
+
 
         //Retrieve UserProfile from the bundle (to use inside this fragment)
         if (getArguments() != null) {
@@ -306,8 +309,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         createConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) { //get the fields and create a new Mood object
-                //Get the trigger text from UI
-                String trigger = triggerEditText.getText().toString().trim();
+
 
                 // US 02.01.01 - I want to express the reason why for a mood is happening (no more than 20 characters or 3 words).
                 // check if a reason was inputed
@@ -321,16 +323,15 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                     /*
                     Issue solved:
                     - in this constructor: SocialSit can't be null, so temp hardcoded to the TITLE value.
-                    - In the constructor, trigger is just a string, so it can be null (errors shouldn't happen here)
-                    - If trigger == null, getText() will just return ""
+
                      TO DO: SocialSituation might need a NULL field
                      */
-                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {trigger, reason, socialSit.toString()} );
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {reason, socialSit.toString()} );
                 }
 
                 //Default: create Mood object with only the UserProfile and EmotionalState
                 else {
-                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {trigger, null, socialSit.toString()});
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {null, socialSit.toString()});
                 }
 
                 //Log.d("NANCY", imageUri.toString());

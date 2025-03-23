@@ -85,7 +85,6 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
         TextView reason = view.findViewById(R.id.reason);
         TextView emotion = view.findViewById(R.id.emotion);
         TextView user = view.findViewById(R.id.username);
-        TextView trigger = view.findViewById(R.id.trigger);
         TextView socialSit = view.findViewById(R.id.social_situation);
         TextView date = view.findViewById(R.id.date);
         ImageView image = view.findViewById(R.id.image);
@@ -95,7 +94,6 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
         reason.setText(currentMood.getReason());
         emotion.setText(currentMood.getEmotionalState().toString());
         user.setText(currentMood.getOwnerString());
-        trigger.setText(currentMood.getTrigger());
         socialSit.setText(currentMood.getSocialSituation().toString());
         date.setText(currentMood.getPostedDate().toString());
 
@@ -108,16 +106,16 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 
 
 
-        //if theres no trigger, hide it
-        if (currentMood.getTrigger() == null || Objects.equals(currentMood.getTrigger(), "")){
-            trigger.setVisibility(View.GONE);
-            view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
-        }
 
         // if no reason, hide it
         if(currentMood.getReason() == null){
             reason.setVisibility(View.GONE);
         }
+
+        //fix bug where when you scroll past it hides all social situations
+        socialSit.setVisibility(View.VISIBLE);
+        view.findViewById(R.id.social_situation_icon).setVisibility(View.VISIBLE);
+
         //if no social situation, hide it
         if(currentMood.getSocialSituation().toString().equals("Social Situations")){
             socialSit.setVisibility(View.GONE);
