@@ -34,6 +34,7 @@
         android:layout_height="wrap_content"
         android:text="SELECTMOOD"
         android:textSize="20dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/space"
         app:layout_constraintEnd_toEndOf="@+id/space"
         app:layout_constraintStart_toStartOf="@+id/space"

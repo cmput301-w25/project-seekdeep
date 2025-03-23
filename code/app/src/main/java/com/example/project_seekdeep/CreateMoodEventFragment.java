@@ -219,9 +219,6 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         socialSit = SocialSituations.TITLE.toString();
 
 
-
-
-
         //Retrieve UserProfile from the bundle (to use inside this fragment)
         if (getArguments() != null) {
             //Retrieve UserProfile (must be casted), save it in userProfile class attribute
@@ -309,9 +306,13 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         createConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) { //get the fields and create a new Mood object
+                //Ensure that Emotional State has been chosen
+                if (selectedEmotion == null) {
+                    clickToSelectMood.setError("Emotional state is required!");
+                    return;
+                }
 
-
-                // US 02.01.01 - I want to express the reason why for a mood is happening (no more than 20 characters or 3 words).
+                // US 02.01.01 - I want to express the reason why for a mood is happening (<=200 chars).
                 // check if a reason was inputed
                 if (reasonEditText != null) {
                     String reason = reasonEditText.getText().toString().trim();
