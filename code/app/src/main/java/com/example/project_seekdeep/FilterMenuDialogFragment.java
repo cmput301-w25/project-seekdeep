@@ -145,7 +145,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
         });
 
         //Adjust filtering menu if on profile OR feed page
-        hideLastThreeFilterChip(view);
+        hideChipsAndLabels(view);
 
         Button applyFiltersButton = view.findViewById(R.id.apply_filters_button);
         applyFiltersButton.setOnClickListener(v -> applyFilters());
@@ -172,14 +172,19 @@ public class FilterMenuDialogFragment extends DialogFragment {
     }
 
     /**
-     * This method is used to hide a chip if the user is on certain pages depending on the tag attached
+     * This method is used to hide a chip or label if the user is on certain pages depending on the tag attached
      * @param view: The view the user is on.
      */
-    public void hideLastThreeFilterChip(View view) {
+    public void hideChipsAndLabels(View view) {
         //If on profile/feed page, hide last_3_chip from the filtering menu:
         //can use:  view.findViewById(R.id.last_3_chip).setVisibility(View.GONE);
         if(Objects.equals(getTag(), "profile")) {
             view.findViewById(R.id.last_3_chip).setVisibility(View.GONE);
+        }
+        // edit the else as you see fit
+        else {
+            view.findViewById(R.id.keyword_label).setVisibility(View.GONE);
+            view.findViewById(R.id.dialog_keyword_search).setVisibility(View.GONE);
         }
     }
 

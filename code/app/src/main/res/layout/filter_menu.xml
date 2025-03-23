@@ -109,6 +109,24 @@
                 android:text="Last 3 from all users" />
         </com.google.android.material.chip.ChipGroup>
 
+        <TextView
+            android:id="@+id/keyword_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Keword to filter by" />
+
+        <EditText
+            android:id="@+id/dialog_keyword_search"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:ems="10"
+            android:gravity="top"
+            android:hint="1 Keyword"
+            android:inputType="text" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
