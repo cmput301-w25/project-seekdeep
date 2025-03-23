@@ -9,6 +9,7 @@
         android:id="@+id/user_pfp_req_follow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="10dp">
 
@@ -42,26 +43,14 @@
         android:layout_weight="1"
         android:text="\@user"
         android:textSize="10sp"
+        android:visibility="invisible"
         app:layout_constraintLeft_toRightOf="@id/user_pfp_req_follow"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4sp"
-        android:layout_marginRight="35sp"
-        android:layout_weight="1"
-        android:gravity="right"
-        android:text="date"
-        android:textSize="10sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/username"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="25dp"
         android:layout_marginRight="-10sp"
         android:background="@drawable/layout_rounded_mood_bg"
         android:orientation="vertical"
@@ -69,69 +58,84 @@
         app:layout_constraintRight_toRightOf="@id/date"
         app:layout_constraintTop_toBottomOf="@id/username">
 
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="4sp"
+            android:layout_marginRight="35sp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="date"
+            android:textAlignment="center"
+            android:textSize="10sp" />
+
         <Spinner
             android:id="@+id/emotion_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/edit_reason"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/editbox_background"
+            android:gravity="start|top"
+            android:hint="Reason"
+            android:maxLines="5"
+            android:minLines="3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:gravity="center"
+            app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+        <Spinner
+            android:id="@+id/social_situation_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0" />
+
+        <TextView
+            android:id="@+id/geolocat_info"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:orientation="horizontal">
+            android:paddingTop="25dp"
+            android:text="Attach my current location to this mood event" />
 
-            <EditText
-                android:id="@+id/edit_reason"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:hint="Reason" />
-
-            <ImageView
-                android:id="@+id/image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                app:srcCompat="@android:drawable/ic_menu_gallery" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Switch
+            android:id="@+id/switch1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:checked="false"
+            android:drawableLeft="@drawable/location_off"
+            android:drawablePadding="-5dp" />
 
-            <ImageView
-                android:id="@+id/trigger_icon"
-                android:layout_width="15sp"
-                android:layout_height="15sp"
-                android:layout_weight="0"
-                app:srcCompat="@android:drawable/ic_popup_reminder" />
+        <TextView
+            android:id="@+id/explain_privacy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="25dp"
+            android:text="@string/private_mode" />
 
-            <EditText
-                android:id="@+id/edit_trigger"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:hint="trigger"
-                android:textSize="10sp" />
-
-            <ImageView
-                android:id="@+id/social_situation_icon"
-                android:layout_width="15sp"
-                android:layout_height="15sp"
-                android:layout_marginLeft="10sp"
-                android:layout_weight="0"
-                app:srcCompat="@android:drawable/ic_menu_myplaces" />
-
-            <Spinner
-                android:id="@+id/social_situation_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0" />
-
-        </LinearLayout>
+        <Switch
+            android:id="@+id/privacy_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:drawableLeft="@drawable/private_symbol"
+            android:drawablePadding="-5dp"
+            android:textOff="@string/private_mode"
+            android:textOn="@string/public_mode" />
 
     </LinearLayout>
 

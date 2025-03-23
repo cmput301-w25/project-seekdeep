@@ -105,13 +105,6 @@
             android:drawableLeft="@drawable/location_off"
             android:drawablePadding="-5dp" />
 
-        <!--        <TextView-->
-        <!--            android:id="@+id/privacy_header"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_weight="0"-->
-        <!--            android:text="Select Privacy"-->
-        <!--            android:paddingTop="20dp"/>-->
         <TextView
             android:id="@+id/explain_privacy"
             android:layout_width="wrap_content"
