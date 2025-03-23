@@ -72,13 +72,22 @@ public class MoodHistoryFragmentUITest {
 
     @Before
     public void seedDatabase() throws InterruptedException {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersRef = db.collection("UserDB");
+        CollectionReference moodsRef = db.collection("MoodDB");
+/*
+        Mood[] moods = {
+                new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food"),
+                new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework"),
+                new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms")
+        };*/
+        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE);
 
-        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food");
         // give time so we can sort the list
         Thread.sleep(5000);
-        Mood mood2 = new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework");
+        Mood mood2 = new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER);
         Thread.sleep(5000);
-        Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms");
+        Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD);
         // make mood with a date outside of recent week
         Thread.sleep(2000);
         Calendar calendar = Calendar.getInstance();

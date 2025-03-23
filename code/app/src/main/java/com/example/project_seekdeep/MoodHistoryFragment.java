@@ -145,7 +145,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                for (QueryDocumentSnapshot snapshot : value) {
                     EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
                     SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
-                    String trigger = (String) snapshot.get("trigger");
+
                     List<String> followers = (List<String>) snapshot.get("followers");
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
                     String reason = (String) snapshot.get("reason");
@@ -157,7 +157,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                    }
 
 
-                    Mood mood = new Mood(loggedInUser, emotionalState, socialSituation, trigger, followers, postedDate, reason);
+                    Mood mood = new Mood(loggedInUser, emotionalState, socialSituation, followers, postedDate, reason);
 
                     mood.setDocRef (snapshot.getReference());
                     mood.setImage(image);
