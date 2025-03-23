@@ -29,7 +29,8 @@
                 android:layout_height="20dp"
                 android:layout_weight="0"
                 android:contentDescription="User icon"
-                app:srcCompat="@drawable/profile_pic" />
+                app:srcCompat="@drawable/profile_pic"
+                android:clickable="true" />
 
             <TextView
                 android:id="@+id/username"

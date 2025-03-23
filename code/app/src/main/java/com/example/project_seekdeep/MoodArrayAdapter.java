@@ -198,6 +198,14 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
                 listener.onUsernameClick(currentMood.getOwner());
             }
         });
+        /**
+         * This listens for when a user clicks on a mood event's profile pic, which will trigger the listener implemented by FeedFragment.
+         */
+        pfp.setOnClickListener(view1 -> {
+            if (listener != null) {
+                listener.onUsernameClick(currentMood.getOwner());
+            }
+        });
 
         return view;
     }
