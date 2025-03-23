@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.media.Image;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -12,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +37,10 @@ public class EditMoodFragment extends DialogFragment {
     private Spinner socialSituationSpinner;
     private ImageView imageView;
     private MoodProvider moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
+    private TextView char_count;
+    private Switch locationToggle;
+    private Switch privacySwitch;
+    private TextView explainPrivacy;
 
 
     //** btw i used seth's lab-07 code for this **//
@@ -68,9 +76,13 @@ public class EditMoodFragment extends DialogFragment {
 
         View view = getLayoutInflater().inflate(R.layout.fragment_edit_mood_details, null);
         editReason = view.findViewById(R.id.edit_reason);
+        char_count = view.findViewById(R.id.char_count);
         emotionSpinner = view.findViewById(R.id.emotion_spinner);
         socialSituationSpinner = view.findViewById(R.id.social_situation_spinner);
         imageView = view.findViewById(R.id.image);
+        locationToggle = view.findViewById(R.id.switch1);
+        privacySwitch = view.findViewById(R.id.privacy_switch);
+        explainPrivacy = view.findViewById(R.id.explain_privacy);
 
         emotionSpinner.setAdapter(new ArrayAdapter<EmotionalStates>(getContext(), android.R.layout.simple_spinner_item, EmotionalStates.values()));
 
@@ -94,6 +106,38 @@ public class EditMoodFragment extends DialogFragment {
             mood = null;
         }
 
+        // Update charCount as user types their Reason
+        // resource used: https://stackoverflow.com/questions/3013791/live-character-count-for-edittext
+        final TextWatcher txtWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //exculde spaces from char_count
+                String exclude_spaces = charSequence.toString().replaceAll("[\\s\\n]","");
+                char_count.setText(String.valueOf(exclude_spaces.length()));
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        };
+        editReason.addTextChangedListener(txtWatcher);
+
+        //THIS CONTROLS THE TOGGLES FOR GEOLOCATION AND PRIVACY:
+        //LOCATION switch (default set to 'off')
+        locationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int drawable = isChecked ? R.drawable.location_on : R.drawable.location_off;
+            locationToggle.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
+        });
+
+        //PRIVACY (default set to OFF=private, because you might upload something and regret it)
+        privacySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int drawable = isChecked ? R.drawable.public_symbol : R.drawable.private_symbol;
+            privacySwitch.setCompoundDrawablesWithIntrinsicBounds(drawable,0,0,0);
+            explainPrivacy.setText(isChecked ? R.string.public_mode : R.string.private_mode);
+        });
+
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         AlertDialog dialog = builder
@@ -108,6 +152,15 @@ public class EditMoodFragment extends DialogFragment {
             Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             positiveButton.setOnClickListener(v -> {
                 String reason = editReason.getText().toString().trim();
+
+                //Validate length of reason to <= 200 chars
+                if (editReason != null) {
+                    if (!validReasonLength()) {
+                        editReason.setError("Reason must be ≤ 200 characters");
+                        return;
+                    }
+                }
+
                 
                 String[] emoStateBreak = emotionSpinner.getSelectedItem().toString().split(" ");
                 EmotionalStates emotionalStates = EmotionalStates.valueOf(
@@ -151,4 +204,14 @@ public class EditMoodFragment extends DialogFragment {
         });
         return dialog;
     }
+
+    /**
+     * This method checks whether a reason is <=200 characters (excluding whitespaces)
+     * @return true if the reason is ≤ 200 chars, false otherwise
+     */
+    public boolean validReasonLength() {
+        String charCountText = char_count.getText().toString();
+        return Integer.parseInt(charCountText) <= 200;
+    }
+
 }
