@@ -7,7 +7,8 @@ package com.example.project_seekdeep;
 public class UserLocation {
     private double latitude;
     private double longitude;
-    private String moodEventId; // To associate with a mood event
+    private EmotionalStates emotionalState;
+    private String userId;
 
     /**
      * Default Constructor for database
@@ -20,12 +21,28 @@ public class UserLocation {
      * Constructor to create a UserLocation with specifies latitude, longitude and mood event Id
      * @param latitude: The latitude coordinate
      * @param longitude: The longitude coordinate
-     * @param moodEventId: The ID of the mood event
      */
-    public UserLocation(double latitude, double longitude, String moodEventId) {
+    public UserLocation(double latitude, double longitude, EmotionalStates emotionalState, String userId) {
         this.latitude = latitude;
         this.longitude = longitude;
-        this.moodEventId = moodEventId;
+        this.emotionalState = emotionalState;
+        this.userId = userId;
+    }
+
+    public EmotionalStates getEmotionalState() {
+        return emotionalState;
+    }
+
+    public void setEmotionalState(EmotionalStates emotionalState) {
+        this.emotionalState = emotionalState;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     /**
@@ -58,21 +75,5 @@ public class UserLocation {
      */
     public void setLongitude(double longitude) {
         this.longitude = longitude;
-    }
-
-    /**
-     * Gets the mood event ID
-     * @return
-     */
-    public String getMoodEventId() {
-        return moodEventId;
-    }
-
-    /**
-     * Sets the mood event ID
-     * @param moodEventId
-     */
-    public void setMoodEventId(String moodEventId) {
-        this.moodEventId = moodEventId;
     }
 }

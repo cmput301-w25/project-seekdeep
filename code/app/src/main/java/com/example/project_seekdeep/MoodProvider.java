@@ -43,13 +43,6 @@ public class MoodProvider {
     }
 
     /**
-     * Interface for handling callback for moodId
-     */
-    public interface AddMoodCallback {
-        void onSuccess(String moodEventId);
-    }
-
-    /**
      * This checks for any changes in the database
      * @param dataStatus
      */
@@ -94,17 +87,12 @@ public class MoodProvider {
      * @param mood
      *          This is the mood to be added to firebase
      */
-    public void addMoodEvent(Mood mood, AddMoodCallback callback) {
+    public void addMoodEvent(Mood mood) {
         //Create a new document for the mood.  Keep the parameter empty in document() so that firestore generates a unique Key
         DocumentReference moodDocRef = moodCollection.document();
 
-        String moodEventId = moodDocRef.getId();
-
-        moodDocRef.set(mood)
-                .addOnSuccessListener(aVoid -> {
-                    // On success, pass the moodEventId to the callback
-                    callback.onSuccess(moodEventId);
-                });
+        //Populate the new document with mood
+        moodDocRef.set(mood);
     }
 
     /**
