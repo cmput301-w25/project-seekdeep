@@ -40,7 +40,7 @@ public class MoodFiltering {
     private static Set<String> filters = new HashSet<>(); // the filters applied
 
     private static Set<EmotionalStates> selectedStates = new HashSet<>(); // the selected emotional state(s) to filter by
-    private static String keyword;
+    private static String keyword = "";
 
     /**
      * This method saves a copy of the original array

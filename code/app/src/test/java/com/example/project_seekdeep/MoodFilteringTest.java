@@ -564,6 +564,87 @@ public class MoodFilteringTest {
         assertFalse("Filtered moods should NOT contain anger without 123", containsMood10);
     }
 
+    @Test
+    public void testSortKeywordAndEmotionalStateAndRecentWeek() {
+        MoodFiltering.removeAllFilters();
+        ArrayList<Mood> moods = getMoods();
+        // add another mood to test with more
+        Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -3);
+        Mood mood10 = new Mood(testUser, EmotionalStates.ANGER, calendar.getTime(), "hi");
+        moods.add(mood10);
+        MoodFiltering.saveOriginal(moods);
+        ArrayList<EmotionalStates> states = new ArrayList<>();
+        // sort by anger and keyword
+        states.add(EmotionalStates.ANGER);
+        MoodFiltering.addStates(states);
+        MoodFiltering.addKeyword("123 ");
+        MoodFiltering.applyFilter("keyword");
+        MoodFiltering.applyFilter("states");
+        MoodFiltering.applyFilter("recent");
+
+        ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
+        // filteredMoods should now contain nothing because nothing should match
+        boolean containsMood1 = false;
+        boolean containsMood2 = false;
+        boolean containsMood3 = false;
+        boolean containsMood10 = false;
+
+        // iterate through the filtered moods to check the emotional states
+        for (Mood mood : filteredMoods) {
+            if (mood.getEmotionalState().equals(EmotionalStates.ANGER) && mood.getReason().equals("123 me")) {
+                containsMood1 = true;
+            }
+            else if (mood.getEmotionalState().equals(EmotionalStates.SHAME)) {
+                containsMood2 = true;
+            }
+            else if (mood.getEmotionalState().equals(EmotionalStates.SADNESS)) {
+                containsMood3 = true;
+            }
+            else if (mood.getEmotionalState().equals(EmotionalStates.ANGER) && !mood.getReason().equals("123 me")) {
+                containsMood10 = true;
+            }
+        }
+        // check to see if anger is the only one
+        assertFalse("Filtered moods should contain anger", containsMood1);
+        assertFalse("Filtered moods should NOT contain sadness", containsMood3);
+        assertFalse("Filtered moods should NOT contain shame", containsMood2);
+        assertFalse("Filtered moods should NOT contain anger without 123", containsMood10);
+    }
+
+    @Test
+    public void testSortKeywordShouldBeNotCaseSensitive() {
+        MoodFiltering.removeAllFilters();
+        ArrayList<Mood> moods = getMoods();
+        MoodFiltering.saveOriginal(moods);
+        MoodFiltering.addKeyword("GUYS ");
+        MoodFiltering.applyFilter("keyword");
+
+        ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
+        // filteredMoods should now contain [SHAME] only
+        boolean containsMood1 = false;
+        boolean containsMood2 = false;
+        boolean containsMood3 = false;
+
+        // iterate through the filtered moods to check the emotional states
+        for (Mood mood : filteredMoods) {
+            if (mood.getEmotionalState().equals(EmotionalStates.ANGER)) {
+                containsMood1 = true;
+            }
+            else if (mood.getEmotionalState().equals(EmotionalStates.SHAME)) {
+                containsMood2 = true;
+            }
+            else if (mood.getEmotionalState().equals(EmotionalStates.SADNESS)) {
+                containsMood3 = true;
+            }
+        }
+        // check to see if anger is the only one
+        assertFalse("Filtered moods should NOT contain anger", containsMood1);
+        assertFalse("Filtered moods should NOT contain sadness", containsMood3);
+        assertTrue("Filtered moods should contain shame", containsMood2);
+    }
+
     @NonNull
     private ArrayList<Mood> getMoods() {
         // creating moods to work with

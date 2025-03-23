@@ -216,7 +216,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
             moodArrayAdapter.notifyDataSetChanged();
         }
 
-        if(!keyword.isBlank()) {
+        if(!keyword.isEmpty()) {
             MoodFiltering.addKeyword(keyword);
             MoodFiltering.applyFilter("keyword");
             filteredMoodList = MoodFiltering.getFilteredMoods();

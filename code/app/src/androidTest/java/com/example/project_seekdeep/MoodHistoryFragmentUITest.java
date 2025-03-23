@@ -808,4 +808,57 @@ public class MoodHistoryFragmentUITest {
         onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(3).onChildView(withId(R.id.emotion))
                 .check(matches(withText("\uD83D\uDE20 Anger")));
     }
+
+    /*
+    THIS TEST WILL NOT WORK ATM SINCE TRIGGER IS STILL A THING IN THIS VERSION OF THE CODE!!!
+     */
+    @Test
+    public void testFilterKeyword() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(2000);
+        // save views that should be gone
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        views.add(view);
+        view = onView(withText("😄 Happiness"));
+        views.add(view);
+        view = onView(withText("🤔 Confusion"));
+        views.add(view);
+
+        // the order should be ["Sadness", "Confusion", "Happiness", "Anger"] (top to bottom)
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText("☹️ Sadness")));
+
+        // next confusion
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText("🤔 Confusion")));
+
+        // next happiness
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText("😄 Happiness")));
+
+        // next anger
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText("\uD83D\uDE20 Anger")));
+
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // type keyword "Midterms"
+        onView(withId(R.id.dialog_keyword_search)).perform(typeText("Midterms"));
+        Thread.sleep(2000);
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // now should only be the sadness mood
+        // check if other views are gone
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+
+        // check if sadness is there
+        onView(withText("☹️ Sadness")).check(matches(isDisplayed()));
+
+    }
 }
