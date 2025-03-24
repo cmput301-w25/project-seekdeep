@@ -55,7 +55,7 @@ public class MoodFiltering {
      * This method puts the filter name into a set
      * <p><STRONG>Please note that you must use the addStates method before using applyFilter("states") </STRONG></p>
      * @param filterName: The filter applied <p>
-     *                    Filter names include: "rChronological", "recent", "states"
+     *                    Filter names include: "rChronological", "recent", "states", "keyword"
      */
     public static void applyFilter(String filterName) {
         filters.add(filterName);
