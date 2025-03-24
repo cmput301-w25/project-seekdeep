@@ -11,7 +11,7 @@ import java.util.List;
 public class UserProfile implements Serializable {
     private String username;
     private String password;
-//    private List<String> followers;
+    private List<String> followings;
 
     /**
      * Default empty constructor required by Firestore for deserialization.
@@ -28,7 +28,7 @@ public class UserProfile implements Serializable {
     public UserProfile(String username, String password) {
         this.username = username;
         this.password = password;
-//        this.followers = new ArrayList<>();
+        this.followings = new ArrayList<>();
     }
 
     /**
@@ -63,21 +63,19 @@ public class UserProfile implements Serializable {
         this.password = password;
     }
 
-//    public List<String> getFollowers() {
-//        return followers;
-//    }
-//
-//    public void setFollowers(List<String> followers) {
-//        this.followers = followers;
-//    }
-//    public void addFollower(String followerUsername) {
-//        if  (!followers.contains(followerUsername)) {
-//            followers.add(followerUsername);
-//        }
-//    }
-//    public void removeFollower(String followerUsername) {
-//        if (followers.contains(followerUsername)) {
-//            followers.remove(followerUsername);
-//        }
-//    }
+    public List<String> getFollowings() {
+        return followings;
+    }
+
+    public void setFollowings(List<String> followings) {
+        this.followings = followings;
+    }
+    public void addFollower(String followerUsername) {
+        if  (!followings.contains(followerUsername)) {
+            followings.add(followerUsername);
+        }
+    }
+    public void removeFollower(String followerUsername) {
+        followings.remove(followerUsername);
+    }
 }
