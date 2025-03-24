@@ -17,7 +17,7 @@ public class UserProfile implements Serializable {
      * Default empty constructor required by Firestore for deserialization.
      */
     public UserProfile() {
-//        this.followers = new ArrayList<>(); //initialize followers as empty list to avoid null issues
+        this.followings = new ArrayList<>(); //initialize followers as empty list to avoid null issues
     }
 
     /**
@@ -70,12 +70,12 @@ public class UserProfile implements Serializable {
     public void setFollowings(List<String> followings) {
         this.followings = followings;
     }
-    public void addFollower(String followerUsername) {
+    public void addFollowing(String followerUsername) {
         if  (!followings.contains(followerUsername)) {
             followings.add(followerUsername);
         }
     }
-    public void removeFollower(String followerUsername) {
+    public void removeFollowing(String followerUsername) {
         followings.remove(followerUsername);
     }
 }

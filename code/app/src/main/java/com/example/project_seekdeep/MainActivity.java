@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -15,6 +16,16 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -25,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragManager;
     private UserProfile currentUser;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
         // Set default fragment to be feed upon login
         fragManager = getSupportFragmentManager();
         fragManager.beginTransaction().replace(R.id.frameLayout, new LogInFragment()).commit();
+
+        db = FirebaseFirestore.getInstance();
     }
 
     // The following code for Navigation Bar was adapted from GeeksForGeeks' guide on "BottomNavigationView in Android"
@@ -124,5 +138,41 @@ public class MainActivity extends AppCompatActivity {
 //      getParentFragmentManager().beginTransaction()
 //          .replace(R.id.frameLayout, feedFragment)
 //          .commit();
+
+        //Once login is successful, can create the following list (users you follow) and listen for new followings
+        listenForAcceptedRequests();
     }
+
+    /**
+     * This method creates the user's following list whenever a user logs in,
+     * while also listening for users who have accepted the logged-in user's follow request
+     *
+     * TO DO:
+     * - if the user logged-in, then don't need to recreate the list from scratch, just get the initial list from firebase
+     * - how to update this list in firebase?
+     */
+    //Reference: https://firebase.google.com/docs/firestore/query-data/listen#listen_to_multiple_documents_in_a_collection
+    public void listenForAcceptedRequests() {
+        db.collection("followings_and_requests")
+                .whereEqualTo("follower", currentUser.getUsername())
+                .whereEqualTo("status", "following")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            Log.w("listenForFollowRequests", "Listener failed!!");
+                            return;
+                        }
+
+                        for (QueryDocumentSnapshot doc : value) {
+                            String followee = doc.getString("followee");
+                            currentUser.addFollowing(followee);
+
+                            // Debug: Print out the updated following list after adding the followee
+                            Log.d("Following List", "Updated following list: " + (currentUser.getFollowings()).get(0));
+                        }
+                    }
+                });
+    }
+
 }
