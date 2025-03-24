@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -79,6 +80,13 @@ public class MainActivity extends AppCompatActivity {
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
             selectedFragment = new FeedFragment();
+
+            Log.d("NANCY", "feed nav button pressed");
+
+            //Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("userProfile", currentUser); //make currentUser Serializable, with key "userProfile"
+            selectedFragment.setArguments(bundle);  //attach bundle to the fragment
         } else if (itemPressed == R.id.create_mood_bottom_nav) {
             selectedFragment = new CreateMoodEventFragment();
             //Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
@@ -118,7 +126,14 @@ public class MainActivity extends AppCompatActivity {
     public void successful_login() {
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
         navBar.setVisibility(View.VISIBLE);
-        fragManager.beginTransaction().replace(R.id.frameLayout, new FeedFragment()).commit();
+
+        Fragment selectedFragment = new FeedFragment();
+        //Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("userProfile", currentUser); //make currentUser Serializable, with key "userProfile"
+        selectedFragment.setArguments(bundle);  //attach bundle to the fragment
+
+        fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
 
         // A placeholder for future functionality
         // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android

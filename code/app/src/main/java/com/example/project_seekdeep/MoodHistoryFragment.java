@@ -134,6 +134,8 @@ public class MoodHistoryFragment extends Fragment {
 
         moodArrayAdapter = new UserMoodArrayAdapter(view.getContext(), moodArrayList);
 
+        Log.d("Nancy", "MOOD HISTORY ON VIEW CREATED");
+
 
         loggedInUserMoodsQuery.addSnapshotListener((value, error) -> {
            if (error != null) {
