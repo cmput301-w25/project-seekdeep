@@ -430,6 +430,190 @@ public class MoodHistoryFragmentUITest {
     }
 
     @Test
+    public void filterMoodByConfusionShouldOnlyShowConfusion() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(2000);
+        // save views that should be gone
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        views.add(view);
+        view = onView(withText("☹️ Sadness"));
+        views.add(view);
+        view = onView(withText("😄 Happiness"));
+        views.add(view);
+
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // click confusion on the dialog fragment
+        onView(withId(R.id.confusion_chip)).perform((click()));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if those views are gone
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+        // check confusion is there
+        onView(withText("\uD83E\uDD14 Confusion")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void filterMoodByHappinessShouldOnlyShowHappiness() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(2000);
+        // save views that should be gone
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        views.add(view);
+        view = onView(withText("☹️ Sadness"));
+        views.add(view);
+        view = onView(withText("\uD83E\uDD14 Confusion"));
+        views.add(view);
+
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // click happiness on the dialog fragment
+        onView(withId(R.id.happiness_chip)).perform((click()));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if those views are gone
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+        // check happiness is there
+        onView(withText("😄 Happiness")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void filterMoodByDisgustShouldOnlyShowDisgust() {
+        Mood mood = new Mood(testUser, EmotionalStates.DISGUST, new String[]{"What??", "With Another Person"});
+        usersRef.document().set(testUser);
+        moodsRef.document().set(mood);
+        onView(withId(R.id.History)).perform(click());
+        // save views that should be gone
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        views.add(view);
+        view = onView(withText("☹️ Sadness"));
+        views.add(view);
+        view = onView(withText("\uD83E\uDD14 Confusion"));
+        views.add(view);
+        view = onView(withText("😄 Happiness"));
+        views.add(view);
+
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // click disgust on the dialog fragment
+        onView(withId(R.id.disgust_chip)).perform((click()));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if those views are gone
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+        // check disgust is there
+        onView(withText("\uD83E\uDD22 Disgust")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void filterMoodBySurpriseShouldOnlyShowSurprise() {
+        Mood mood = new Mood(testUser, EmotionalStates.SURPRISE, new String[]{"What??", "With Another Person"});
+        usersRef.document().set(testUser);
+        moodsRef.document().set(mood);
+        onView(withId(R.id.History)).perform(click());
+        // save views that should be gone
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        views.add(view);
+        view = onView(withText("☹️ Sadness"));
+        views.add(view);
+        view = onView(withText("\uD83E\uDD14 Confusion"));
+        views.add(view);
+        view = onView(withText("😄 Happiness"));
+        views.add(view);
+
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // click surprise on the dialog fragment
+        onView(withId(R.id.surprise_chip)).perform((click()));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if those views are gone
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+        // check surprise is there
+        onView(withText("\uD83D\uDE2F Surprise")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void filterMoodByFearShouldOnlyShowFear() {
+        Mood mood = new Mood(testUser, EmotionalStates.FEAR, new String[]{"What??", "With Another Person"});
+        usersRef.document().set(testUser);
+        moodsRef.document().set(mood);
+        onView(withId(R.id.History)).perform(click());
+        // save views that should be gone
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        views.add(view);
+        view = onView(withText("☹️ Sadness"));
+        views.add(view);
+        view = onView(withText("\uD83E\uDD14 Confusion"));
+        views.add(view);
+        view = onView(withText("😄 Happiness"));
+        views.add(view);
+
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // click fear on the dialog fragment
+        onView(withId(R.id.fear_chip)).perform((click()));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if those views are gone
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+        // check fear is there
+        onView(withText("\uD83D\uDE28 Fear")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void filterMoodByShameShouldOnlyShowShame() {
+        Mood mood = new Mood(testUser, EmotionalStates.SHAME, new String[]{"What??", "With Another Person"});
+        usersRef.document().set(testUser);
+        moodsRef.document().set(mood);
+        onView(withId(R.id.History)).perform(click());
+        // save views that should be gone
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        views.add(view);
+        view = onView(withText("☹️ Sadness"));
+        views.add(view);
+        view = onView(withText("\uD83E\uDD14 Confusion"));
+        views.add(view);
+        view = onView(withText("😄 Happiness"));
+        views.add(view);
+
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // click shame on the dialog fragment
+        onView(withId(R.id.shame_chip)).perform((click()));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if those views are gone
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+        // check shame is there
+        onView(withText("\uD83D\uDE14 Shame")).check(matches(isDisplayed()));
+    }
+
+    @Test
     public void filterMoodBySadnessAndPastWeekShouldShowOnlySadness() throws InterruptedException {
         // give time for the login to process
         Thread.sleep(2000);
