@@ -2,13 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
+    <color name="dark_gray">#444444</color>
     <color name="raisin_black">#211A1D</color>
     <color name="electric_indigo">#6320EE</color>
     <color name="medium_slate_blue">#8075FF</color>
     <color name="magnolia">#f8f0fb</color>
     <color name="ash_gray">#cad5ca</color>
-
     <color name="anger_red">#D55353</color>
     <color name="confusion_pink">#FFC6E8</color>
     <color name="disgust_green">#59C225</color>
@@ -17,5 +16,6 @@
     <color name="sadness_blue">#0055FF</color>
     <color name="shame_purple">#AD2CED</color>
     <color name="surprise_orange">#E4A21F</color>
-
+    <color name="pastel_lavender">#DCCCFF</color>
+    <color name="light_green">#CAD5CA</color>
 </resources>

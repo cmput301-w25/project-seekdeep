@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.media.Image;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +19,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * This class is a custom array adapter for the Mood class.
@@ -25,10 +34,36 @@ import java.util.ArrayList;
  */
 public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+
+    /**
+     * Mandatory constructor class for MoodArrayAdapter
+     *
+     * @param context   , type Context
+     * @param moods     , type ArrayList<Mood>
+     */
     public MoodArrayAdapter(Context context, ArrayList<Mood> moods) {
         super(context, 0, moods);
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
     }
 
+    /**
+     * Create and get the view for each item in a listView for moods
+     *
+     *
+     * @param position The position of the item within the adapter's data set of the item whose view
+     *        we want.
+     * @param convertView The old view to reuse, if possible. Note: You should check that this view
+     *        is non-null and of an appropriate type before using. If it is not possible to convert
+     *        this view to display the correct data, this method can create a new view.
+     *        Heterogeneous lists can specify their number of view types, so that this View is
+     *        always of the right type (see {@link #getViewTypeCount()} and
+     *        {@link #getItemViewType(int)}).
+     * @param parent The parent that this view will eventually be attached to
+     * @return
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -57,17 +92,76 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         emotion.setText(currentMood.getEmotionalState().toString());
         user.setText(currentMood.getOwnerString());
         trigger.setText(currentMood.getTrigger());
-        socialSit.setText(currentMood.getSocialSituation());
+        socialSit.setText(currentMood.getSocialSituation().toString());
         date.setText(currentMood.getPostedDate().toString());
 
 
         // i don't know how to do the image and pfp one - jachelle
 
+        //todo set up images for mood events
+
+        //if theres no trigger, hide it
+        if (currentMood.getTrigger() == null || Objects.equals(currentMood.getTrigger(), "")){
+            trigger.setVisibility(View.GONE);
+            view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
+        }
+
+        // if no reason, hide it
+        if(currentMood.getReason() == null){
+            reason.setVisibility(View.GONE);
+        }
+        //if no social situation, hide it
+        if(currentMood.getSocialSituation().toString().equals("Social Situations")){
+            socialSit.setVisibility(View.GONE);
+            view.findViewById(R.id.social_situation_icon).setVisibility(View.GONE);
+        }
+
         // if image DNE, then hide the image view?
         if (currentMood.getImage() == null){
             image.setImageDrawable(null);
+
+            Log.d("NANCY", "null image");
         } else{
             ; //ToDo for images
+
+
+            //Log.d("NANCY", "non null image: " + splitString.toString());
+
+
+            StorageReference pathReference = storageRef.child("Images/" +
+                    currentMood.getImage().getLastPathSegment());
+
+            Log.d("NANCY", "Non null Pathref/ " + pathReference);
+
+
+
+            StorageReference imageFire = storage.getReference("Images/" +
+                    currentMood.getImage().getLastPathSegment());
+
+
+            Log.d("NANCY", "Non null image fire/ " + imageFire);
+
+
+            //Glide.with(getContext())
+            //       .load(imageFire)
+            //      .into(image);
+
+
+            imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL for 'users/me/profile.png'
+                    Glide.with(getContext())
+                            .load(uri)
+                            .into(image);
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
         }
 
 

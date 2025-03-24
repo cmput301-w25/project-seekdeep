@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1092658032671",
+    "project_id": "project-seekdeep",
+    "storage_bucket": "project-seekdeep.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1092658032671:android:5dfa49c5c7a5641941652a",
+        "android_client_info": {
+          "package_name": "com.example.project_seekdeep"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMX2z8FR5Xgm77_tSqzu0ohbAUG6jANJY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
