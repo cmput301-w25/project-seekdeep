@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -240,76 +241,9 @@ public class OtherUsersProfileFragment extends Fragment {
         }
     }
 
+    private void addUserToFollowingList() {
+        //Should the following list be a list of docRefs or of usernames?
+    }
 
-//    @Override
-//    protected void onCreate(@Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.other_users_profile_page);
-//
-//        //Setup the username
-//        String username = getIntent().getStringExtra("USERNAME");
-//        usernameTextView = findViewById(R.id.username_profile);
-//        usernameTextView.setText(username);
-//
-//        //Get instance of db
-//        db = FirebaseFirestore.getInstance();
-//
-//        //Implement the back button
-//        //https://stackoverflow.com/questions/72634225/onbackpressed-is-deprecated-what-is-the-alternative
-//        backButton = findViewById(R.id.back_button);
-//        backButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                getOnBackPressedDispatcher().onBackPressed();
-//            }
-//        });
-//
-//        //Fetch the state of the button
-//        // TO DO: see if user is following or already requested this user from database
-//
-//        /*
-//        The button has 3 states:
-//        1. "Follow" : isFollowing == true, isPending == false
-//        2. "Pending" : isFollowing == false, isPending == true
-//        3. "Following" : both are false
-//         */
-//        isFollowing = false;
-//        isPending = false;
-//
-//        //Implement the follow button
-//        followButton = findViewById(R.id.follow_button);
-//        //Change the state of the follow button (in the current view) depending on the current state
-//        followButton.setOnClickListener(view -> {
-//            //If user is neither following nor pending, then they will see a Follow button that they can click
-//            if (!isFollowing && !isPending) {
-//                isPending = true;
-//                updateFollowButton(followButton, isFollowing, isPending);
-//                sendFollowRequestToDataBase();
-//            }
-//        });
-//    }
-//
-//    /**
-//     * This method changes the state of the follow button on the UI of profile that the user is viewing.
-//     * @param followButton is the UI element that will be changed to either "Follow", "Pending", or "Following"
-//     * @param isFollowing declares if the user is already following this profile
-//     * @param isPending declares if the user has already requested to follow this profile
-//     */
-//    public void updateFollowButton(Button followButton, boolean isFollowing, boolean isPending) {
-//        if (isFollowing && !isPending) {
-//            followButton.setText("Following");
-//        }
-//        else if (isPending && !isFollowing) {
-//            followButton.setText("Pending");
-//        }
-//        else {
-//            followButton.setText("Follow");
-//        }
-//    }
-//
-//    private void sendFollowRequestToDataBase() {
-//
-//    }
-//
-//}
+
 }
