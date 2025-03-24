@@ -139,6 +139,7 @@ public class OtherUsersProfileFragment extends Fragment {
                     //Store mood object into the list
                     moodArrayList.add(mood);
                 }
+                MoodFiltering.sortReverseChronological(moodArrayList);
                 moodArrayAdapter.notifyDataSetChanged();
             }
             else {Log.d("Firestore", "no moods found for this user!");}
