@@ -56,6 +56,12 @@ public class FeedFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /**
+     * Modify On create 
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,6 +162,12 @@ public class FeedFragment extends Fragment {
 
                         moodArrayList.add(mood);
                     }
+
+                    //taken from Jachelle
+
+                    MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
+                    moodArrayAdapter.notifyDataSetChanged();
+                    moodListView.setAdapter(moodArrayAdapter);
                     moodArrayAdapter.notifyDataSetChanged();
                 }
             });
@@ -163,11 +175,4 @@ public class FeedFragment extends Fragment {
 
     }
 
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        Log.d("NANCY", "FEED FRAGMENT ON RESUME");
-    }
 }
