@@ -164,7 +164,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
     /**
-     * Requests location updates if the last location isn’t available.
+     * Requests regular location updates when the last location isn’t available or the user moves
      * Moves the map camera to the first valid location received and stops updates.
      */
     private void requestLocationUpdates() {
