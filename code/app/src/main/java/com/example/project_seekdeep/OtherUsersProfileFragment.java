@@ -91,7 +91,9 @@ public class OtherUsersProfileFragment extends Fragment {
         ListView moodListView = view.findViewById(R.id.history_listview); //UI ListView
         moodArrayList = new ArrayList<>();
         //Adapter tells how moodArrayList should display the items
-        moodArrayAdapter = new UserMoodArrayAdapter(view.getContext(), moodArrayList);
+        //1st arg: the context(fragment), 2nd arg: The list of mood objects to display, 3rd arg: ref to object that implements MoodArrayAdapter.OnUsernameClickListener
+        //pass 'null' as the 3rd arg : moods in this fragment don't need to listen for username clicks
+        moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, null);
         //Set the adapter to the UI Listview
         moodListView.setAdapter(moodArrayAdapter);
 
