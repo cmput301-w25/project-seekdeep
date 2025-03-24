@@ -403,7 +403,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
             fusedLocationProviderClient.getLastLocation()
                     .addOnSuccessListener(location -> {
                         if (location != null) {
-                            // Create a location map]
+                            // Create a location map
                             double latitude = location.getLatitude();
                             double longitude = location.getLongitude();
                             EmotionalStates emotionalState = moodEvent.getEmotionalState();
@@ -412,19 +412,8 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                             UserLocation userLocation = new UserLocation(latitude, longitude, emotionalState, userName);
                             // Save location to Firestore under "location" collection
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            db.collection("locations").add(userLocation)
-                                    .addOnSuccessListener(documentReference -> {
-                                        Log.d("CreateMoodEvent", "Location saved with ID: " + documentReference.getId());
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.e("CreateMoodEvent", "Error saving location", e);
-                                    });
-                        } else {
-                            Log.d("CreateMoodEvent", "No location available");
+                            db.collection("locations").add(userLocation);
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("CreateMoodEvent", "Error getting location", e);
                     });
         } else {
             Toast.makeText(requireContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
