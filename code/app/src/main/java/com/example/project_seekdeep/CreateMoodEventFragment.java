@@ -58,7 +58,7 @@ import java.util.UUID;
 /**
  * This Fragment class is designed to display a Mood Event Card, and let users Create a mood.
  * When the user clicks to select an emotion, a SelectMoodDialogFragment will pop up.
- * @author Sarah Chang, Nancy Lin
+ * @author Sarah Chang, Nancy Lin, Saurabh S. Baghel
  */
 
 /*
