@@ -91,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
             bundle.putSerializable("userProfile", currentUser); //make currentUser Serializbale, with key "userProfile"
 //            bundle.putString("username", getCurrentUsername()); //username stored as string in the bundle
             selectedFragment.setArguments(bundle);  //attach bundle to the fragment
+        } else if (itemPressed == R.id.following_bottom_nav) {
+            selectedFragment = new FollowingFragment();
         }
 
         // Display selected fragment to screen
