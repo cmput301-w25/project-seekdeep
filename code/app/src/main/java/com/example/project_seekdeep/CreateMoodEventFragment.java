@@ -50,11 +50,6 @@ import com.google.firebase.storage.UploadTask;
 import com.google.firebase.storage.internal.StorageReferenceUri;
 
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-
 /**
  * This Fragment class is designed to display a Mood Event Card, and let users Create a mood.
  * When the user clicks to select an emotion, a SelectMoodDialogFragment will pop up.
@@ -89,6 +84,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     private MoodProvider moodProvider;
     //Attributes for selecting a mood:
     TextView clickToSelectMood; //this textView is set to clickable
+
     //Attributes for saving the current location while creatng mood
     private Switch locationToggle;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -269,37 +265,38 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
              }
          });
 
-
-        // Restore current switch state from SharedPreferences
+        // https://developer.android.com/training/data-storage/shared-preferences#java
+        // Restore current switch state from SharedPreferences so that it is consistent with MapsFragment
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("MoodEventPrefs", Context.MODE_PRIVATE);
         boolean isLocationEnabled = sharedPreferences.getBoolean("location_enabled", false);
         locationToggle.setChecked(isLocationEnabled);
 
-        // Handle location permission request result
-        requestLocationPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
+        // Handle location permission request
+        requestLocationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
-                    if (isGranted) {
+                    if (isGranted) {        // Enable Toggle
                         Toast.makeText(requireContext(), "Location permission granted", Toast.LENGTH_SHORT).show();
-                        locationToggle.setChecked(true); // Trigger the toggle listener
-                    } else {
+                        locationToggle.setChecked(true);
+                    } else {                // Disable Toggle
                         Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
-                        locationToggle.setChecked(false); // Ensure toggle reflects denied state
+                        locationToggle.setChecked(false);
                     }
                 }
         );
 
-        // Set listener for the location toggle switch
+        // Set the listener for the location toggle switch
         locationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
+                // If toggle is enabled,  and permission nor granted then ask for permission
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
                     requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
                 } else {
-                    // Save the location when permission is granted
+                    // Save the state when permission is granted
                     saveLocationToggleState(true);
                 }
             } else {
+                // If toggle is disabled, save that state
                 saveLocationToggleState(false);
             }
         });
@@ -346,7 +343,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                 moodProvider.addMoodEvent(moodEvent);
 
                 if (locationToggle.isChecked()) {
-                    saveLocationToFirestore();  // Pass the ID to saveLocationToFirestore
+                    saveLocationToFirestore();          // Pass the ID to saveLocationToFirestore
                 }
 
                 Toast.makeText(requireContext(), "Your mood has been uploaded!", Toast.LENGTH_SHORT).show();
@@ -381,9 +378,10 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         clickToSelectMood.setText(selectedMood.toString());
     }
 
+    // https://developer.android.com/training/data-storage/shared-preferences#java
     /**
-     * Function saves the state of the location switch toggle to SharedPreferences.
-     * @param isEnabled: True if location tracking is enabled.
+     * Function writes/saves the state of the location switch toggle to SharedPreferences.
+     * @param isEnabled: True if location tracking is enabled, false otherwise
      */
     private void saveLocationToggleState(boolean isEnabled) {
         // Retrieve shared preference instance and set as enabled
@@ -400,10 +398,11 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     private void saveLocationToFirestore() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
+            // Get the current location
             fusedLocationProviderClient.getLastLocation()
                     .addOnSuccessListener(location -> {
                         if (location != null) {
-                            // Create a location map
+                            // Create the location attributes
                             double latitude = location.getLatitude();
                             double longitude = location.getLongitude();
                             EmotionalStates emotionalState = moodEvent.getEmotionalState();
@@ -414,6 +413,9 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
                             db.collection("locations").add(userLocation);
                         }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(requireContext(), "Error to fetch location", Toast.LENGTH_SHORT).show();
                     });
         } else {
             Toast.makeText(requireContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
