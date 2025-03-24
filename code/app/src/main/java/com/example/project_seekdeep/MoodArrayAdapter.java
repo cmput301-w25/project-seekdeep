@@ -90,7 +90,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
         TextView socialSit = view.findViewById(R.id.social_situation);
         TextView date = view.findViewById(R.id.date);
-        ImageView image = view.findViewById(R.id.image);
+        ImageView image = view.findViewById(R.id.mood_image);
         ImageView pfp = view.findViewById(R.id.profile_picture);
 
         // set the text for the mood event (layout_mood.xml)
