@@ -1,6 +1,8 @@
 package com.example.project_seekdeep;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -17,11 +19,15 @@ import java.util.List;
 public class UserProvider {
     private FirebaseFirestore db;
     private UserProfile currentUser;
+    private Context context;
+    private boolean initializingFollowings;
 
-    public UserProvider(UserProfile currentUser) {
+    public UserProvider(Context mainActivityContext, UserProfile currentUser) {
         //Get an instance of firebase (.getInstance only needs to be called once per class)
         this.db = FirebaseFirestore.getInstance();
         this.currentUser = currentUser;
+        this.context = mainActivityContext;
+        this.initializingFollowings = true;
     }
 
     /**
@@ -86,6 +92,39 @@ public class UserProvider {
                 });
     }
 
+    //THIS METHOD DOESN'T WORK AND MIGHT NOT BE NECESSARY (THE TOASTS ARE WORKING) - DONT USE IT
+    public void listenForNewRequests() {
+        Log.d("listenForNewRequests", "Listener started!");
+        db.collection("followings_and_requests")
+                .whereEqualTo("followee", currentUser.getUsername())
+                .whereEqualTo("status", "pending")
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.w("listenForNewRequests", "Error in new request listener!", error);
+                        return;
+                    }
+
+                    Log.d("listenForNewRequests", "Snapshot received!");
+
+                    if (initializingFollowings) {
+                        initializingFollowings = false;
+                        return; // Ignore the first snapshot to prevent spam after login
+                    }
+
+                    // Detect document changes (added requests)
+                    assert value != null;
+                    for (DocumentChange change : value.getDocumentChanges()) {
+                        if (change.getType() == DocumentChange.Type.ADDED) {
+                            Log.d("listenForNewRequests", "New doc added!");
+                            String requester = change.getDocument().getString("follower");
+                            Log.d("listenForNewRequests", "New follow request by " + requester);
+                            Toast.makeText(context, "You have a new request from " + requester, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+    }
+
+
     //This might be an unneccessary listener
     public void listenForDeniedRequests() {
         db.collection("followings_and_requests")
@@ -99,7 +138,7 @@ public class UserProvider {
                     for (DocumentChange change : value.getDocumentChanges()) {
                         if (change.getType() == DocumentChange.Type.REMOVED) {
                             String unfollowedUser = change.getDocument().getString("followee");
-                            Log.d("Following", "currentUser has been denied by "+unfollowedUser);
+                            Log.d("listenForDeniedRequests", "currentUser has been denied by "+unfollowedUser);
 
                             //Firebase doesnt need to be updated cuz pending requests were never in the followings list
                         }
