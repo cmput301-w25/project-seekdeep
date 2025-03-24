@@ -17,6 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -36,7 +37,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragManager;
     private UserProfile currentUser;
-    private FirebaseFirestore db;
+    //private FirebaseFirestore db;
+    private UserProvider userProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         fragManager = getSupportFragmentManager();
         fragManager.beginTransaction().replace(R.id.frameLayout, new LogInFragment()).commit();
 
-        db = FirebaseFirestore.getInstance();
+        //db = FirebaseFirestore.getInstance();
     }
 
     // The following code for Navigation Bar was adapted from GeeksForGeeks' guide on "BottomNavigationView in Android"
@@ -109,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
      */
     public void setCurrentUser(UserProfile user) {
         this.currentUser = user;
+        //Create an instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
+        this.userProvider = new UserProvider(user);
     }
 
     /**
@@ -140,39 +144,65 @@ public class MainActivity extends AppCompatActivity {
 //          .commit();
 
         //Once login is successful, can create the following list (users you follow) and listen for new followings
-        listenForAcceptedRequests();
+//        userProvider.listenForAcceptedRequests();
+        //listenForAcceptedRequests();
+
+        //Invoke listeners for Following
+        setUpFollowingListeners();
+    }
+    public void setUpFollowingListeners() {
+        userProvider.listenForAcceptedRequests();
+        userProvider.listenForUnfollowings();
     }
 
-    /**
-     * This method creates the user's following list whenever a user logs in,
-     * while also listening for users who have accepted the logged-in user's follow request
-     *
-     * TO DO:
-     * - if the user logged-in, then don't need to recreate the list from scratch, just get the initial list from firebase
-     * - how to update this list in firebase?
-     */
-    //Reference: https://firebase.google.com/docs/firestore/query-data/listen#listen_to_multiple_documents_in_a_collection
-    public void listenForAcceptedRequests() {
-        db.collection("followings_and_requests")
-                .whereEqualTo("follower", currentUser.getUsername())
-                .whereEqualTo("status", "following")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if (error != null) {
-                            Log.w("listenForFollowRequests", "Listener failed!!");
-                            return;
-                        }
-
-                        for (QueryDocumentSnapshot doc : value) {
-                            String followee = doc.getString("followee");
-                            currentUser.addFollowing(followee);
-
-                            // Debug: Print out the updated following list after adding the followee
-                            Log.d("Following List", "Updated following list: " + (currentUser.getFollowings()).get(0));
-                        }
-                    }
-                });
-    }
+//    /**
+//     * This method creates the user's following list whenever a user logs in,
+//     * while also listening for users who have accepted the logged-in user's follow request
+//     *
+//     * TO DO:
+//     * - if the user logged-in, then don't need to recreate the list from scratch, just get the initial list from firebase
+//     * - how to update this list in firebase?
+//     * - this method does not handle unfollowings!!
+//     */
+//    //Reference: https://firebase.google.com/docs/firestore/query-data/listen#listen_to_multiple_documents_in_a_collection
+//    public void listenForAcceptedRequests() {
+//        db.collection("followings_and_requests")
+//                .whereEqualTo("follower", currentUser.getUsername())
+//                .whereEqualTo("status", "following")
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+//                        if (error != null) {
+//                            Log.w("listenForFollowRequests", "Listener failed!!");
+//                            return;
+//                        }
+//
+//                        for (QueryDocumentSnapshot doc : value) {
+//                            String followee = doc.getString("followee");
+//                            currentUser.addFollowing(followee);
+//
+//                            // Debug: Print out the updated following list after adding the followee
+//                            Log.d("Following List", "Updated following list: " + (currentUser.getFollowings()).get(0));
+//                        }
+//                        addFollowingListToFirebase();
+//                    }
+//                });
+//    }
+//
+//    /**
+//     * This method adds the current user's followings list (taken from the UserProfile followings attribute) into firestore
+//     */
+//    public void addFollowingListToFirebase() {
+//        List<String> followingList = currentUser.getFollowings();
+//        DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("users").document(currentUser.getUsername());
+//
+//        userDocRef.update("followings", followingList)
+//                .addOnSuccessListener(aVoid -> {
+//                    Log.d("Firestore", "Followings list updated successfully");
+//                })
+//                .addOnFailureListener(e -> {
+//                    Log.w("Firestore", "Error updating followings list", e);
+//                });
+//    }
 
 }
