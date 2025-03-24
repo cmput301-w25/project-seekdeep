@@ -141,17 +141,11 @@ public class MainActivity extends AppCompatActivity {
 //          .replace(R.id.frameLayout, feedFragment)
 //          .commit();
 
-        //Once login is successful, can create the following list (users you follow) and listen for new following
-        //Create an instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
-        this.userProvider = new UserProvider(getApplicationContext(), currentUser);
-        //Invoke listeners for Following
-//        setUpFollowingListeners();
+        //Once login is successful, can create initizlize the followings list
+        //Use one instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
+        userProvider = UserProvider.getInstance(this, currentUser);
+        userProvider.initializeFollowingsList();
     }
 
-//    public void setUpFollowingListeners() {
-//        userProvider.listenForAcceptedRequests();
-//        userProvider.listenForUnfollowings();
-//        userProvider.listenForNewRequests();
-//    }
 
 }

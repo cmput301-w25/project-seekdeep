@@ -18,10 +18,13 @@ import androidx.annotation.Nullable;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -30,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -57,6 +59,7 @@ public class OtherUsersProfileFragment extends Fragment {
     boolean isPending;
     private UserProfile loggedInUser;
     private UserProfile userBeingViewed;
+    private UserProvider userProvider;
 
 
     //Constructor
@@ -73,6 +76,10 @@ public class OtherUsersProfileFragment extends Fragment {
             loggedInUser = (UserProfile) getArguments().getSerializable("loggedInUser");
             userBeingViewed = (UserProfile) getArguments().getSerializable("userBeingViewed");
         }
+
+        //Instantiate userProvide (to use its firebase methods)
+        //userProvider = new UserProvider(requireContext(), loggedInUser);
+        userProvider = UserProvider.getInstance(requireContext(), null); //use the same instance of userProvider that mainactivity uses
 
         //Setup the username
         usernameTextView = view.findViewById(R.id.username_profile);
@@ -148,6 +155,8 @@ public class OtherUsersProfileFragment extends Fragment {
 
         //Assign the collection reference (if DNE, it'll create a new one)
         followingsAndRequestsRef = db.collection("followings_and_requests");
+        //Setup listeners
+        //listenForAcceptedRequests();
 
         //Implement the back button
         backButton = view.findViewById(R.id.back_button);
@@ -162,7 +171,7 @@ public class OtherUsersProfileFragment extends Fragment {
         //Fetch the state of the button
         isFollowing = false;
         isPending = false;
-        updateButtonStatus();
+        initializeButtonStatus();
 
         //Implement the follow button
         followButton = view.findViewById(R.id.follow_button);
@@ -170,7 +179,9 @@ public class OtherUsersProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (!isFollowing && !isPending) {
-                sendFollowRequestToDataBase();
+                //sendFollowRequestToDataBase();
+                userProvider.sendFollowRequestToDataBase(loggedInUser, userBeingViewed);
+                changeButtonAndStatus("Pending");
             }
             }
         });
@@ -182,16 +193,16 @@ public class OtherUsersProfileFragment extends Fragment {
             public void onClick(View view) {
                 if (isFollowing && !isPending) {
                     //Remove userBeingViewed from the UserProfile followings list and from firebase
-                    unfollowThisUser();
+                    userProvider.unfollowThisUser(userBeingViewed);
                     //Update the UI
-                    changeButtonAndStatus("Unfollow");
+                    changeButtonAndStatus("Unfollowing");
                 }
             }
         });
 
     }
 
-    private void updateButtonStatus() {
+    private void initializeButtonStatus() {
         followButton = getView().findViewById(R.id.follow_button);
 
         followingsAndRequestsRef
@@ -212,26 +223,26 @@ public class OtherUsersProfileFragment extends Fragment {
                         }
                         else {
                             //This just means the user doesn't follow userBeingViewed
-                            changeButtonAndStatus("Unfollow");
+                            changeButtonAndStatus("Unfollowing");
                         }
                     }
                 });
     }
 
-    private void sendFollowRequestToDataBase() {
-        //Change the button to "Pending"
-        changeButtonAndStatus("Pending");
-
-        //Create a new doc with a uniquely generated id
-        DocumentReference newDocRef = followingsAndRequestsRef.document();
-
-        Map<String, Object> followData = new HashMap<>();
-        followData.put("follower", loggedInUser.getUsername());
-        followData.put("followee", userBeingViewed.getUsername());
-        followData.put("status", "pending");
-
-        newDocRef.set(followData);
-    }
+//    private void sendFollowRequestToDataBase() {
+//        //Change the button to "Pending"
+//        changeButtonAndStatus("Pending");
+//
+//        //Create a new doc with a uniquely generated id
+//        DocumentReference newDocRef = followingsAndRequestsRef.document();
+//
+//        Map<String, Object> followData = new HashMap<>();
+//        followData.put("follower", loggedInUser.getUsername());
+//        followData.put("followee", userBeingViewed.getUsername());
+//        followData.put("status", "pending");
+//
+//        newDocRef.set(followData);
+//    }
 
     private void changeButtonAndStatus(String newStatus) {
         if (newStatus.equals("Pending")) {
@@ -246,7 +257,7 @@ public class OtherUsersProfileFragment extends Fragment {
             isFollowing = true;
             isPending = false;
         }
-        if (newStatus.equals("Unfollow")) {
+        if (newStatus.equals("Unfollowing")) {
             getView().findViewById(R.id.follow_button).setVisibility(VISIBLE);
             getView().findViewById(R.id.following_button).setVisibility(View.GONE);
             isFollowing = false;
@@ -254,41 +265,42 @@ public class OtherUsersProfileFragment extends Fragment {
         }
     }
 
-    /**
-     * This method will delete the document where
-     * follower==loggedInUser and followee==userBeingViewed and status=="following"
-     */
-    private void unfollowThisUser() {
-        followingsAndRequestsRef
-                .whereEqualTo("follower", loggedInUser.getUsername())
-                .whereEqualTo("followee", userBeingViewed.getUsername())
-                .whereEqualTo("status","following")
-                .get()
-                .addOnSuccessListener(queryDocSnapshot -> {
-                    for (QueryDocumentSnapshot doc : queryDocSnapshot) {
-                        doc.getReference().delete()
-                                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Successfully unfollowed " + userBeingViewed.getUsername()))
-                                .addOnFailureListener(e -> Log.w("Firestore", "Error unfollowing user", e));
-                    }
+//    /**
+//     * This method will delete the document where
+//     * follower==loggedInUser and followee==userBeingViewed and status=="following"
+//     */
+//    private void unfollowThisUser() {
+//        followingsAndRequestsRef
+//                .whereEqualTo("follower", loggedInUser.getUsername())
+//                .whereEqualTo("followee", userBeingViewed.getUsername())
+//                .whereEqualTo("status","following")
+//                .get()
+//                .addOnSuccessListener(queryDocSnapshot -> {
+//                    for (QueryDocumentSnapshot doc : queryDocSnapshot) {
+//                        doc.getReference().delete()
+//                                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Successfully unfollowed " + userBeingViewed.getUsername()))
+//                                .addOnFailureListener(e -> Log.w("Firestore", "Error unfollowing user", e));
+//                    }
+//
+//                    //Update the UserProfile class
+//                    loggedInUser.removeFollowing(userBeingViewed.getUsername());
+//
+//                    //Update the followings list in firestore
+//                    removeFromFollowingsListInFirestore();
+//                })
+//                .addOnFailureListener(e -> Log.w("Firestore", "Error finding follow document", e));
+//    }
+//    /**
+//     * This is a helper method for unfollowThisUser
+//     * This will remove userBeingViewed from the followings-array-field in the user's document
+//     */
+//    private void removeFromFollowingsListInFirestore() {
+//        DocumentReference userDocRef = db.collection("users").document(loggedInUser.getUsername());
+//        userDocRef.update("followings", FieldValue.arrayRemove(userBeingViewed.getUsername()))
+//                .addOnSuccessListener(aVoid -> Log.d("Firestore", "(unfollow) Followings list updated successfully"))
+//                .addOnFailureListener(e -> Log.w("Firestore", "(unfollow) Error updating followings list", e));
+//    }
 
-                    //Update the UserProfile class
-                    loggedInUser.removeFollowing(userBeingViewed.getUsername());
-
-                    //Update the followings list in firestore
-                    removeFromFollowingsListInFirestore();
-                })
-                .addOnFailureListener(e -> Log.w("Firestore", "Error finding follow document", e));
-    }
-    /**
-     * This is a helper method for unfollowThisUser
-     * This will remove userBeingViewed from the followings-array-field in the user's document
-     */
-    private void removeFromFollowingsListInFirestore() {
-        DocumentReference userDocRef = db.collection("users").document(loggedInUser.getUsername());
-        userDocRef.update("followings", FieldValue.arrayRemove(userBeingViewed.getUsername()))
-                .addOnSuccessListener(aVoid -> Log.d("Firestore", "(unfollow) Followings list updated successfully"))
-                .addOnFailureListener(e -> Log.w("Firestore", "(unfollow) Error updating followings list", e));
-    }
 
     //THIS METHOD IS USED WHEN ANOTHER USER HAS ACCEPTED THE LOGGED-IN USERS FOLLOW REQUESTS
     //THIS METHOD MIGHT BE BETTER USED IN SOME OTHER CLASS
@@ -297,6 +309,33 @@ public class OtherUsersProfileFragment extends Fragment {
         userDocRef.update("followings", FieldValue.arrayUnion(userBeingViewed.getUsername()))
                 .addOnSuccessListener(aVoid -> Log.d("Firestore", "(unfollow) Followings list updated successfully"))
                 .addOnFailureListener(e -> Log.w("Firestore", "(unfollow) Error updating followings list", e));
+    }
+
+    public void listenForAcceptedRequests() {
+        db.collection("followings_and_requests")
+                .whereEqualTo("follower", loggedInUser.getUsername())
+                .whereEqualTo("status", "following")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            Log.d("listenForFollowRequests", "Listener failed!!");
+                            return;
+                        }
+
+                        for (QueryDocumentSnapshot doc : value) {
+                            String followee = doc.getString("followee");
+                            loggedInUser.addFollowing(followee);
+                            Log.d("Following","currentUser now follows "+followee);
+                            // Debug: Print out the updated following list after adding the followee
+                            //Log.d("Following List", "Updated following list: " + (currentUser.getFollowings()).get(0));
+                            //if (change.getType() == DocumentChange.Type.ADDED) {}
+                        }
+                        loggedInUser.addFollowing(userBeingViewed.getUsername());
+                        addToFollowingsListInFirestore();
+                        changeButtonAndStatus("Following");
+                    }
+                });
     }
 
 

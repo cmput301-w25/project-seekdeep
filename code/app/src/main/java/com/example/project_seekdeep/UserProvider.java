@@ -6,18 +6,28 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.auth.User;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserProvider {
+    private static UserProvider instance;
     private FirebaseFirestore db;
+    private CollectionReference followingsAndRequestsCollectionRef;
+    private CollectionReference usersCollectionRef;
     private UserProfile currentUser;
     private Context context;
     private boolean initializingFollowings;
@@ -25,9 +35,67 @@ public class UserProvider {
     public UserProvider(Context mainActivityContext, UserProfile currentUser) {
         //Get an instance of firebase (.getInstance only needs to be called once per class)
         this.db = FirebaseFirestore.getInstance();
+        this.followingsAndRequestsCollectionRef = db.collection("followings_and_requests");
+        this.usersCollectionRef = db.collection("users");
         this.currentUser = currentUser;
         this.context = mainActivityContext;
         this.initializingFollowings = true;
+    }
+
+    public static synchronized UserProvider getInstance(Context context, UserProfile user) {
+        if (instance == null) {
+            instance = new UserProvider(context, user);
+        }
+        return instance;
+    }
+
+    public void sendFollowRequestToDataBase(UserProfile currentUser, UserProfile userBeingViewed) {
+
+        //Create a new doc with a uniquely generated id
+        DocumentReference newDocRef = followingsAndRequestsCollectionRef.document();
+
+        Map<String, Object> followData = new HashMap<>();
+        followData.put("follower", currentUser.getUsername());
+        followData.put("followee", userBeingViewed.getUsername());
+        followData.put("status", "pending");
+
+        newDocRef.set(followData);
+    }
+    /**
+     * This method will delete the document where
+     *      follower==loggedInUser and followee==userBeingViewed and status=="following"
+     * This method also removed the userBeingViewed from the UserProfile object's followings-list
+     */
+    public void unfollowThisUser(UserProfile userBeingViewed) {
+        followingsAndRequestsCollectionRef
+                .whereEqualTo("follower", currentUser.getUsername())
+                .whereEqualTo("followee", userBeingViewed.getUsername())
+                .whereEqualTo("status","following")
+                .get()
+                .addOnSuccessListener(queryDocSnapshot -> {
+                    for (QueryDocumentSnapshot doc : queryDocSnapshot) {
+                        doc.getReference().delete()
+                                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Successfully unfollowed " + userBeingViewed.getUsername()))
+                                .addOnFailureListener(e -> Log.w("Firestore", "Error unfollowing user", e));
+                    }
+
+                    //Update the UserProfile class
+                    userBeingViewed.removeFollowing(userBeingViewed.getUsername());
+
+                    //Update the followings list in firestore
+                    removeFromFollowingsListInFirestore(userBeingViewed);
+                })
+                .addOnFailureListener(e -> Log.w("Firestore", "Error finding follow document", e));
+    }
+    /**
+     * This is a helper method for unfollowThisUser
+     * This will remove userBeingViewed from the followings-array-field in the user's document
+     */
+    private void removeFromFollowingsListInFirestore(UserProfile userBeingViewed) {
+        DocumentReference userDocRef = db.collection("users").document(currentUser.getUsername());
+        userDocRef.update("followings", FieldValue.arrayRemove(userBeingViewed.getUsername()))
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "(unfollow) Followings list updated successfully"))
+                .addOnFailureListener(e -> Log.w("Firestore", "(unfollow) Error updating followings list", e));
     }
 
     /**
@@ -147,6 +215,34 @@ public class UserProvider {
     }
 
     /**
+     * This method fetches all users that currentUser is following
+     */
+    public void initializeFollowingsList() {
+        followingsAndRequestsCollectionRef
+            .whereEqualTo("follower", currentUser.getUsername())
+            .whereEqualTo("status", "following")
+            .get()
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                List<String> followingList = new ArrayList<>();
+                //Add each user into the following list
+                for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                    String followee = doc.getString("followee");
+                    if (followee != null) {
+                        followingList.add(followee);
+                    }
+                }
+                //Set the currentUser's followingList
+                currentUser.setFollowings(followingList);
+                //Upload this list to firestore (as a followings array in the user's document)
+                addFollowingListToFirebase();
+                Log.d("Firestore", "Followings list initialized: " + followingList);
+            })
+            .addOnFailureListener(e -> {
+                Log.e("Firestore", "Error initializing followings list");
+            });
+    }
+    /**
+     * This is a helper method for initializeFollowingsList.
      * This method adds the current user's followings list (taken from the UserProfile followings attribute) into firestore
      */
     public void addFollowingListToFirebase() {
