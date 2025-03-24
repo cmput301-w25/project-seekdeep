@@ -195,7 +195,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         reasonEditText = view.findViewById(R.id.edit_reason);
 
         //Initialize the image UI element
-        uploadImageHere = view.findViewById(R.id.image);
+        uploadImageHere = view.findViewById(R.id.mood_image);
         //Initialize selectMood to UI element
         clickToSelectMood = view.findViewById(R.id.edit_emotion_editText);
         createConfirmButton = view.findViewById(R.id.confirm_create_button);
