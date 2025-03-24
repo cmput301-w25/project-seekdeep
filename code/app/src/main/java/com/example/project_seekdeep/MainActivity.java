@@ -3,6 +3,7 @@ package com.example.project_seekdeep;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
@@ -37,6 +38,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragManager;
     private UserProfile currentUser;
+    private ListView moodListView;
     //private FirebaseFirestore db;
     private UserProvider userProvider;
 
@@ -60,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
         // Set default fragment to be feed upon login
         fragManager = getSupportFragmentManager();
         fragManager.beginTransaction().replace(R.id.frameLayout, new LogInFragment()).commit();
-
-        //db = FirebaseFirestore.getInstance();
     }
 
     // The following code for Navigation Bar was adapted from GeeksForGeeks' guide on "BottomNavigationView in Android"

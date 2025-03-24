@@ -8,7 +8,7 @@ import java.util.Set;
 
 /**
  * This class is for filtering mood events across screens.
- * When using this class, use saveOriginal method first
+ * When using this class, use saveOriginal method first (after sorting reverse chronologically)
  * <p>
  * How to use: <p>
  *   <pre>
@@ -16,6 +16,8 @@ import java.util.Set;
  *   MoodFiltering.sortReverseChronological(moods);
  *   MoodFiltering.saveOriginal(moods);
  *   MoodFiltering.applyFilter("recent");
+ *   MoodFilter.addStates(ArrayList of EmotionalStates);
+ *   MoodFiltering.applyFilter("states");
  *   ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
  *   Then use filteredMoods for displaying
  *   </pre>
@@ -35,6 +37,8 @@ public class MoodFiltering {
     private static ArrayList<Mood> originalMoods; // og list of moods
     private static Set<String> filters = new HashSet<>(); // the filters applied
 
+    private static Set<EmotionalStates> selectedStates = new HashSet<>(); // the selected emotional state(s) to filter by
+
     /**
      * This method saves a copy of the original array
      * You must use this before applying any filters to preserve the original array
@@ -46,8 +50,9 @@ public class MoodFiltering {
 
     /**
      * This method puts the filter name into a set
-     * @param filterName: The filter applied
-     *                    Filter names include: "rChronological", "recent", "😄 Happiness" etc
+     * <p><STRONG>Please note that you must use the addStates method before using applyFilter("states") </STRONG></p>
+     * @param filterName: The filter applied <p>
+     *                    Filter names include: "rChronological", "recent", "states"
      */
     public static void applyFilter(String filterName) {
         filters.add(filterName);
@@ -62,6 +67,24 @@ public class MoodFiltering {
     }
 
     /**
+     * This method MUST be used before using applyFilter("states")
+     * @param states
+     */
+
+    public static void addStates(ArrayList<EmotionalStates> states) {
+        selectedStates.clear();
+        selectedStates.addAll(states);
+    }
+
+    /**
+     * This method removes all filters that were selected by the user.
+     */
+    public static void removeAllFilters() {
+        // reverse chronological should NOT be removed ever
+        filters.remove("recent");
+        filters.remove("states");
+    }
+    /**
      * This method gets the moods that matches the filters that were applied
      * @return
      *      An ArrayList with filtered moods
@@ -75,6 +98,9 @@ public class MoodFiltering {
             }
             if (filter.equals("recent")) {
                 sortRecentWeek(filteredMoods);
+            }
+            if (filter.equals("states")) {
+                sortEmotionalState(filteredMoods);
             }
         }
         return filteredMoods;
@@ -100,5 +126,18 @@ public class MoodFiltering {
 
         // remove the mood from the moods arraylist if it happened before the recent week
         moods.removeIf(mood -> mood.getPostedDate().before(recentWeek));
+    }
+
+    /**
+     * This method sorts/filters an Arraylist of moods to only include those with particular emotional state(s)
+     * @param moods: An ArrayList of Mood objects
+     */
+    public static void sortEmotionalState(ArrayList<Mood> moods) {
+        // remove moods from the arraylist if it's not one of the moods selected and in the selectedStates arraylist
+        moods.removeIf(mood -> !selectedStates.contains(mood.getEmotionalState()));
+    }
+
+    public static Set<String> getFilters() {
+        return filters;
     }
 }
