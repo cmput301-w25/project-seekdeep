@@ -225,6 +225,38 @@ public class MoodHistoryFragmentUITest {
     }
 
     @Test
+    public void testEditMoodWithInvalidReasonShouldError() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(2000);
+        // save the view with the sadness mood event still available
+        ViewInteraction view = onView(withText("☹️ Sadness"));
+
+        // choose the sadness mood to edit and press the edit button associated with that mood event
+        onData(new BoundedMatcher<Object, Mood>(Mood.class) {
+            @Override
+            protected boolean matchesSafely(Mood mood) {
+                return mood.getEmotionalState().toString().equals("☹️ Sadness");
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with emotion: Sadness");
+            }
+        }).inAdapterView(withId(R.id.history_listview)).onChildView(withId(R.id.edit_mood_button)).perform(click());
+        // change reason to be Midterms oh no!
+        onView(withId(R.id.edit_reason)).perform(clearText());
+        String invalidReason = "A".repeat(201);
+        onView(withId(R.id.edit_reason)).perform(ViewActions.typeText(invalidReason));
+
+        // submit form and check if the error is shown to the user
+        onView(withId(android.R.id.button1)).perform(click());
+        onView(withId(R.id.edit_reason)).check(matches(hasErrorText("Reason must be ≤ 200 characters")));
+    }
+
+    @Test
     public void testDeleteMood() throws InterruptedException {
         // give time for the login to process
         Thread.sleep(2000);
