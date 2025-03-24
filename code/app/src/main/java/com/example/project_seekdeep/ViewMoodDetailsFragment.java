@@ -3,6 +3,7 @@ package com.example.project_seekdeep;
 import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -46,6 +47,11 @@ public class ViewMoodDetailsFragment extends Fragment {
     CollectionReference Comments;
     CollectionReference Users;
 
+    // Used to prevent double clicking.
+    // https://stackoverflow.com/questions/5608720/android-preventing-double-click-on-a-button
+    // Taken by: Kevin Tu on 2025-03-23
+    private long lastClickedTime = 0;
+
     ViewMoodDetailsFragment() {
         super(R.layout.fragment_mood_details_and_comments);
     }
@@ -78,6 +84,12 @@ public class ViewMoodDetailsFragment extends Fragment {
         addCommentLayout.setEndIconOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Prevent double clicking
+                if (SystemClock.elapsedRealtime() - lastClickedTime < 1500) {
+                    return;
+                }
+                lastClickedTime = SystemClock.elapsedRealtime();
+
                 String comment = Objects.requireNonNull(addCommentInput.getText()).toString();
                 if (comment.isBlank() || comment.isEmpty()) {
                     Toast usageToast = Toast.makeText(getContext(), "Type in something to comment!", Toast.LENGTH_LONG);
