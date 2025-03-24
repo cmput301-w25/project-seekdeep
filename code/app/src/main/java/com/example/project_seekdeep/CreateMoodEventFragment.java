@@ -267,7 +267,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
         // https://developer.android.com/training/data-storage/shared-preferences#java
         // Restore current switch state from SharedPreferences so that it is consistent with MapsFragment
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("MoodEventPrefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("LocationPref", Context.MODE_PRIVATE);
         boolean isLocationEnabled = sharedPreferences.getBoolean("location_enabled", false);
         locationToggle.setChecked(isLocationEnabled);
 
@@ -385,7 +385,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
      */
     private void saveLocationToggleState(boolean isEnabled) {
         // Retrieve shared preference instance and set as enabled
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("MoodEventPrefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("LocationPref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("location_enabled", isEnabled);
         editor.apply();
