@@ -89,7 +89,7 @@
                 android:hint="Reason" />
 
             <ImageView
-                android:id="@+id/image"
+                android:id="@+id/mood_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

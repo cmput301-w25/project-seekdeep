@@ -1,15 +1,10 @@
 package com.example.project_seekdeep;
 
-import static android.app.Activity.RESULT_OK;
-
-import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,30 +14,23 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.firebase.storage.internal.StorageReferenceUri;
 
 import java.io.FileNotFoundException;
-import java.util.Objects;
-import java.util.UUID;
 
 /**
  * This Fragment class is designed to display a Mood Event Card, and let users Create a mood.
@@ -190,7 +178,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         //Initialize the EditText for trigger
         triggerEditText = view.findViewById(R.id.edit_trigger);
         //Initialize the image UI element
-        uploadImageHere = view.findViewById(R.id.image);
+        uploadImageHere = view.findViewById(R.id.mood_image);
         //Initialize selectMood to UI element
         clickToSelectMood = view.findViewById(R.id.edit_emotion_editText);
         createConfirmButton = view.findViewById(R.id.confirm_create_button);

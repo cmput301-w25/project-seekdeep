@@ -2,9 +2,7 @@ package com.example.project_seekdeep;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.media.Image;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,8 +14,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -84,7 +80,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         TextView trigger = view.findViewById(R.id.trigger);
         TextView socialSit = view.findViewById(R.id.social_situation);
         TextView date = view.findViewById(R.id.date);
-        ImageView image = view.findViewById(R.id.image);
+        ImageView image = view.findViewById(R.id.mood_image);
         ImageView pfp = view.findViewById(R.id.profile_picture);
 
         // set the text for the mood event (layout_mood.xml)

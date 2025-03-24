@@ -68,7 +68,7 @@
                 android:padding="10dp" />
 
             <ImageView
-                android:id="@+id/image"
+                android:id="@+id/mood_image"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_weight="1"

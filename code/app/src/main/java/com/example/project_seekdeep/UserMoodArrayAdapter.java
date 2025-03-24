@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -25,7 +24,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -88,7 +86,7 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
         TextView trigger = view.findViewById(R.id.trigger);
         TextView socialSit = view.findViewById(R.id.social_situation);
         TextView date = view.findViewById(R.id.date);
-        ImageView image = view.findViewById(R.id.image);
+        ImageView image = view.findViewById(R.id.mood_image);
         ImageView pfp = view.findViewById(R.id.profile_picture);
 
         // set the text for the mood event (layout_mood.xml)

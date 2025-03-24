@@ -2,8 +2,6 @@ package com.example.project_seekdeep;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,8 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.Dictionary;
 
 /**
  * This class is used for editing moods
@@ -72,7 +68,7 @@ public class EditMoodFragment extends DialogFragment {
         editTrigger = view.findViewById(R.id.edit_trigger);
         emotionSpinner = view.findViewById(R.id.emotion_spinner);
         socialSituationSpinner = view.findViewById(R.id.social_situation_spinner);
-        imageView = view.findViewById(R.id.image);
+        imageView = view.findViewById(R.id.mood_image);
 
         emotionSpinner.setAdapter(new ArrayAdapter<EmotionalStates>(getContext(), android.R.layout.simple_spinner_item, EmotionalStates.values()));
 
