@@ -11,12 +11,11 @@ public class UserLocation {
     private String userId;
 
     /**
-     * Default Constructor for database
+     * Empty Constructor required for Firebase database operations
      */
-    public UserLocation() {
+    public UserLocation(){
 
     }
-
     /**
      * Constructor to create a UserLocation with specifies latitude, longitude and mood event Id
      * @param latitude: The latitude coordinate
@@ -29,20 +28,28 @@ public class UserLocation {
         this.userId = userId;
     }
 
+    /**
+     * Gets the emotional state of the mood event
+     * @return
+     */
     public EmotionalStates getEmotionalState() {
         return emotionalState;
     }
 
+    /**
+     * Sets the emotional state of the mood event
+     * @param emotionalState
+     */
     public void setEmotionalState(EmotionalStates emotionalState) {
         this.emotionalState = emotionalState;
     }
 
+    /**
+     * Gets the UserId of the owner mood event
+     * @return
+     */
     public String getUserId() {
         return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     /**
