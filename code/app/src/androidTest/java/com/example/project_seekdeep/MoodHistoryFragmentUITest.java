@@ -77,12 +77,12 @@ public class MoodHistoryFragmentUITest {
                 new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework"),
                 new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms")
         };*/
-        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food");
+        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE);
         // give time so we can sort the list
         Thread.sleep(5000);
-        Mood mood2 = new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework");
+        Mood mood2 = new Mood(testUser, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER);
         Thread.sleep(5000);
-        Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD, "Midterms");
+        Mood mood3 = new Mood(testUser, EmotionalStates.SADNESS, SocialSituations.CROWD);
         // make mood with a date outside of recent week
         Thread.sleep(2000);
         Calendar calendar = Calendar.getInstance();
@@ -205,6 +205,27 @@ public class MoodHistoryFragmentUITest {
         onView(withId(R.id.edit_reason)).check(matches(withText("Demo")));
         onView(withId(R.id.edit_trigger)).check(matches(withText("")));
         onView(withId(R.id.social_situation_spinner)).check(matches(hasDescendant(withText("With a Crowd"))));
+    }
+
+    @Test
+    public void testAddMoodWithInvalidReasonShouldShowError() throws InterruptedException {
+        //give time for setup
+        Thread.sleep(2000);
+        //Click Create Mood
+        onView(withId(R.id.create_mood_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        //Choose an emotion
+        onView(withId(R.id.edit_emotion_editText)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.buttonFear)).perform(click());
+        onView(withId(android.R.id.button1)).perform(click());
+        //Write an invalid reason (over 200 characters long - not including whitespaces)
+        String invalidReason = "A".repeat(201);
+        onView(withId(R.id.edit_reason)).perform(ViewActions.typeText(invalidReason));
+        //Click the Create button
+        onView(withId(R.id.confirm_create_button)).perform(click());
+        //Check that the error is shown to user
+        onView(withId(R.id.edit_reason)).check(matches(hasErrorText("Reason must be ≤ 200 characters")));
     }
 
     @Test
