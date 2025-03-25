@@ -75,4 +75,12 @@ public enum EmotionalStates {
     public void setColour(String colour) {
         this.colour = colour;
     }
+
+    /**
+     * This method returns just the uppercase name of the state.
+     * @return
+     */
+    public String getStateName() {
+        return this.name();
+    }
 }

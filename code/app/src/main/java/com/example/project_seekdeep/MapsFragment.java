@@ -14,8 +14,12 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Looper;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +53,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
  *  https://youtube.com/playlist?list=PLHQRWugvckFrWppucVnQ6XhiJyDbaCU79&si=LXVl0HjJwen_ij05
  *  https://developers.google.com/maps/documentation/android-sdk/reference/com/google/android/libraries/maps/model/BitmapDescriptorFactory#HUE_YELLOW
  *  https://stackoverflow.com/questions/17839388/creating-a-scaled-bitmap-with-createscaledbitmap-in-android
+ *  https://stackoverflow.com/questions/47807621/draw-emoji-on-bitmap-with-drawtextonpath?utm_source=chatgpt.com
  */
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
@@ -202,7 +207,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         UserLocation location = document.toObject(UserLocation.class);
                         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                         EmotionalStates emotionalState = location.getEmotionalState();;
-                        String markerTitle = emotionalState.toString();
+                        String markerTitle = emotionalState.getStateName();
                         mMap.addMarker(new MarkerOptions()
                                 .position(latLng)
                                 .title(markerTitle)
@@ -221,20 +226,22 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
      */
     // BitmapDescriptor is class of google maps API, vs Bitmap is class of android graphics
     private BitmapDescriptor getEmotionalLocation(EmotionalStates emotionalState) {
-        int drawableId; // Variable for the emoji gif
-        if (emotionalState == EmotionalStates.SHAME) {drawableId = R.drawable.shame;}
-        else if (emotionalState == EmotionalStates.SADNESS) {drawableId = R.drawable.sad;}
-        else if (emotionalState == EmotionalStates.ANGER) {drawableId = R.drawable.angry;}
-        else if (emotionalState == EmotionalStates.CONFUSION) {drawableId = R.drawable.confused;}
-        else if (emotionalState == EmotionalStates.DISGUST) {drawableId = R.drawable.disgusted;}
-        else if (emotionalState == EmotionalStates.HAPPINESS) {drawableId = R.drawable.happy;}
-        else if (emotionalState == EmotionalStates.SURPRISE) {drawableId = R.drawable.surprised;}
-        else if (emotionalState == EmotionalStates.FEAR) {drawableId = R.drawable.fear;}
-        else {return BitmapDescriptorFactory.defaultMarker();}
-        // Load drawable as bitmap
-        Bitmap b = BitmapFactory.decodeResource(requireContext().getResources(), drawableId);
-        // Scale drawable to specific size
-        Bitmap scaledB = Bitmap.createScaledBitmap(b, 70, 70, true);
-        return BitmapDescriptorFactory.fromBitmap(scaledB);         // Convert bitmap to bitmapDescriptor
+        String emoji = emotionalState.getEmoticon();
+        // Create a 100 x 100 bitmap and a canvas to display upon
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        // Set up the paint for the emoji
+        TextPaint textPaint = new TextPaint();
+        textPaint.setTextSize(64);
+        textPaint.setAntiAlias(true);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+
+        // Draw the emoji at the center of the canvas
+        float x = canvas.getWidth() / 2f;
+        float y = (canvas.getHeight() / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f);        // Align the emoji vertically
+        canvas.drawText(emoji, x, y, textPaint);
+
+        return BitmapDescriptorFactory.fromBitmap(bitmap);         // Convert bitmap to bitmapDescriptor
     }
 }
