@@ -121,7 +121,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         loadMoodLocations();            // Load the mood based markers
-
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         // Retrieve location based setting from shared Preferences
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("LocationPref", Context.MODE_PRIVATE);
         boolean isLocationEnabled = sharedPreferences.getBoolean("location_enabled", false);
