@@ -153,7 +153,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     if (location != null) {
                         // Create the latlng object and move camera to this retrieved location
                         LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
                     } else {
                         requestLocationUpdates();
                     }
@@ -176,7 +176,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 if (locationResult.getLastLocation() != null) {
                     LatLng myLocation = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
                     fusedLocationProviderClient.removeLocationUpdates(this);
                 }
             }
