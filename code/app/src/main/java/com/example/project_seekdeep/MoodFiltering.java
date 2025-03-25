@@ -55,7 +55,7 @@ public class MoodFiltering {
      * This method puts the filter name into a set
      * <p><STRONG>Please note that you must use the addStates method before using applyFilter("states") </STRONG></p>
      * @param filterName: The filter applied <p>
-     *                    Filter names include: "rChronological", "recent", "states", "keyword"
+     *                    Filter names include: "rChronological", "recent", "states", "keyword", "last3"
      */
     public static void applyFilter(String filterName) {
         filters.add(filterName);
@@ -95,6 +95,7 @@ public class MoodFiltering {
         filters.remove("recent");
         filters.remove("states");
         filters.remove("keyword");
+        filters.remove("last3");
     }
     /**
      * This method gets the moods that matches the filters that were applied
@@ -105,17 +106,22 @@ public class MoodFiltering {
         ArrayList<Mood> filteredMoods = new ArrayList<>(originalMoods);
 
         for (String filter : filters) {
-            if (filter.equals("rChronological")) {
-                sortReverseChronological(filteredMoods);
-            }
-            if (filter.equals("recent")) {
-                sortRecentWeek(filteredMoods);
-            }
-            if (filter.equals("states")) {
-                sortEmotionalState(filteredMoods);
-            }
-            if(filter.equals("keyword")) {
-                sortKeyword(filteredMoods);
+            switch (filter) {
+                case "rChronological":
+                    sortReverseChronological(filteredMoods);
+                    break;
+                case "recent":
+                    sortRecentWeek(filteredMoods);
+                    break;
+                case "states":
+                    sortEmotionalState(filteredMoods);
+                    break;
+                case "keyword":
+                    sortKeyword(filteredMoods);
+                    break;
+                case "last3":
+                    sortLast3(filteredMoods);
+                    break;
             }
         }
         return filteredMoods;
@@ -154,7 +160,7 @@ public class MoodFiltering {
 
     /**
      * This method filters an ArrayList of moods to only include those with a keyword. Exact matches only, not case-sensitive.
-     * @param moods: An ArrayList of Mood object
+     * @param moods: An ArrayList of Mood objects
      */
     public static void sortKeyword(ArrayList<Mood> moods) {
         // the regex for this method is taken from https://stackoverflow.com/a/9464309
@@ -163,6 +169,17 @@ public class MoodFiltering {
         // Taken on: March 19, 2025
         // remove moods from the arraylist if it doesn't contain the keyword
         moods.removeIf(mood -> !mood.getReason().toLowerCase().matches(".*\\b" + keyword.toLowerCase().trim() + "\\b.*"));  // matches whole word
+    }
+
+
+    /**
+     * This method filters an ArrayList of moods to only include those that are the most recent.
+     * @param moods: An ArrayList of Mood objects
+     */
+    public static void sortLast3(ArrayList<Mood> moods) {
+        // directly modify the arraylist
+        // keep only the first 3 moods by using sublist from the 3rd to the end of the arraylist and then clear
+        moods.subList(3,moods.size()).clear();
     }
 
     /**
