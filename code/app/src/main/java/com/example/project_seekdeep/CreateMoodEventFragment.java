@@ -269,7 +269,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         // Restore current switch state from SharedPreferences so that it is consistent with MapsFragment
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("LocationPref", Context.MODE_PRIVATE);
         boolean isLocationEnabled = sharedPreferences.getBoolean("location_enabled", false);
-        locationToggle.setChecked(isLocationEnabled);
+        locationToggle.setChecked(false);       // Initially set it as off, cause if user wants to save location then only save location
 
         // Handle location permission request
         requestLocationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
@@ -287,7 +287,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         // Set the listener for the location toggle switch
         locationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                // If toggle is enabled,  and permission nor granted then ask for permission
+                // If toggle is enabled, and permission not granted then ask for permission
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
                     requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
