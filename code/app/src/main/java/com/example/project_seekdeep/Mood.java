@@ -21,7 +21,6 @@ import java.util.List;
 
 public class Mood implements Serializable {
 
-    private String trigger;
     private SocialSituations socialSituation;
     private Uri image;
     private Date postedDate;
@@ -45,21 +44,20 @@ public class Mood implements Serializable {
         this.postedDate = new Date();
     }
     /**
-     * This method is a constructor for Mood which takes user, emotionalState, socialSituation, and trigger.
+     * This method is a constructor for Mood which takes user, emotionalState, socialSituation.
      * This method also sets the date to the current date
      * @param emotionalState
      *  New String for emotionalState
      * @param socialSituation
      *  New String for socialSituation
-     * @param trigger
-     *  New String for trigger of the situation
+
      */
-    public Mood(UserProfile owner,EmotionalStates emotionalState, SocialSituations socialSituation, String trigger){
+    public Mood(UserProfile owner,EmotionalStates emotionalState, SocialSituations socialSituation){
         this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
         this.socialSituation = socialSituation;
-        this.trigger = trigger;
+
     }
 
     /**
@@ -69,16 +67,16 @@ public class Mood implements Serializable {
      * @param emotionalState
      *  The emotional state of the user/mood event (EmotionalState)
      * @param stringFields
-     *  A string array in the form [trigger, reason, social situation] (String[])
+     *  A string array in the form [reason, social situation] (String[])
      */
     public Mood(UserProfile owner, EmotionalStates emotionalState, String[] stringFields) {
         this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = new Date();
-        // position 0 is trigger, position 1 is reason, position 2 is social situation
-        this.trigger = stringFields[0];
-        this.reason = stringFields[1];
-        switch (stringFields[2]) {
+        // position 0 is reason, position 1 is social situation
+
+        this.reason = stringFields[0];
+        switch (stringFields[1]) {
             case "Social Situations":
                 this.socialSituation = SocialSituations.TITLE;
                 break;
@@ -114,43 +112,51 @@ public class Mood implements Serializable {
         this.postedDate = date;
     }
 
-
-
-    public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate){
+    // this is used for testing ***
+    public Mood(UserProfile owner, EmotionalStates emotionalState, Date date, String reason) {
         this.owner = owner;
         this.emotionalState = emotionalState;
-        this.postedDate = postedDate;
-        this.socialSituation = socialSituation;
-        this.trigger = trigger;
+        this.postedDate = date;
+        this.reason = reason;
     }
 
-    public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, String trigger, List<String> followers, Date postedDate, String reason){
+    // this is used for testing ***
+    public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, Date date, String reason){
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+        this.socialSituation = socialSituation;
+        this.postedDate = date;
+        this.reason = reason;
+    }
+
+
+
+    public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, List<String> followers, Date postedDate){
         this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = postedDate;
         this.socialSituation = socialSituation;
-        this.trigger = trigger;
+
+    }
+
+    public Mood(UserProfile owner, EmotionalStates emotionalState, SocialSituations socialSituation, List<String> followers, Date postedDate, String reason){
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+        this.postedDate = postedDate;
+        this.socialSituation = socialSituation;
         this.reason = reason;
         this.followers = followers;
     }
 
 
-    public Mood(EmotionalStates emotionalState, List<String> followers, UserProfile owner, Date postedDate, SocialSituations socialSituation, String trigger){
+    public Mood(EmotionalStates emotionalState, List<String> followers, UserProfile owner, Date postedDate, SocialSituations socialSituation){
         this.owner = owner;
         this.emotionalState = emotionalState;
         this.postedDate = postedDate;
         this.socialSituation = socialSituation;
-        this.trigger = trigger;
     }
 
-    /**
-     * This function sets the trigger of the mood
-     * @param trigger
-     *  New trigger for this mood
-     */
-    public void setTrigger(String trigger){
-        this.trigger = trigger;
-    }
+
     /**
      * This function sets the socialSituation of the mood
      * @param socialSituation
@@ -176,11 +182,6 @@ public class Mood implements Serializable {
         this.postedDate = postedDate;
     }
 
-    /**
-     * This function gets the trigger of the mood
-     * @return
-     *  Current trigger of this mood
-     */
     public void setOwner(UserProfile owner){
         this.owner = owner;
     }
@@ -193,9 +194,7 @@ public class Mood implements Serializable {
         this.docRef = docRef;
     }
 
-    public String getTrigger() {
-        return trigger;
-    }
+
 
     /**
      * This function gets the socialSituation of the mood

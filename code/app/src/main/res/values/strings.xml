@@ -2,6 +2,8 @@
     <string name="app_name">project_seekdeep</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="public_mode">Public: Let my followers see this mood event.</string>
+    <string name="private_mode">Private: Only I can see this mood event. </string>
     <string name="manage_requests">Manage Requests</string>
     <string name="myusername">MyUsername</string>
     <string name="_0_string">0</string>
