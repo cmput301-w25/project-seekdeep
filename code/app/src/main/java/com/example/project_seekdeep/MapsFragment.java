@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -51,6 +52,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
  *  https://stackoverflow.com/questions/74367916/how-can-i-create-location-request-in-android-locationrequest-create-is-depr
  *  https://youtube.com/playlist?list=PLHQRWugvckFrWppucVnQ6XhiJyDbaCU79&si=LXVl0HjJwen_ij05
  *  https://developer.android.com/training/data-storage/shared-preferences#java
+ *  https://stackoverflow.com/questions/17839388/creating-a-scaled-bitmap-with-createscaledbitmap-in-android
  */
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
@@ -233,25 +235,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         else if (emotionalState == EmotionalStates.SURPRISE) {drawableId = R.drawable.surprised;}
         else if (emotionalState == EmotionalStates.FEAR) {drawableId = R.drawable.fear;}
         else {return BitmapDescriptorFactory.defaultMarker();}
-        // Scale the drawable to bitmap
-        return resizeMapIcons(drawableId, 70, 70);
-    }
-
-
-    /**
-     * Scales the drawable resource to a bitmap descriptor of specified height and width
-     * @param drawableId: The drawable object
-     * @param width: The specified width
-     * @param height: The specified height
-     * @return
-     */
-    private BitmapDescriptor resizeMapIcons(int drawableId, int width, int height) {
-        Drawable drawable = ContextCompat.getDrawable(requireContext(), drawableId);
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);        // Create a bitmap with high quality ARGB
-        Canvas canvas = new Canvas(bitmap);         // Generate a blank canvas
-        drawable.setBounds(0, 0, width, height);        // Set the bound for canvas
-        drawable.draw(canvas);
-
-        return BitmapDescriptorFactory.fromBitmap(bitmap);          // Convert bitmap to Bit Map Descriptor
+        // Load drawable as bitmap
+        Bitmap b = BitmapFactory.decodeResource(requireContext().getResources(), drawableId);
+        // Scale drawable to specific size
+        Bitmap scaledB = Bitmap.createScaledBitmap(b, 70, 70, true);
+        return BitmapDescriptorFactory.fromBitmap(scaledB);         // Convert bitmap to bitmapDescriptor
     }
 }
