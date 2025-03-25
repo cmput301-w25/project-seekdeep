@@ -298,6 +298,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("LocationPref", Context.MODE_PRIVATE);
         locationToggle.setChecked(false);           // Initially set it as off, cause if user wants to save location then only save location
         saveLocationToggleState(false);     // Reset state to "off" on load
+        locationToggle.setCompoundDrawablesWithIntrinsicBounds(R.drawable.location_off, 0, 0, 0);
 
         // Handle location permission request
         requestLocationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
@@ -305,11 +306,9 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                     if (isGranted) {
                         Toast.makeText(requireContext(), "Location permission granted", Toast.LENGTH_SHORT).show();
                         locationToggle.setChecked(true);
-                        saveLocationToggleState(true);
                     } else {
                         Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
                         locationToggle.setChecked(false);
-                        saveLocationToggleState(false);
                     }
                 }
         );
@@ -319,7 +318,6 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
             // Update drawable
             int drawable = isChecked ? R.drawable.location_on : R.drawable.location_off;
             locationToggle.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
-
             if (isChecked) {
                 // If toggle is enabled, and permission not granted then ask for permission
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
