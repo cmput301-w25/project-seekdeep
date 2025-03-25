@@ -161,32 +161,72 @@ public class UserProvider {
     }
 
     //THIS METHOD DOESN'T WORK AND MIGHT NOT BE NECESSARY (THE TOASTS ARE WORKING) - DONT USE IT
-    public void listenForNewRequests() {
-        Log.d("listenForNewRequests", "Listener started!");
+//    public void listenForNewRequests() {
+//        Log.d("listenForNewRequests", "Listener started!");
+//        db.collection("followings_and_requests")
+//                .whereEqualTo("followee", currentUser.getUsername())
+//                .whereEqualTo("status", "pending")
+//                .addSnapshotListener((value, error) -> {
+//                    if (error != null) {
+//                        Log.w("listenForNewRequests", "Error in new request listener!", error);
+//                        return;
+//                    }
+//
+//                    Log.d("listenForNewRequests", "Snapshot received!");
+//
+//                    if (initializingFollowings) {
+//                        initializingFollowings = false;
+//                        return; // Ignore the first snapshot to prevent spam after login
+//                    }
+//
+//                    // Detect document changes (added requests)
+//                    assert value != null;
+//                    for (DocumentChange change : value.getDocumentChanges()) {
+//                        if (change.getType() == DocumentChange.Type.ADDED) {
+//                            Log.d("listenForNewRequests", "New doc added!");
+//                            String requester = change.getDocument().getString("follower");
+//                            Log.d("listenForNewRequests", "New follow request by " + requester);
+//                            Toast.makeText(context, "You have a new request from " + requester, Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//                });
+//    }
+
+    /**
+     * This method listens for a new follow request to the logged-in user, and displays a toast message, notifying the user.
+     *
+     * In firestore this means:
+     *      A new document is added into the "followings_and_requests" collection,
+     *      where followee == loggedInUser.getUsername()
+     *      and status == "pending"
+     */
+    public void listenForNewFollowRequests() {
+        Log.d("listenForNewFollowRequests", "Listener started!");
+
         db.collection("followings_and_requests")
                 .whereEqualTo("followee", currentUser.getUsername())
                 .whereEqualTo("status", "pending")
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
-                        Log.w("listenForNewRequests", "Error in new request listener!", error);
+                        Log.w("listenForNewFollowRequests", "Error in new request listener!", error);
                         return;
                     }
 
-                    Log.d("listenForNewRequests", "Snapshot received!");
+                    Log.d("listenForNewFollowRequests", "Snapshot received!");
 
                     if (initializingFollowings) {
                         initializingFollowings = false;
-                        return; // Ignore the first snapshot to prevent spam after login
+                        // Ignore the first snapshot to prevent spamming you with toasts after logging in
+                        return;
                     }
 
-                    // Detect document changes (added requests)
-                    assert value != null;
                     for (DocumentChange change : value.getDocumentChanges()) {
                         if (change.getType() == DocumentChange.Type.ADDED) {
-                            Log.d("listenForNewRequests", "New doc added!");
                             String requester = change.getDocument().getString("follower");
-                            Log.d("listenForNewRequests", "New follow request by " + requester);
-                            Toast.makeText(context, "You have a new request from " + requester, Toast.LENGTH_LONG).show();
+                            Log.d("listenForNewFollowRequests", "New follow request by " + requester);
+
+                            // Show notification in the form of a  Toast message
+                            Toast.makeText(context, "You have a new follow request from " + requester, Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -257,4 +297,5 @@ public class UserProvider {
                     Log.w("Firestore", "Error updating followings list", e);
                 });
     }
+
 }

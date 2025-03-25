@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         //Use one instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
         userProvider = UserProvider.getInstance(this, currentUser);
         userProvider.initializeFollowingsList();
+        userProvider.listenForNewFollowRequests();
     }
 
 
