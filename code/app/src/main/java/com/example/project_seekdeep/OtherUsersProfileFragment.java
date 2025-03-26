@@ -2,6 +2,7 @@ package com.example.project_seekdeep;
 
 import static android.view.View.VISIBLE;
 
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -103,6 +105,9 @@ public class OtherUsersProfileFragment extends Fragment {
         if (getArguments() != null) {
             loggedInUser = (UserProfile) getArguments().getSerializable("loggedInUser");
             userBeingViewed = (UserProfile) getArguments().getSerializable("userBeingViewed");
+        }
+        if ("johnCena".equals(userBeingViewed.getUsername())) {
+            view.findViewById(R.id.profile_header).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.john));
         }
 
         //Instantiate userProvide (to use its firebase methods)
