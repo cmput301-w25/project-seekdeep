@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -62,6 +63,7 @@ public class OtherUsersProfileFragment extends Fragment {
     private UserProfile userBeingViewed;
     private UserProvider userProvider;
     //private FollowRequest followRequest; //possible followRequest between loggedInUser and userBeingViewed
+    private ProgressBar loadingCircle;
 
 
     //Constructor
@@ -72,6 +74,11 @@ public class OtherUsersProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //Display a loading symbol since the Follow/Pending/Following button delays when being initialized in initializeButtonStatus
+        loadingCircle = view.findViewById(R.id.loading_spinner);
+        loadingCircle.bringToFront(); //needed to add this so that it isn't hidden being the mood list
+        loadingCircle.setVisibility(View.VISIBLE);
 
         //Retrieve current logged-in user and userBeingViewed from bundle
         if (getArguments() != null) {
@@ -205,9 +212,16 @@ public class OtherUsersProfileFragment extends Fragment {
 
     }
 
+    /**
+     * This method is called whenever the loggedInUser goes into another user's profile page.
+     * It will query firestore to see if the loggedInUser is already following them or has requested to follow them or neither.
+     * It will then update the button to Follow or Pending or Following accordingly, using changeButtonAndStatus.
+     * If:
+     *  - loggedInUser doesn't follow userBeingViewed: display "Follow"
+     *  - loggedInUser has requested to follow userBeingViewed: display "Pending"
+     *  - loggedInUser is following userBeingViewed: display "Following"
+     */
     private void initializeButtonStatus() {
-        followButton = getView().findViewById(R.id.follow_button);
-
         followingsAndRequestsRef
                 .whereEqualTo("follower", loggedInUser.getUsername())
                 .whereEqualTo("followee", userBeingViewed.getUsername())
@@ -247,6 +261,10 @@ public class OtherUsersProfileFragment extends Fragment {
 //        newDocRef.set(followData);
 //    }
 
+    /**
+     * This method will update the UI to display the correct button according to the given status between loggedInUser and userBeingViewed.
+     * @param newStatus The new status between loggedInUser and userBeingViewed.
+     */
     private void changeButtonAndStatus(String newStatus) {
         if (newStatus.equals("Pending")) {
             getView().findViewById(R.id.follow_button).setVisibility(View.GONE);
@@ -266,6 +284,8 @@ public class OtherUsersProfileFragment extends Fragment {
             isFollowing = false;
             isPending = false;
         }
+        //Remove the loading bar once the Follow/Pending/Following button it properly displayed on initialization
+        loadingCircle.setVisibility(View.GONE);
     }
 
 //    /**
