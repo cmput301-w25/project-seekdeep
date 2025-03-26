@@ -23,6 +23,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class is in charge of handling the following's list of the logged-in user through firestore.
+ * Classes that will use UserProvider:
+ *  - MainActivity: to initialize a user's following's list after login, and listen for new follow requests to the user
+ *  - OtherUsersProfileFragment: to send follow requests, and unfollow users
+ *  - ManageRequestsFragment: to accept and decline follow requests from other users.
+ *          - when the logged-in user accepts a request: find the doc where follower==requester && followee==loggedInUser && status=="pending", and change "pending"-->"following"
+ *          - when loggedInUser denies a request, find the doc where follower==requester && followee==loggedInUser && status=="pending", and delete the doc
+ */
 public class UserProvider {
     private static UserProvider instance;
     private FirebaseFirestore db;
@@ -201,7 +210,7 @@ public class UserProvider {
      *      and status == "pending"
      */
     public void listenForNewFollowRequests() {
-        Log.d("listenForNewFollowRequests", "Listener started!");
+        Log.d("listenForNewFollowRequests", "listenForNewFollowRequests started!");
 
         db.collection("followings_and_requests")
                 .whereEqualTo("followee", currentUser.getUsername())
