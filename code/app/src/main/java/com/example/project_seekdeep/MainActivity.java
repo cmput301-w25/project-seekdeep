@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager fragManager;
     private UserProfile currentUser;
     private ListView moodListView;
-    //private FirebaseFirestore db;
     private UserProvider userProvider;
 
     @Override
@@ -129,14 +128,11 @@ public class MainActivity extends AppCompatActivity {
      */
     public void successful_login() {
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
-        FeedFragment feedFragment = new FeedFragment();
         navBar.setVisibility(View.VISIBLE);
-        Bundle bundle = new Bundle();
-        bundle.putString("username", getCurrentUsername().getUsername());
-        bundle.putSerializable("userProfile", currentUser);
-        feedFragment.setArguments(bundle);
-        fragManager.beginTransaction().replace(R.id.frameLayout, feedFragment).commit();
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true); //magic code to enable disk persistence
+        fragManager.beginTransaction().replace(R.id.frameLayout, new FeedFragment()).commit();
+        // FROM https://firebase.google.com/docs/database/android/offline-capabilities
+        // Accessed by Deryk Fong on March 20th
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         // A placeholder for future functionality
         // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
 //      getParentFragmentManager().beginTransaction()
