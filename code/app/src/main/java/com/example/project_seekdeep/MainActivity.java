@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         userProvider = UserProvider.getInstance(this, currentUser);
         userProvider.initializeFollowingsList();
         userProvider.listenForNewFollowRequests();
+        userProvider.listenForAcceptedRequests();
     }
 
 

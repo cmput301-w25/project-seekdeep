@@ -104,7 +104,7 @@ public class UserProvider {
                                 .addOnFailureListener(e -> Log.w("Firestore", "Error unfollowing user", e));
                     }
 
-                    //Update the UserProfile class
+                    //Update following list in the UserProfile class
                     currentUser.removeFollowing(userBeingViewed.getUsername());
 
                     //Update the followings list in firestore
@@ -124,13 +124,10 @@ public class UserProvider {
     }
 
     /**
-     * This method creates the user's following list whenever a user logs in,
-     * while also listening for users who have accepted the logged-in user's follow request
+     * This method will listening for other users who have accepted the logged-in user's follow request
      *
-     * TO DO:
-     * - if the user logged-in, then don't need to recreate the list from scratch, just get the initial list from firebase
-     * - how to update this list in firebase?
-     * - this method does not handle unfollowings!!
+     * Note:
+     * - this method should only listen for new requests that come in while the user is using the app
      */
     //Reference: https://firebase.google.com/docs/firestore/query-data/listen#listen_to_multiple_documents_in_a_collection
     public void listenForAcceptedRequests() {
@@ -141,21 +138,35 @@ public class UserProvider {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                         if (error != null) {
-                            Log.d("listenForFollowRequests", "Listener failed!!");
+                            Log.d("firestore", "listenForAcceptedRequests failed!!");
                             return;
                         }
 
                         for (QueryDocumentSnapshot doc : value) {
                             String followee = doc.getString("followee");
+                            //Add to following list in the UserProfile object
                             currentUser.addFollowing(followee);
-                            Log.d("Following","currentUser now follows "+followee);
+                            //Add to following list in firestore
+                            addToFollowingsListInFirestore(followee);
+                            Log.d("firestore","listenForAcceptedRequests: currentUser now follows "+followee);
                             // Debug: Print out the updated following list after adding the followee
                             //Log.d("Following List", "Updated following list: " + (currentUser.getFollowings()).get(0));
                             //if (change.getType() == DocumentChange.Type.ADDED) {}
                         }
-                        addFollowingListToFirebase();
                     }
                 });
+    }
+
+    /**
+     * This is a helper method for listenForAcceptedRequests. It takes the user's username that has accepted loggedInUser's request,
+     *    and adds them to the loggedInUser's following list in firestore.
+     * @param newFollowing The username of the user that has accepted loggedInUser's follow request.
+     */
+    private void addToFollowingsListInFirestore(String newFollowing) {
+        DocumentReference userDocRef = db.collection("users").document(currentUser.getUsername());
+        userDocRef.update("followings", FieldValue.arrayUnion(newFollowing))
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "addToFollowingsListInFirestore: Followings list updated successfully"))
+                .addOnFailureListener(e -> Log.w("Firestore", "addToFollowingsListInFirestore: Error updating followings list", e));
     }
 
 
