@@ -230,6 +230,7 @@ public class UserProvider {
 
     /**
      * This method listens for a new follow request to the logged-in user, and displays a toast message, notifying the user.
+     * Note: the message only shows up if a follow request has been sent to the user while they are using the app.
      *
      * In firestore this means:
      *      A new document is added into the "followings_and_requests" collection,
@@ -252,7 +253,7 @@ public class UserProvider {
 
                     if (initializingFollowings) {
                         initializingFollowings = false;
-                        // Ignore the first snapshot to prevent spamming you with toasts after logging in
+                        // Ignore the first snapshot (which is taken upon login), to prevent spamming you with toasts after logging in
                         return;
                     }
 
