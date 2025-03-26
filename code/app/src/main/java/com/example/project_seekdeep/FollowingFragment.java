@@ -28,6 +28,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This fragment class displays all the moods from users that the logged-in user is following.
+ * @see UserProfile
+ * @author Sarah Chang
+ */
+// TODO: Implement filtering (by emotion/recent/last 3/text)
 public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnUsernameClickListener{
     private ListView moodListView;
 

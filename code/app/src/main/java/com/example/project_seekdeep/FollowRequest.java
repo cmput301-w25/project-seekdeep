@@ -2,6 +2,19 @@ package com.example.project_seekdeep;
 
 import com.google.firebase.firestore.DocumentReference;
 
+/**
+ * This is a class that gets instantiated whenever a new follow request is made between two users.
+ * It will then be used to store into firebase.
+ * </p>
+ * It stores:
+ *      <pre>
+ *      follower: user that sent the request
+ *      followee: user that receives the request
+ *      status: either "pending" or "following"
+ *      </pre>
+ * @see OtherUsersProfileFragment The only fragment that creates FollowRequest objects
+ * @author Sarah Chang
+ */
 public class FollowRequest {
     private DocumentReference docRef;
     private String follower;
@@ -47,18 +60,5 @@ public class FollowRequest {
     public void setStatusToFollowing() {
         this.status = "following";
     }
-
-//    /**
-//     * Sets the status
-//     * @param status
-//     */
-//    public void setStatus(String status) {
-//        if ("pending".equals(status) || "following".equals(status)) {
-//            this.status = status;
-//        }
-//        else {
-//            throw new IllegalArgumentException("invalid status!! Can only set as 'pending' or 'following'");
-//        }
-//    }
 
 }

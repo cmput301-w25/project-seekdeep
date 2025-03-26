@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * This fragment class is designed to display all the moods in the database.
+ * This fragment class is designed to display all the moods (except for the logged-in user's moods) in the database.
  * @author Kevin Tu, Nancy Lin
  */
 public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernameClickListener {

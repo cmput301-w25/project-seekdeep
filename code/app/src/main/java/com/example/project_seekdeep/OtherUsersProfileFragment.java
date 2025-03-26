@@ -39,16 +39,21 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * This activity displays another user's profile. Including their username, mood history, number of followers & following, and a button to follow them.
- *
- * Following feature:
- * If the logged-in user doesn't follow the user's profile, there will be a "Follow" button.
- * Once clicked, the button will change to a "Pending" button.
- * Once the user has accepted the follow request, then it will change to a "Following" button.
- * If the logged-in user clicks on "Following", it will unfollow the user-being-viewed.
- *
+ * This activity displays another user's profile. Including their username, mood history, and a button to follow them.
+ * <p></p>
+ * Following features:
+ * <pre>
+ * - If the logged-in user doesn't follow the user's profile, there will be a "Follow" button.
+ * - Once clicked, the button will change to a "Pending" button.
+ * - Once userBeingViewed has accepted the follow request, then it will change to a "Following" button.
+ * - If the logged-in user clicks on "Following", it will unfollow userBeingViewed.
+ * </pre>
+ * @see UserProfile
+ * @see UserProvider
+ * @see FollowRequest
  * @author Sarah Chang
  */
+// TODO: get the number of followings and followers of userBeingViewed (might be uneccessary tho)
 public class OtherUsersProfileFragment extends Fragment {
     private TextView usernameTextView;
     private FirebaseFirestore db; //Need access to the database to retrieve all the user's moods

@@ -24,13 +24,24 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class is in charge of handling the following's list of the logged-in user through firestore.
- * Classes that will use UserProvider:
- *  - MainActivity: to initialize a user's following's list after login, and listen for new follow requests to the user
- *  - OtherUsersProfileFragment: to send follow requests, and unfollow users
- *  - ManageRequestsFragment: to accept and decline follow requests from other users.
- *          - when the logged-in user accepts a request: find the doc where follower==requester && followee==loggedInUser && status=="pending", and change "pending"-->"following"
- *          - when loggedInUser denies a request, find the doc where follower==requester && followee==loggedInUser && status=="pending", and delete the doc
+ * <p> This class is in charge of handling the following's list of the logged-in user through firestore. </p>
+ * <pre>
+ * <ul>
+ *     Classes that will use UserProvider (sharing the same instance of it):
+ *      <li>MainActivity: to initialize a user's following's list after login, and listen for new follow requests to the user. </li>
+ *      <li>OtherUsersProfileFragment: to send follow requests, and unfollow users. </li>
+ *      <li>ManageRequestsFragment: to accept and decline follow requests from other users: </li>
+ *          <ul>
+ *              <li>when the logged-in user accepts a request: find the doc where follower==requester && followee==loggedInUser && status=="pending", and change "pending"-->"following"</li>
+ *              <li>when loggedInUser denies a request, find the doc where follower==requester && followee==loggedInUser && status=="pending", and delete the doc</li>
+ *          </ul>
+ * </ul>
+ * </pre>
+ * @see MainActivity
+ * @see FollowRequest
+ * @see OtherUsersProfileFragment
+ * @see UserProfile
+ * @author Sarah Chang
  */
 public class UserProvider {
     private static UserProvider instance;
@@ -59,19 +70,6 @@ public class UserProvider {
         }
         return instance;
     }
-
-//    public void sendFollowRequestToDataBase(UserProfile currentUser, UserProfile userBeingViewed) {
-//
-//        //Create a new doc with a uniquely generated id
-//        DocumentReference newDocRef = followingsAndRequestsCollectionRef.document();
-//
-//        Map<String, Object> followData = new HashMap<>();
-//        followData.put("follower", currentUser.getUsername());
-//        followData.put("followee", userBeingViewed.getUsername());
-//        followData.put("status", "pending");
-//
-//        newDocRef.set(followData);
-//    }
 
     /**
      * This method uploads a new follow request from the logged-in user to another user into firebase.
@@ -196,37 +194,6 @@ public class UserProvider {
                 });
     }
 
-    //THIS METHOD DOESN'T WORK AND MIGHT NOT BE NECESSARY (THE TOASTS ARE WORKING) - DONT USE IT
-//    public void listenForNewRequests() {
-//        Log.d("listenForNewRequests", "Listener started!");
-//        db.collection("followings_and_requests")
-//                .whereEqualTo("followee", currentUser.getUsername())
-//                .whereEqualTo("status", "pending")
-//                .addSnapshotListener((value, error) -> {
-//                    if (error != null) {
-//                        Log.w("listenForNewRequests", "Error in new request listener!", error);
-//                        return;
-//                    }
-//
-//                    Log.d("listenForNewRequests", "Snapshot received!");
-//
-//                    if (initializingFollowings) {
-//                        initializingFollowings = false;
-//                        return; // Ignore the first snapshot to prevent spam after login
-//                    }
-//
-//                    // Detect document changes (added requests)
-//                    assert value != null;
-//                    for (DocumentChange change : value.getDocumentChanges()) {
-//                        if (change.getType() == DocumentChange.Type.ADDED) {
-//                            Log.d("listenForNewRequests", "New doc added!");
-//                            String requester = change.getDocument().getString("follower");
-//                            Log.d("listenForNewRequests", "New follow request by " + requester);
-//                            Toast.makeText(context, "You have a new request from " + requester, Toast.LENGTH_LONG).show();
-//                        }
-//                    }
-//                });
-//    }
 
     /**
      * This method listens for a new follow request to the logged-in user, and displays a toast message, notifying the user.
