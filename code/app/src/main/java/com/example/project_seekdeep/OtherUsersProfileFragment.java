@@ -46,6 +46,7 @@ import java.util.Objects;
 public class OtherUsersProfileFragment extends Fragment {
     private TextView usernameTextView;
     private FirebaseFirestore db; //Need access to the database to retrieve all the user's moods
+    private CollectionReference moods; //Used to get the userBeingViewed's mood history
     private ArrayList<Mood> moodArrayList;
     private ArrayAdapter<Mood> moodArrayAdapter;
     private CollectionReference followingsAndRequestsRef;
@@ -60,6 +61,7 @@ public class OtherUsersProfileFragment extends Fragment {
     private UserProfile loggedInUser;
     private UserProfile userBeingViewed;
     private UserProvider userProvider;
+    //private FollowRequest followRequest; //possible followRequest between loggedInUser and userBeingViewed
 
 
     //Constructor
@@ -79,7 +81,7 @@ public class OtherUsersProfileFragment extends Fragment {
 
         //Instantiate userProvide (to use its firebase methods)
         //userProvider = new UserProvider(requireContext(), loggedInUser);
-        userProvider = UserProvider.getInstance(requireContext(), null); //use the same instance of userProvider that mainactivity uses
+        userProvider = UserProvider.getInstance(requireContext(), loggedInUser); //use the same instance of userProvider that mainactivity uses
 
         //Setup the username
         usernameTextView = view.findViewById(R.id.username_profile);
@@ -106,7 +108,7 @@ public class OtherUsersProfileFragment extends Fragment {
 
         //Get instance of db and the moods collection
         db = FirebaseFirestore.getInstance();
-        CollectionReference moods = db.collection("MoodDB");
+        moods = db.collection("MoodDB");
 
         //Query the collection to get all moods for the userBeingView
         HashMap<String, Object> userMap = new HashMap<String, Object> ();
@@ -114,7 +116,7 @@ public class OtherUsersProfileFragment extends Fragment {
         userMap.put("username", userBeingViewed.getUsername());
         Query userBeingViewedMoodsQuery = moods.whereEqualTo("owner.username", userBeingViewed.getUsername());
 
-
+        //Display their mood history
         userBeingViewedMoodsQuery.addSnapshotListener((value, error) -> {
             if (error != null) {
                 Log.e("Firestore", error.toString());
@@ -155,8 +157,6 @@ public class OtherUsersProfileFragment extends Fragment {
 
         //Assign the collection reference (if DNE, it'll create a new one)
         followingsAndRequestsRef = db.collection("followings_and_requests");
-        //Setup listeners
-        //listenForAcceptedRequests();
 
         //Implement the back button
         backButton = view.findViewById(R.id.back_button);
@@ -168,19 +168,22 @@ public class OtherUsersProfileFragment extends Fragment {
             }
         });
 
-        //Fetch the state of the button
+        //Fetch the state of the button and initialize it
         isFollowing = false;
         isPending = false;
         initializeButtonStatus();
 
-        //Implement the follow button
+        //Implement the follow button.
+        //When user clicks "Follow", it will create a new follow request being the current logged-in user and the user being viewed.
         followButton = view.findViewById(R.id.follow_button);
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!isFollowing && !isPending) {
                 //sendFollowRequestToDataBase();
-                userProvider.sendFollowRequestToDataBase(loggedInUser, userBeingViewed);
+                FollowRequest followRequest = new FollowRequest(loggedInUser.getUsername(), userBeingViewed.getUsername());
+                userProvider.sendFollowRequestToDataBase(followRequest);
+                //userProvider.sendFollowRequestToDataBase(loggedInUser, userBeingViewed);
                 changeButtonAndStatus("Pending");
             }
             }

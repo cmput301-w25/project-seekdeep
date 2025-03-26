@@ -34,42 +34,58 @@ import java.util.Map;
  */
 public class UserProvider {
     private static UserProvider instance;
-    private FirebaseFirestore db;
+    private final FirebaseFirestore db;
     private CollectionReference followingsAndRequestsCollectionRef;
     private CollectionReference usersCollectionRef;
     private UserProfile currentUser;
     private Context context;
     private boolean initializingFollowings;
+//    private final CollectionReference followingsAndRequestsColRef; //final means that variable cannot be reassigned throughout MoodProvider's lifetime
 
-    public UserProvider(Context mainActivityContext, UserProfile currentUser) {
+    public UserProvider(Context mainActivityContext, UserProfile currentUser, FirebaseFirestore db) {
         //Get an instance of firebase (.getInstance only needs to be called once per class)
-        this.db = FirebaseFirestore.getInstance();
+//        this.db = FirebaseFirestore.getInstance();
+        this.db = db;
         this.followingsAndRequestsCollectionRef = db.collection("followings_and_requests");
         this.usersCollectionRef = db.collection("users");
         this.currentUser = currentUser;
-        this.context = mainActivityContext;
+        this.context = mainActivityContext.getApplicationContext(); //getApplicationContext is the global app context
         this.initializingFollowings = true;
     }
 
-    public static synchronized UserProvider getInstance(Context context, UserProfile user) {
+    public static synchronized UserProvider getInstance(Context context, UserProfile currentUser) {
         if (instance == null) {
-            instance = new UserProvider(context, user);
+            instance = new UserProvider(context, currentUser, FirebaseFirestore.getInstance());
         }
         return instance;
     }
 
-    public void sendFollowRequestToDataBase(UserProfile currentUser, UserProfile userBeingViewed) {
+//    public void sendFollowRequestToDataBase(UserProfile currentUser, UserProfile userBeingViewed) {
+//
+//        //Create a new doc with a uniquely generated id
+//        DocumentReference newDocRef = followingsAndRequestsCollectionRef.document();
+//
+//        Map<String, Object> followData = new HashMap<>();
+//        followData.put("follower", currentUser.getUsername());
+//        followData.put("followee", userBeingViewed.getUsername());
+//        followData.put("status", "pending");
+//
+//        newDocRef.set(followData);
+//    }
 
-        //Create a new doc with a uniquely generated id
-        DocumentReference newDocRef = followingsAndRequestsCollectionRef.document();
-
-        Map<String, Object> followData = new HashMap<>();
-        followData.put("follower", currentUser.getUsername());
-        followData.put("followee", userBeingViewed.getUsername());
-        followData.put("status", "pending");
-
-        newDocRef.set(followData);
+    /**
+     * This method uploads a new follow request from the logged-in user to another user into firebase.
+     * @param newFollowRequest
+     */
+    public void sendFollowRequestToDataBase(FollowRequest newFollowRequest) {
+        //Create a new document for the followRequest. Keep the parameter empty in document() so that firestore generates a unique Key.
+        DocumentReference followRequestDocRef = followingsAndRequestsCollectionRef.document();
+        //Set the docRef in the newFollowRequest object (incase need to look for it in the future)
+        newFollowRequest.setDocRef(followRequestDocRef);
+        //Populate the new document with the attributes from newFollowRequest
+        followRequestDocRef.set(newFollowRequest);
     }
+
     /**
      * This method will delete the document where
      *      follower==loggedInUser and followee==userBeingViewed and status=="following"
