@@ -121,8 +121,9 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
 
         CollectionReference moods = db.collection("MoodDB");
 
-        //Only query the db if the user's following list isn't empty, otherwise don't need to display everything
-        // TODO: account for when the following list changes (new followings/unfollows)
+        // When a user is added/removed from the following list, must leave this fragment and then re-enter to see the change.
+        // Resource: https://firebase.google.com/docs/firestore/query-data/queries#in_not-in_and_array-contains-any
+        // POSSIBLE PROBLEM: if the user's following list has over 30 names, then .whereIn might fail
         if (loggedInUser != null && !loggedInUser.getFollowings().isEmpty()){
             Query MoodsQuery = moods.whereIn("ownerString", loggedInUser.getFollowings());
 

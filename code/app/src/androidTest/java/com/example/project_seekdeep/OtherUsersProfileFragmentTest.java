@@ -130,10 +130,10 @@ public class OtherUsersProfileFragmentTest {
                 description.appendText("with emotion: Sadness");
             }
         }).inAdapterView(withId(R.id.list_view_mood)).onChildView(withId(R.id.username)).perform(click());
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         //Check that the clicked-on user's profile is displayed
-
+        onView(withText("User2")).check(matches(isDisplayed()));
     }
 
 
