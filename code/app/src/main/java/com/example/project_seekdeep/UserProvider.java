@@ -105,7 +105,7 @@ public class UserProvider {
                     }
 
                     //Update the UserProfile class
-                    userBeingViewed.removeFollowing(userBeingViewed.getUsername());
+                    currentUser.removeFollowing(userBeingViewed.getUsername());
 
                     //Update the followings list in firestore
                     removeFromFollowingsListInFirestore(userBeingViewed);
