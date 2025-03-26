@@ -124,7 +124,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         } else{
             ; //ToDo for images
 
-
+            view.findViewById(R.id.image).setVisibility(View.VISIBLE);
             //Log.d("NANCY", "non null image: " + splitString.toString());
 
 
