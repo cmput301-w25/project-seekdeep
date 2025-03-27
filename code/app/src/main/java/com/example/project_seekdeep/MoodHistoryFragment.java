@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
- * @author Kevin Tu, Nancy Lin, modified by Jachelle Chan
+ * @author Kevin Tu, Nancy Lin, modified by Jachelle Chan, Saurabh
  */
 
 public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFragment.OnFilterSelectedListener{
@@ -265,6 +265,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
             moodArrayAdapter.addAll(filteredMoodList);
             moodArrayAdapter.notifyDataSetChanged();
         }
+        saveFilterState(selectedMoods, selectedTimeline, keyword);
     }
 
     /**
@@ -277,5 +278,31 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         moodArrayAdapter.clear();
         moodArrayAdapter.addAll(filteredMoodList);
         moodArrayAdapter.notifyDataSetChanged();
+
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("MoodFilter",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("selected_moods", "");
+        editor.putString("selected_timeline", "");
+        editor.putString("keyword", "");
+        editor.putString("filtered_mood_ids", "");
+        editor.apply();
+    }
+
+    private void saveFilterState(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("MoodFilter",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        String moodsString = selectedMoods.stream()
+                .map(Enum::name)
+                .collect(Collectors.joining(","));
+        editor.putString("selected_moods", moodsString);
+        editor.putString("selected_timeline", selectedTimeline);
+        editor.putString("keyword", keyword);
+
+        String moodIdsString = filteredMoodList.stream()
+                .map(mood -> mood.getDocRef().getId())
+                .collect(Collectors.joining(","));
+        editor.putString("filtered_mood_ids", moodIdsString);
+        editor.apply();
     }
 }
