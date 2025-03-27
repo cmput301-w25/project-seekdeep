@@ -139,7 +139,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
         Chip last3chip = view.findViewById(R.id.last_3_chip);
         last3chip.setOnCheckedChangeListener((chip, isChecked) -> {
             if(isChecked) {
-                selectedTimeline = "last 3";  // or something like that
+                selectedTimeline = "last3";  // or something like that
             }
             else {
                 selectedTimeline = "";
