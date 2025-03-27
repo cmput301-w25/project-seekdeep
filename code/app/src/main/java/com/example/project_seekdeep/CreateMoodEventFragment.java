@@ -293,11 +293,10 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
             explainPrivacy.setText(isChecked ? R.string.public_mode : R.string.private_mode);
         });
 
-        // https://developer.android.com/training/data-storage/shared-preferences#java
-        // Restore current switch state from SharedPreferences so that it is consistent with MapsFragment
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("LocationPref", Context.MODE_PRIVATE);
+//        // https://developer.android.com/training/data-storage/shared-preferences#java
+//        // Restore current switch state from SharedPreferences so that it is consistent with MapsFragment
+//        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("LocationPref", Context.MODE_PRIVATE);
         locationToggle.setChecked(false);           // Initially set it as off, cause if user wants to save location then only save location
-        saveLocationToggleState(false);     // Reset state to "off" on load
         locationToggle.setCompoundDrawablesWithIntrinsicBounds(R.drawable.location_off, 0, 0, 0);
 
         // Handle location permission request
@@ -319,19 +318,11 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
             int drawable = isChecked ? R.drawable.location_on : R.drawable.location_off;
             locationToggle.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
             if (isChecked) {
-                if (drawable == R.drawable.location_on) {
-                    // If toggle is enabled, and permission not granted then ask for permission
-                    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-                    } else {
-                        saveLocationToggleState(true);
-                    }
-                } else {
-                    saveLocationToggleState(false);
+                // If toggle is enabled, and permission not granted then ask for permission
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
                 }
-            } else {
-                saveLocationToggleState(false);
             }
         });
 
@@ -422,19 +413,6 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         this.selectedEmotion = selectedMood;
         //Update UI element to display the selected emotion
         clickToSelectMood.setText(selectedMood.toString());
-    }
-
-    // https://developer.android.com/training/data-storage/shared-preferences#java
-    /**
-     * Function writes/saves the state of the location switch toggle to SharedPreferences.
-     * @param isEnabled: True if location tracking is enabled, false otherwise
-     */
-    private void saveLocationToggleState(boolean isEnabled) {
-        // Retrieve shared preference instance and set as enabled
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("LocationPref", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("location_enabled", isEnabled);
-        editor.apply();
     }
 
     /**
