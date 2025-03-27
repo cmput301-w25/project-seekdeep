@@ -164,7 +164,6 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
 
                 MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                 moodArrayAdapter.notifyDataSetChanged();
-                moodListView.setAdapter(moodArrayAdapter);                moodArrayAdapter.notifyDataSetChanged();
         }
         });
         }

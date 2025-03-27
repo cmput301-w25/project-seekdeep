@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import static androidx.core.app.PendingIntentCompat.getActivity;
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -17,6 +18,7 @@ import static org.hamcrest.CoreMatchers.not;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.test.core.app.ActivityScenario;
@@ -82,10 +84,10 @@ public class CommentsUITest {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -10);
 
-        Mood mood1 = new Mood(user1, EmotionalStates.HAPPINESS, SocialSituations.ALONE, "Food", null, calendar.getTime(), "I love food!");
+        Mood mood1 = new Mood(user1, EmotionalStates.HAPPINESS, SocialSituations.ALONE, null, calendar.getTime(), "I love food!");
         // give time so we can sort the list
         Thread.sleep(5000);
-        Mood mood2 = new Mood(user1, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, "Homework", null, calendar.getTime(), "I hate homework!!");
+        Mood mood2 = new Mood(user1, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, null, calendar.getTime(), "I hate homework!!");
         Thread.sleep(5000);
 
         usersRef.document().set(user1);
@@ -175,22 +177,16 @@ public class CommentsUITest {
         Thread.sleep(1000);
 
         // Click on first item
-        AtomicReference<Mood> moodAtomicReference = new AtomicReference<>();
-        scenario.getScenario().onActivity(activity -> {
-            ListView feedListView = activity.findViewById(R.id.list_view_moods);
-            moodAtomicReference.set((Mood) feedListView.getAdapter().getItem(0));
-        });
+        onView(withText("I hate homework!!")).perform(click());
 
-        Mood clickedOnMood = moodAtomicReference.get();
-        onView(withText(clickedOnMood.getTrigger())).perform(click());
         Thread.sleep(1000);
 
         // Check to see if clicked on mood displays correct mood information.
-        onView(withText(clickedOnMood.getOwnerString() + "'s Mood")).check(matches(isDisplayed()));
-        onView(withText(clickedOnMood.getEmotionalState().toString())).check(matches(isDisplayed()));
-        onView(withText(clickedOnMood.getReason())).check(matches(isDisplayed()));
-        onView(withText(clickedOnMood.getTrigger())).check(matches(isDisplayed()));
-        onView(withText(clickedOnMood.getSocialSituation().toString())).check(matches(isDisplayed()));
+
+        onView(withText("check2" + "'s Mood")).check(matches(isDisplayed()));
+        onView(withText(EmotionalStates.CONFUSION.toString())).check(matches(isDisplayed()));
+        onView(withText("I hate homework!!")).check(matches(isDisplayed()));
+        onView(withText(SocialSituations.WITH_ANOTHER.toString())).check(matches(isDisplayed()));
     }
 
     @Test
@@ -200,18 +196,12 @@ public class CommentsUITest {
         Thread.sleep(1000);
 
         // Click on second item
-        AtomicReference<Mood> moodAtomicReference = new AtomicReference<>();
-        scenario.getScenario().onActivity(activity -> {
-            ListView feedListView = activity.findViewById(R.id.list_view_moods);
-            moodAtomicReference.set((Mood) feedListView.getAdapter().getItem(1));
-        });
-        Mood clickedOnMood = moodAtomicReference.get();
-        onView(withText(clickedOnMood.getTrigger())).perform(click());
+        onView(withText("I love food!")).perform(click());
 
         Thread.sleep(1000);
 
         ArrayList<Comment> comments = new ArrayList<>();
-        Query CommentsQuery = commentsRef.whereEqualTo("mood", clickedOnMood.getDocRef());
+        Query CommentsQuery = commentsRef.whereEqualTo("reason", "I love food!");
         CommentsQuery.addSnapshotListener((value, error) -> {
             if (error != null) {
                 Log.e("Firestore", error.toString());
@@ -236,13 +226,7 @@ public class CommentsUITest {
         Thread.sleep(1000);
 
         // Click on first item
-        AtomicReference<Mood> moodAtomicReference = new AtomicReference<>();
-        scenario.getScenario().onActivity(activity -> {
-            ListView feedListView = activity.findViewById(R.id.list_view_moods);
-            moodAtomicReference.set((Mood) feedListView.getAdapter().getItem(0));
-        });
-        Mood clickedOnMood = moodAtomicReference.get();
-        onView(withText(clickedOnMood.getTrigger())).perform(click());
+        onView(withText("I love food!")).perform(click());
 
         onView(withId(R.id.add_comment_input)).perform(ViewActions.typeText("This is a test comment!!!"));
         onView(withContentDescription("Add comment")).perform(click());
@@ -254,12 +238,7 @@ public class CommentsUITest {
         onView(withId(R.id.back_button)).perform(click());
 
         // Click on second item
-        scenario.getScenario().onActivity(activity -> {
-            ListView feedListView = activity.findViewById(R.id.list_view_moods);
-            moodAtomicReference.set((Mood) feedListView.getAdapter().getItem(1));
-        });
-        clickedOnMood = moodAtomicReference.get();
-        onView(withText(clickedOnMood.getTrigger())).perform(click());
+        onView(withText("I hate homework!!")).perform(click());
 
         onView(withId(R.id.add_comment_input)).perform(ViewActions.typeText("This is another test comment!!!"));
         onView(withContentDescription("Add comment")).perform(click());
