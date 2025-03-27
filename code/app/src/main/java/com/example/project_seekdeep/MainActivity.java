@@ -23,6 +23,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 /**
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
  * It also sets up the navigation and fragment management for the app's main UI flow.
+ * Resources Used:
+ * https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
+ * @author Kevin Tu, Saurabh Singh Baghel
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -126,10 +129,5 @@ public class MainActivity extends AppCompatActivity {
         // FROM https://firebase.google.com/docs/database/android/offline-capabilities
         // Accessed by Deryk Fong on March 20th
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        // A placeholder for future functionality
-        // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
-//      getParentFragmentManager().beginTransaction()
-//          .replace(R.id.frameLayout, feedFragment)
-//          .commit();
     }
 }
