@@ -1,6 +1,8 @@
 package com.example.project_seekdeep;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,10 +48,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
- * @author Kevin Tu, Nancy Lin, modified by Jachelle Chan
+ * @author Kevin Tu, Nancy Lin, modified by Jachelle Chan, Saurabh
  */
 
 public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFragment.OnFilterSelectedListener{
@@ -94,9 +97,6 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         db = FirebaseFirestore.getInstance();
         CollectionReference users = db.collection("UserDB");
         CollectionReference moods = db.collection("MoodDB");
-
-
-
     }
 
     /**
@@ -156,15 +156,14 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
                     String reason = (String) snapshot.get("reason");
 
-                   String imageStr = (String) snapshot.get("image");
-                   Uri image = null;
-                   if (imageStr != null){
+                    String imageStr = (String) snapshot.get("image");
+                    Uri image = null;
+                    if (imageStr != null){
                        image = Uri.parse(imageStr);
-                   }
+                    }
 
 
                     Mood mood = new Mood(loggedInUser, emotionalState, socialSituation, followers, postedDate, reason);
-
                     mood.setDocRef (snapshot.getReference());
                     mood.setImage(image);
 
@@ -241,6 +240,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
             moodArrayAdapter.addAll(filteredMoodList);
             moodArrayAdapter.notifyDataSetChanged();
         }
+        saveFilterState(selectedMoods, selectedTimeline, keyword);
     }
 
     /**
@@ -253,5 +253,31 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         moodArrayAdapter.clear();
         moodArrayAdapter.addAll(filteredMoodList);
         moodArrayAdapter.notifyDataSetChanged();
+
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("MoodFilter",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("selected_moods", "");
+        editor.putString("selected_timeline", "");
+        editor.putString("keyword", "");
+        editor.putString("filtered_mood_ids", "");
+        editor.apply();
+    }
+
+    private void saveFilterState(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("MoodFilter",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        String moodsString = selectedMoods.stream()
+                .map(Enum::name)
+                .collect(Collectors.joining(","));
+        editor.putString("selected_moods", moodsString);
+        editor.putString("selected_timeline", selectedTimeline);
+        editor.putString("keyword", keyword);
+
+        String moodIdsString = filteredMoodList.stream()
+                .map(mood -> mood.getDocRef().getId())
+                .collect(Collectors.joining(","));
+        editor.putString("filtered_mood_ids", moodIdsString);
+        editor.apply();
     }
 }

@@ -24,6 +24,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.Manifest;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -43,6 +46,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * MAP fragments uses google maps API to show the user's current location and mood based emoji markers.
  * It retrieves locations from the firebase database and displays them on the map with specified mood details.
@@ -54,12 +61,18 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
  *  https://developers.google.com/maps/documentation/android-sdk/reference/com/google/android/libraries/maps/model/BitmapDescriptorFactory#HUE_YELLOW
  *  https://stackoverflow.com/questions/17839388/creating-a-scaled-bitmap-with-createscaledbitmap-in-android
  *  https://stackoverflow.com/questions/47807621/draw-emoji-on-bitmap-with-drawtextonpath?utm_source=chatgpt.com
+ * @author Saurabh
  */
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
     private ActivityResultLauncher<String> requestLocationPermissionLauncher;       // API to request location permission
+    private String currentMapView;
+
+    private ImageButton filterMoodHistoryButton;
+    private ImageButton filterMoodFollowingButton;
+    private ImageButton filter5KmRadiusButton;
 
     /**
      * Empty constructor required by database
@@ -112,6 +125,51 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     }
                 }
         );
+
+        // The button click listeners
+        filterMoodHistoryButton = view.findViewById(R.id.filter_mood_history);
+        filterMoodFollowingButton = view.findViewById(R.id.filter_mood_following);
+        filter5KmRadiusButton = view.findViewById(R.id.filter_5_km_radius);
+
+        filterMoodHistoryButton.setOnClickListener(v -> {
+            if (currentMapView == "Mood History") {
+                currentMapView = "";
+                filterMoodHistoryButton.setSelected(false);
+            } else {
+                currentMapView = "Mood History";
+                filterMoodHistoryButton.setSelected(true);
+                filterMoodFollowingButton.setSelected(false);
+                filter5KmRadiusButton.setSelected(false);
+            }
+            loadMap();
+        });
+
+        filterMoodFollowingButton.setOnClickListener(v -> {
+            if (currentMapView == "Mood Following") {
+                currentMapView = "";
+                filterMoodFollowingButton.setSelected(false);
+            } else {
+                currentMapView = "Mood Following";
+                filterMoodHistoryButton.setSelected(false);
+                filterMoodFollowingButton.setSelected(true);
+                filter5KmRadiusButton.setSelected(false);
+            }
+            loadMap();
+        });
+
+        filter5KmRadiusButton.setOnClickListener(v -> {
+            if (currentMapView == "5 KM radius") {
+                currentMapView = "";
+                filter5KmRadiusButton.setSelected(false);
+            } else {
+                currentMapView = "5 KM radius";
+                filterMoodHistoryButton.setSelected(false);
+                filterMoodFollowingButton.setSelected(false);
+                filter5KmRadiusButton.setSelected(true);
+            }
+            loadMap();
+        });
+
         return view;
     }
 
@@ -123,7 +181,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-        loadMoodLocations();            // Load the mood based markers
         mMap.getUiSettings().setZoomControlsEnabled(true);
         // Retrieve location based setting from shared Preferences
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("LocationPref", Context.MODE_PRIVATE);
@@ -140,8 +197,70 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             editor.putBoolean("location_enabled", true);
             editor.apply();
         }
+        loadMap();
     }
 
+    private void loadMap() {
+        mMap.clear(); // Clear existing markers
+        if ("Mood History".equals(currentMapView)) {
+            loadMoodHistoryLocations();
+        }
+        else if ("Mood Following".equals(currentMapView)) {
+            loadMoodFollowingLocations();
+        }
+        else if ("5 KM radius".equals(currentMapView)) {
+            loadFilter5kmRadiusLocations();
+        }
+        else{
+            loadMoodLocations();
+        }
+    }
+
+    private void loadMoodHistoryLocations() {
+        UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
+        String userName = currentUserProfile.getUsername();
+
+        SharedPreferences sharedPref = requireContext().getSharedPreferences("MoodFilter", Context.MODE_PRIVATE);
+        String moodIdsString = sharedPref.getString("filtered_mood_ids", "");
+
+        if (moodIdsString.isEmpty()){
+            Toast.makeText(requireContext(), "No Filter applied or such event doesn't exist", Toast.LENGTH_SHORT).show();
+            loadMoodLocations();
+            return;
+        }
+
+        List<String> mooodIds = Arrays.asList(moodIdsString.split(","));
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Match the database locations with current user
+        db.collection("locations")
+                .whereEqualTo("userId", userName)
+                .whereIn("moodID", mooodIds)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    // Iterate throught each item in the database collection 'locations'
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        UserLocation location = document.toObject(UserLocation.class);
+                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        EmotionalStates emotionalState = location.getEmotionalState();;
+                        String markerTitle = emotionalState.getStateName();
+                        mMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .title(markerTitle)
+                                .icon(getEmotionalLocation(emotionalState)));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(requireContext(), "Failed to load your mood locations", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void loadMoodFollowingLocations(){
+        Toast.makeText(requireContext(), "View is in development", Toast.LENGTH_SHORT).show();
+    }
+
+    private void loadFilter5kmRadiusLocations(){
+        Toast.makeText(requireContext(), "View is in development", Toast.LENGTH_SHORT).show();
+    }
     /**
      * Enables the blue dot and fetches user location and move the camera to that location
      */
