@@ -44,7 +44,7 @@ import java.io.FileNotFoundException;
 /**
  * This Fragment class is designed to display a Mood Event Card, and let users Create a mood.
  * When the user clicks to select an emotion, a SelectMoodDialogFragment will pop up.
- * @author Sarah Chang, Nancy Lin, Saurabh S. Baghel
+ * @author Sarah Chang, Nancy Lin, modified by Saurabh S. Baghel
  */
 
 /*
@@ -319,12 +319,16 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
             int drawable = isChecked ? R.drawable.location_on : R.drawable.location_off;
             locationToggle.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
             if (isChecked) {
-                // If toggle is enabled, and permission not granted then ask for permission
-                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+                if (drawable == R.drawable.location_on) {
+                    // If toggle is enabled, and permission not granted then ask for permission
+                    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+                    } else {
+                        saveLocationToggleState(true);
+                    }
                 } else {
-                    saveLocationToggleState(true);
+                    saveLocationToggleState(false);
                 }
             } else {
                 saveLocationToggleState(false);
@@ -371,11 +375,15 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                 }
                 moodEvent.setImage(imageUri);
                 //Upload the new Mood to firebase
-                moodProvider.addMoodEvent(moodEvent);
+                moodProvider.addMoodEvent(moodEvent).addOnSuccessListener(documentReference -> {
+                    String moodEventId = documentReference.getId();
+                    moodEvent.setDocRef(documentReference);
+                    if (locationToggle.isChecked()) {
+                        saveLocationToFirestore(moodEventId);          // Pass the ID to saveLocationToFirestore
+                        Toast.makeText(requireContext(), "Location saved", Toast.LENGTH_SHORT).show();
+                    }
 
-                if (locationToggle.isChecked()) {
-                    saveLocationToFirestore();          // Pass the ID to saveLocationToFirestore
-                }
+                });
 
                 Toast.makeText(requireContext(), "Your mood has been uploaded!", Toast.LENGTH_SHORT).show();
 
@@ -433,7 +441,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
      * Function saves the user's current location to Firestore Database in the locations collection
      * The location is associated with the specific mood event and uses FusedLocationProviderClient to fetch the current oocation
      */
-    private void saveLocationToFirestore() {
+    private void saveLocationToFirestore(String moodEventID) {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             // Get the current location
@@ -446,7 +454,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                             EmotionalStates emotionalState = moodEvent.getEmotionalState();
                             UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
                             String userName = currentUserProfile.getUsername();
-                            UserLocation userLocation = new UserLocation(latitude, longitude, emotionalState, userName);
+                            UserLocation userLocation = new UserLocation(latitude, longitude, emotionalState, userName, moodEventID);
                             // Save location to Firestore under "location" collection
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
                             db.collection("locations").add(userLocation);

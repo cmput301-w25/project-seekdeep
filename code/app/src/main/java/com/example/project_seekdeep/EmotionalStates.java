@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 /**
  * This is a class that represents the emotional state of the user.
- * @author Jachelle Chan
+ * @author Jachelle Chan, modified by Saurabh
  *
  */
 public enum EmotionalStates {
