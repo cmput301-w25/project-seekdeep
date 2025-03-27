@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,6 +72,11 @@ import java.util.UUID;
 
 public class CreateMoodEventFragment extends Fragment implements SelectMoodDialogFragment.MoodSelectionListener {
     //ATTRIBUTES:
+    private TextView cancelButton;
+    private TextView char_count;
+    private Switch locationToggle;
+    private Switch privacySwitch;
+    private TextView explainPrivacy;
     private Spinner socialSitSpinner;
     private ImageView uploadImageHere;  //this imageView is set to be clickable
     private Button createConfirmButton;
@@ -180,6 +189,15 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        cancelButton = view.findViewById(R.id.cancel_button);
+
+        //initialize char_count
+        char_count = view.findViewById(R.id.char_count);
+
+        //Set the initial state of location toggle:
+        locationToggle = view.findViewById(R.id.switch1);
+        privacySwitch = view.findViewById(R.id.privacy_switch);
+        explainPrivacy = view.findViewById(R.id.explain_privacy);
 
         //Initialize an instance of movieProvide (so can add new mood to firestore)
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -201,9 +219,6 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         socialSit = SocialSituations.TITLE.toString();
 
 
-
-
-
         //Retrieve UserProfile from the bundle (to use inside this fragment)
         if (getArguments() != null) {
             //Retrieve UserProfile (must be casted), save it in userProfile class attribute
@@ -214,6 +229,24 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
             Log.e("CreateMoodEventFragment", message);
             throw new NullPointerException(message);
         }
+
+        // Update charCount as user types their Reason
+        // resource used: https://stackoverflow.com/questions/3013791/live-character-count-for-edittext
+        final TextWatcher txtWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //exculde spaces from char_count
+                String exclude_spaces = charSequence.toString().replaceAll("[\\s\\n]","");
+                char_count.setText(String.valueOf(exclude_spaces.length()));
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        };
+        reasonEditText.addTextChangedListener(txtWatcher);
 
 
         //Set a listener for when the imageView is clicked on
@@ -254,19 +287,37 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
              }
          });
 
+        //LOCATION switch (default set to 'off')
+        locationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int drawable = isChecked ? R.drawable.location_on : R.drawable.location_off;
+            locationToggle.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
+        });
+
+        //PRIVACY (default set to OFF=private, because you might upload something and regret it)
+        privacySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int drawable = isChecked ? R.drawable.public_symbol : R.drawable.private_symbol;
+            privacySwitch.setCompoundDrawablesWithIntrinsicBounds(drawable,0,0,0);
+
+            explainPrivacy.setText(isChecked ? R.string.public_mode : R.string.private_mode);
+        });
+
 
         //Set a listener for the "Create" button. This will create a new Mood object
         createConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) { //get the fields and create a new Mood object
+                //Ensure that Emotional State has been chosen
+                if (selectedEmotion == null) {
+                    clickToSelectMood.setError("Emotional state is required!");
+                    return;
+                }
 
-
-                // US 02.01.01 - I want to express the reason why for a mood is happening (no more than 20 characters or 3 words).
+                // US 02.01.01 - I want to express the reason why for a mood is happening (<=200 chars).
                 // check if a reason was inputed
                 if (reasonEditText != null) {
                     String reason = reasonEditText.getText().toString().trim();
-                    if (!validReasonLength(reason)) {
-                        reasonEditText.setError("Reason must be ≤ 20 chars or ≤ 3 words!");
+                    if (!validReasonLength()) {
+                        reasonEditText.setError("Reason must be ≤ 200 characters");
                         return; //this stops execution for the rest of this click method
                     }
 
@@ -294,19 +345,26 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                 moodProvider.addMoodEvent(moodEvent);
 
                 Toast.makeText(requireContext(), "Your mood has been uploaded!", Toast.LENGTH_SHORT).show();
+
+                requireActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Just return to whatever screen the user was previously on
+                requireActivity().getSupportFragmentManager().popBackStack();
             }
         });
     }
 
     /**
-     * This checks whether a reason is under 20 characters or under 3 words
-     * @param reason
-     * @return true if the reason is ≤ 20 chars or ≤ 3 words, false otherwise
+     * This method checks whether a reason is <=200 characters
+     * @return true if the reason is ≤ 200 chars, false otherwise
      */
-    public boolean validReasonLength(String reason) {
-        //throw new IllegalArgumentException("User's reason must be <=20 chars OR <=3 words!");
-        return reason.length() <= 20 && reason.split(" ").length <= 3; //returns true or false
-
+    public boolean validReasonLength() {
+        String charCountText = char_count.getText().toString();
+        return Integer.parseInt(charCountText) <= 200;
     }
 
     //Must implement this listener method from the SelectMoodDialogFragment

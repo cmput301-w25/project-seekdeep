@@ -90,9 +90,9 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         // set the text for the mood event (layout_mood.xml)
         reason.setText(currentMood.getReason());
         emotion.setText(currentMood.getEmotionalState().toString());
-        user.setText(currentMood.getOwnerString());
+        user.setText("@"+currentMood.getOwnerString());
 
-        socialSit.setText(currentMood.getSocialSituation().toString());
+        socialSit.setText("(" + currentMood.getSocialSituation().toString() + ")");
         date.setText(currentMood.getPostedDate().toString());
 
 
@@ -107,23 +107,24 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
         //fix bug where when you scroll past it hides all social situations
         socialSit.setVisibility(View.VISIBLE);
-        view.findViewById(R.id.social_situation_icon).setVisibility(View.VISIBLE);
+        //view.findViewById(R.id.social_situation_icon).setVisibility(View.VISIBLE);
 
         //if no social situation, hide it
         if(currentMood.getSocialSituation().toString().equals("Social Situations")){
             socialSit.setVisibility(View.GONE);
-            view.findViewById(R.id.social_situation_icon).setVisibility(View.GONE);
+            //view.findViewById(R.id.social_situation_icon).setVisibility(View.GONE);
         }
 
         // if image DNE, then hide the image view?
         if (currentMood.getImage() == null){
+            view.findViewById(R.id.image).setVisibility(View.GONE);
             image.setImageDrawable(null);
 
             Log.d("NANCY", "null image");
         } else{
             ; //ToDo for images
 
-
+            view.findViewById(R.id.image).setVisibility(View.VISIBLE);
             //Log.d("NANCY", "non null image: " + splitString.toString());
 
 

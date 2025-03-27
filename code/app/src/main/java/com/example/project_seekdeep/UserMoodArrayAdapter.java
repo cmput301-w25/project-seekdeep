@@ -93,8 +93,8 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
         // set the text for the mood event (layout_mood.xml)
         reason.setText(currentMood.getReason());
         emotion.setText(currentMood.getEmotionalState().toString());
-        user.setText(currentMood.getOwnerString());
-        socialSit.setText(currentMood.getSocialSituation().toString());
+        user.setText("@"+currentMood.getOwnerString());
+        socialSit.setText("("+currentMood.getSocialSituation().toString()+")");
         date.setText(currentMood.getPostedDate().toString());
 
 
@@ -114,17 +114,18 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 
         //fix bug where when you scroll past it hides all social situations
         socialSit.setVisibility(View.VISIBLE);
-        view.findViewById(R.id.social_situation_icon).setVisibility(View.VISIBLE);
+        //view.findViewById(R.id.social_situation_icon).setVisibility(View.VISIBLE);
 
         //if no social situation, hide it
         if(currentMood.getSocialSituation().toString().equals("Social Situations")){
             socialSit.setVisibility(View.GONE);
-            view.findViewById(R.id.social_situation_icon).setVisibility(View.GONE);
+            //view.findViewById(R.id.social_situation_icon).setVisibility(View.GONE);
         }
 
         // if image DNE, then hide the image view?
         if (currentMood.getImage() == null){
             image.setImageDrawable(null);
+            view.findViewById(R.id.image).setVisibility(View.GONE); //removes the ImageView UI
         } else{
             image.setVisibility(View.VISIBLE);
             ; //ToDo for images

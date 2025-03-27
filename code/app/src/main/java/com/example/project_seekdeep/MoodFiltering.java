@@ -10,9 +10,10 @@ import java.util.Set;
  * This class is for filtering mood events across screens.
  * When using this class, use saveOriginal method first (after sorting reverse chronologically)
  * <p>
- * How to use: <p>
+ * How to use:
  *   <pre>
  *   ArrayList<Mood> moods
+ *   MoodFiltering.removeAllFilters();
  *   MoodFiltering.sortReverseChronological(moods);
  *   MoodFiltering.saveOriginal(moods);
  *   MoodFiltering.applyFilter("recent");
@@ -21,16 +22,17 @@ import java.util.Set;
  *   ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
  *   Then use filteredMoods for displaying
  *   </pre>
- * To remove a filter: <p>
+ * To remove a filter:
  *     <pre>
  *    MoodFiltering.removeFilter("rChronological");
  *    filteredMoods = MoodFiltering.getFilteredMoods();
  *    </pre>
- * Filters available: <p>
+ * Filters available:
  * <pre>
  *     rChronological: Sort reverse chronologically
  *     recent: Sort by recent week
  * </pre>
+ *     <STRONG>Note that since this class is static, applied filters from other fragments may still be applied. So use MoodFiltering.removeAllFilters() first</STRONG>
  * @author Jachelle Chan
  */
 public class MoodFiltering {
@@ -38,6 +40,7 @@ public class MoodFiltering {
     private static Set<String> filters = new HashSet<>(); // the filters applied
 
     private static Set<EmotionalStates> selectedStates = new HashSet<>(); // the selected emotional state(s) to filter by
+    private static String keyword = "";
 
     /**
      * This method saves a copy of the original array
@@ -52,7 +55,7 @@ public class MoodFiltering {
      * This method puts the filter name into a set
      * <p><STRONG>Please note that you must use the addStates method before using applyFilter("states") </STRONG></p>
      * @param filterName: The filter applied <p>
-     *                    Filter names include: "rChronological", "recent", "states"
+     *                    Filter names include: "rChronological", "recent", "states", "keyword"
      */
     public static void applyFilter(String filterName) {
         filters.add(filterName);
@@ -68,12 +71,20 @@ public class MoodFiltering {
 
     /**
      * This method MUST be used before using applyFilter("states")
-     * @param states
+     * @param states: An arraylist of EmotionalStates that the user wants to filter by
      */
 
     public static void addStates(ArrayList<EmotionalStates> states) {
         selectedStates.clear();
         selectedStates.addAll(states);
+    }
+
+    /**
+     * This method adds the keyword the user wants to filter
+     * @param word
+     */
+    public static void addKeyword(String word) {
+        keyword = word;
     }
 
     /**
@@ -83,6 +94,7 @@ public class MoodFiltering {
         // reverse chronological should NOT be removed ever
         filters.remove("recent");
         filters.remove("states");
+        filters.remove("keyword");
     }
     /**
      * This method gets the moods that matches the filters that were applied
@@ -101,6 +113,9 @@ public class MoodFiltering {
             }
             if (filter.equals("states")) {
                 sortEmotionalState(filteredMoods);
+            }
+            if(filter.equals("keyword")) {
+                sortKeyword(filteredMoods);
             }
         }
         return filteredMoods;
@@ -137,6 +152,24 @@ public class MoodFiltering {
         moods.removeIf(mood -> !selectedStates.contains(mood.getEmotionalState()));
     }
 
+    /**
+     * This method filters an ArrayList of moods to only include those with a keyword. Exact matches only, not case-sensitive.
+     * @param moods: An ArrayList of Mood object
+     */
+    public static void sortKeyword(ArrayList<Mood> moods) {
+        // the regex for this method is taken from https://stackoverflow.com/a/9464309
+        // Author: DNA
+        // Taken by: Jachelle Chan
+        // Taken on: March 19, 2025
+        // remove moods from the arraylist if it doesn't contain the keyword
+        moods.removeIf(mood -> !mood.getReason().toLowerCase().matches(".*\\b" + keyword.toLowerCase().trim() + "\\b.*"));  // matches whole word
+    }
+
+    /**
+     * This method returns the filters currently applied.
+     * Note that since this class is static, applied filters from other fragments may still be applied.
+     * @return: A set of string filters applied
+     */
     public static Set<String> getFilters() {
         return filters;
     }
