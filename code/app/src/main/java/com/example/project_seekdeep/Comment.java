@@ -7,11 +7,13 @@ import com.google.firebase.firestore.DocumentReference;
 
 import org.w3c.dom.Document;
 
+import java.io.Serializable;
+
 /**
  * This is a wrapper class used to represent comments that are made inside of a mood event.
  * @author Kevin Tu
  */
-public class Comment {
+public class Comment implements Serializable {
 //    private Uri commenterPfp; Currently no support for pfp for user profiles
     DocumentReference mood;
     private String username;
@@ -22,6 +24,7 @@ public class Comment {
         this.username = username;
         this.comment = comment;
     }
+
 
 //    public Uri getCommenterPfp() {
 //        return commenterPfp;
