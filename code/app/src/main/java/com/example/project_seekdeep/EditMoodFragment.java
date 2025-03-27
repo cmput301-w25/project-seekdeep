@@ -3,10 +3,10 @@ package com.example.project_seekdeep;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -14,15 +14,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Switch;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.FileNotFoundException;
 import java.util.Dictionary;
 
 /**
@@ -36,12 +46,11 @@ public class EditMoodFragment extends DialogFragment {
     private Spinner emotionSpinner;
     private Spinner socialSituationSpinner;
     private ImageView imageView;
+    private Uri imageUri;
     private MoodProvider moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
-    private TextView char_count;
-    private Switch locationToggle;
-    private Switch privacySwitch;
-    private TextView explainPrivacy;
 
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
 
     //** btw i used seth's lab-07 code for this **//
 
@@ -60,6 +69,72 @@ public class EditMoodFragment extends DialogFragment {
     }
 
 
+
+    //This launches the chosen image into the imageView
+    //Taken from createMoodEventFragment
+    ActivityResultLauncher<PickVisualMediaRequest> launcher = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), new ActivityResultCallback<Uri>() {
+        @Override
+        public void onActivityResult(Uri imageUriActivty) {
+            if (imageUriActivty == null) {
+                Toast.makeText(requireContext(), "No image Selected", Toast.LENGTH_SHORT).show();
+            } else {
+                //Load the image into the mood event card (UI component)
+                imageUri = imageUriActivty;
+
+                AssetFileDescriptor fileDescriptor = null;
+                try {
+                    fileDescriptor = getContext().getContentResolver().openAssetFileDescriptor(imageUri, "r");
+                } catch (FileNotFoundException e) {
+                    Log.d("NANCY", "check file zie error");
+                    throw new RuntimeException(e);
+                }
+                long fileSize = fileDescriptor.getLength();
+
+                if (fileSize > 65536) {
+                    Toast.makeText(requireContext(), "Image too large, must be under 65536 bytes", Toast.LENGTH_SHORT).show();
+                } else {
+                    Glide.with(requireContext()).load(imageUriActivty).into(imageView);
+                }
+
+            }
+
+        }
+    });
+
+    /**
+     * This uploads the image that a user selects into Firebase Storage
+     * @param selectedImage
+     */
+    private void uploadImageToFirebase(Uri selectedImage) {
+        //Initialize a MoodProvider object and pass in the firebase
+
+        Log.d("NANCY", "do we ever get here in uploadimage?");
+
+        moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
+
+        StorageReference selectedImageRef = storageRef.child("Images/" + selectedImage.getLastPathSegment());
+        UploadTask uploadTask = selectedImageRef.putFile(selectedImage);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                Log.d("nancy", "unsuccessful upload");
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+                Log.d("nancy", "working image upload");
+            }
+        });
+
+
+    }
+
+
     /**
      * Creates a dialog that manages editing an existing mood
      *
@@ -72,21 +147,19 @@ public class EditMoodFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
-        Log.d("NANCY", "Did we get here?");
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
         View view = getLayoutInflater().inflate(R.layout.fragment_edit_mood_details, null);
         editReason = view.findViewById(R.id.edit_reason);
-        char_count = view.findViewById(R.id.char_count);
         emotionSpinner = view.findViewById(R.id.emotion_spinner);
         socialSituationSpinner = view.findViewById(R.id.social_situation_spinner);
         imageView = view.findViewById(R.id.image);
-        locationToggle = view.findViewById(R.id.switch1);
-        privacySwitch = view.findViewById(R.id.privacy_switch);
-        explainPrivacy = view.findViewById(R.id.explain_privacy);
-
         emotionSpinner.setAdapter(new ArrayAdapter<EmotionalStates>(getContext(), android.R.layout.simple_spinner_item, EmotionalStates.values()));
-
         socialSituationSpinner.setAdapter(new ArrayAdapter<SocialSituations>(getContext(), android.R.layout.simple_spinner_item, SocialSituations.values()));
+
+
+
 
         String tag = getTag();
         Bundle bundle = getArguments();
@@ -95,47 +168,57 @@ public class EditMoodFragment extends DialogFragment {
         if (tag != null && tag.equals("Mood Details") && bundle != null){
             mood = (Mood) bundle.getSerializable("Mood");
             editReason.setText(mood.getReason());
-
             emotionSpinner.setSelection(mood.getEmotionalState().ordinal());
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
 
 
             //todo add edit image functionality
+
+
+            // if image DNE, then hide the image view?
+            if (mood.getImage() != null){
+                imageView.setVisibility(View.VISIBLE);
+
+
+                StorageReference imageFire = storage.getReference("Images/" +
+                        mood.getImage().getLastPathSegment());
+
+                Log.d("NANCY", "Non null image fire/ " + imageFire);
+
+                imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        // Got the download URL for 'users/me/profile.png'
+                        Glide.with(getContext())
+                                .load(uri)
+                                .into(imageView);
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+            }
         }
         else {
             mood = null;
         }
 
-        // Update charCount as user types their Reason
-        // resource used: https://stackoverflow.com/questions/3013791/live-character-count-for-edittext
-        final TextWatcher txtWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                //exculde spaces from char_count
-                String exclude_spaces = charSequence.toString().replaceAll("[\\s\\n]","");
-                char_count.setText(String.valueOf(exclude_spaces.length()));
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        };
-        editReason.addTextChangedListener(txtWatcher);
 
-        //THIS CONTROLS THE TOGGLES FOR GEOLOCATION AND PRIVACY:
-        //LOCATION switch (default set to 'off')
-        locationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int drawable = isChecked ? R.drawable.location_on : R.drawable.location_off;
-            locationToggle.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
-        });
 
-        //PRIVACY (default set to OFF=private, because you might upload something and regret it)
-        privacySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int drawable = isChecked ? R.drawable.public_symbol : R.drawable.private_symbol;
-            privacySwitch.setCompoundDrawablesWithIntrinsicBounds(drawable,0,0,0);
-            explainPrivacy.setText(isChecked ? R.string.public_mode : R.string.private_mode);
+
+
+        //Set a listener for when the imageView is clicked on
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //launch the gallery
+                launcher.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build());
+            }
         });
 
 
@@ -153,19 +236,10 @@ public class EditMoodFragment extends DialogFragment {
             positiveButton.setOnClickListener(v -> {
                 String reason = editReason.getText().toString().trim();
 
-                //Validate length of reason to <= 200 chars
-                if (editReason != null) {
-                    if (!validReasonLength()) {
-                        editReason.setError("Reason must be ≤ 200 characters");
-                        return;
-                    }
-                }
-
-                
                 String[] emoStateBreak = emotionSpinner.getSelectedItem().toString().split(" ");
                 EmotionalStates emotionalStates = EmotionalStates.valueOf(
                         emoStateBreak[emoStateBreak.length -1].toUpperCase());
-                
+
                 String socSitString = socialSituationSpinner.getSelectedItem().toString();
                 SocialSituations socialSituations = null;
                 switch (socSitString){
@@ -181,12 +255,17 @@ public class EditMoodFragment extends DialogFragment {
                     case "Two or Several People":
                         socialSituations = SocialSituations.SEVERAL_PEOPLE;
                         break;
-                        
+
                     case "With a Crowd":
                         socialSituations = SocialSituations.CROWD;
                         break;
 
                 }
+
+                if (imageUri != null) {
+                    uploadImageToFirebase(imageUri);
+                }
+                mood.setImage(imageUri);
 
                 mood.setReason(reason);
                 mood.setEmotionalState(emotionalStates);
@@ -204,14 +283,4 @@ public class EditMoodFragment extends DialogFragment {
         });
         return dialog;
     }
-
-    /**
-     * This method checks whether a reason is <=200 characters (excluding whitespaces)
-     * @return true if the reason is ≤ 200 chars, false otherwise
-     */
-    public boolean validReasonLength() {
-        String charCountText = char_count.getText().toString();
-        return Integer.parseInt(charCountText) <= 200;
-    }
-
 }

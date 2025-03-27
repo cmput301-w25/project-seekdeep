@@ -42,12 +42,14 @@ public class FeedFragment extends Fragment {
     private ArrayList<Mood> moodArrayList;
     private ArrayAdapter<Mood> moodArrayAdapter;
 
-    private UserProfile loggedInUser;
 
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private StorageReference storageRef;
     CollectionReference MoodDB;
+
+
+    private UserProfile loggedInUser;
 
     /**
      * Require empty public constructor for the Feed Fragment
@@ -57,7 +59,7 @@ public class FeedFragment extends Fragment {
     }
 
     /**
-     * Modify On create 
+     * Modify On create
      *
      * @param savedInstanceState If the fragment is being re-created from
      * a previous saved state, this is the state.
@@ -110,23 +112,18 @@ public class FeedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        Log.d("NANCY", "ON VIEW CREATED OF FEED FRAGMENT");
-
-
         //set views
         moodListView = view.findViewById(R.id.list_view_mood);
         ArrayList<Mood> moodArrayList = new ArrayList<>();
         ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList);
         moodListView.setAdapter(moodArrayAdapter);
 
-        CollectionReference moods = db.collection("MoodDB");
 
 
-        if (loggedInUser != null){
-            Log.d("NANCY", "feed fragment logged in user |" + loggedInUser.getUsername());
-            Query MoodsQuery = moods.whereNotEqualTo("owner.username", loggedInUser.getUsername());
+        //only grab moods if the user is logged in
+        if(loggedInUser != null) {
 
+            Query MoodsQuery = MoodDB.whereNotEqualTo("owner.username", loggedInUser.getUsername());
             MoodsQuery.addSnapshotListener((value, error) -> {
                 if (error != null) {
                     Log.e("Firestore", error.toString());
@@ -135,44 +132,37 @@ public class FeedFragment extends Fragment {
                     moodArrayList.clear();
                     for (QueryDocumentSnapshot snapshot : value) {
 
+                    HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
 
+                    UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
+                            ownerSnapshot.get("password").toString());
+                    EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
+                    SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
 
-                        HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
+                    List<String> followers = (List<String>) snapshot.get("followers");
+                    Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                    String reason = (String) snapshot.get("reason");
 
-                        UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
-                                ownerSnapshot.get("password").toString());
-                        EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
-                        SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
-
-                        List<String> followers = (List<String>) snapshot.get("followers");
-                        Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
-                        String reason = (String) snapshot.get("reason");
-
-                        String imageStr = (String) snapshot.get("image");
-                        Uri image = null;
-                        if (imageStr != null){
-                            image = Uri.parse(imageStr);
-                        }
-
-
-                        Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
-
-                        mood.setImage(image);
-                        mood.setDocRef(snapshot.getReference());
-
-                        moodArrayList.add(mood);
+                    String imageStr = (String) snapshot.get("image");
+                    Uri image = null;
+                    if (imageStr != null){
+                        image = Uri.parse(imageStr);
                     }
+                    
 
-                    //taken from Jachelle
+                    Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
 
+                    mood.setImage(image);
+                    mood.setDocRef(snapshot.getReference());
+
+                    moodArrayList.add(mood);
+                    }
                     MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
-                    moodArrayAdapter.notifyDataSetChanged();
-                    moodListView.setAdapter(moodArrayAdapter);
                     moodArrayAdapter.notifyDataSetChanged();
                 }
             });
-        }
 
+        }
     }
 
 }
