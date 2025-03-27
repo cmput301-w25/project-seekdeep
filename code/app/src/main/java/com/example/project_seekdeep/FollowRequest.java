@@ -31,6 +31,20 @@ public class FollowRequest {
         this.followee = followee;
         this.status = "pending";
     }
+
+    /**
+     * Secondary constructor for FollowRequest, sets status to "pending" if status is not "following"
+     * @param follower
+     * @param followee
+     * @param status
+     */
+    public FollowRequest(String follower, String followee, String status) {
+        this.follower = follower;
+        this.followee = followee;
+        this.status = status.equals("pending") || status.equals("following")
+        ? status
+        : "pending";
+    }
     public DocumentReference getDocRef() {
         return docRef;
     }
@@ -60,5 +74,4 @@ public class FollowRequest {
     public void setStatusToFollowing() {
         this.status = "following";
     }
-
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -62,6 +63,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
     private FirebaseFirestore db;
     private CollectionReference moods;
     private CollectionReference users;
+    private Button requestButton;
 
 
     public MoodHistoryFragment() {
@@ -188,8 +190,19 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                            new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
                        }
                    });
+                   requestButton = view.findViewById(R.id.manage_requests_button);
+                   requestButton.setOnClickListener(new View.OnClickListener() {
+                       @Override
+                       public void onClick(View view) {
+                           Bundle bundle = new Bundle();
+                           bundle.putString("username", loggedInUser.getUsername());
+                           bundle.putSerializable("userProfile", loggedInUser);
+                           ManageFollowRequestsFragment fragment = new ManageFollowRequestsFragment();
+                           fragment.setArguments(bundle);
+                           fragment.show(getChildFragmentManager(), "requests");
+                       }
+                   });
                }
-
            }
         });
     }
