@@ -79,8 +79,8 @@ public class OtherUsersProfileFragmentTest {
 
 
         // log in first
-        scenario.getScenario().onActivity(activity -> activity.successful_login());
         scenario.getScenario().onActivity(activity -> activity.setCurrentUser(testUser1));
+        scenario.getScenario().onActivity(activity -> activity.successful_login());
     }
 
     @After
@@ -108,7 +108,7 @@ public class OtherUsersProfileFragmentTest {
     }
 
     @Test
-    public void testClickOnAnothersUsernameToGoToProfile() throws InterruptedException {
+    public void testClickOnAnotherUsernameToGoToProfile() throws InterruptedException {
         //Give time to log into User1's account
         Thread.sleep(2000);
 

@@ -77,7 +77,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/following_header"
-        app:layout_constraintBottom_toTopOf="@id/list_view_mood">
+        app:layout_constraintBottom_toTopOf="@id/listview_following">
 
         <TextView
             android:id="@+id/filter_results"
@@ -88,7 +88,7 @@
     </LinearLayout>
 
     <ListView
-        android:id="@+id/list_view_mood"
+        android:id="@+id/listview_following"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:divider="@null"
