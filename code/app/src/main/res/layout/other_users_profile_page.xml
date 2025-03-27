@@ -128,7 +128,7 @@
             android:visibility="invisible">
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/profile_followers_label"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -138,7 +138,7 @@
                 android:textColor="@color/black" />
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/profile_following_label"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="50dp"
