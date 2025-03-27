@@ -1,6 +1,8 @@
 package com.example.project_seekdeep;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a class to hold user information (pulled from 4-us-030101 on 3/7/25 ~10pm).
@@ -9,11 +11,13 @@ import java.io.Serializable;
 public class UserProfile implements Serializable {
     private String username;
     private String password;
+    private List<String> followings;
 
     /**
      * Default empty constructor required by Firestore for deserialization.
      */
     public UserProfile() {
+        this.followings = new ArrayList<>(); //initialize followers as empty list to avoid null issues
     }
 
     /**
@@ -24,6 +28,7 @@ public class UserProfile implements Serializable {
     public UserProfile(String username, String password) {
         this.username = username;
         this.password = password;
+        this.followings = new ArrayList<>();
     }
 
     /**
@@ -56,5 +61,21 @@ public class UserProfile implements Serializable {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<String> getFollowings() {
+        return followings;
+    }
+
+    public void setFollowings(List<String> followings) {
+        this.followings = followings;
+    }
+    public void addFollowing(String followerUsername) {
+        if  (!followings.contains(followerUsername)) {
+            followings.add(followerUsername);
+        }
+    }
+    public void removeFollowing(String followerUsername) {
+        followings.remove(followerUsername);
     }
 }
