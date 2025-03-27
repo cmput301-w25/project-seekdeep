@@ -3,12 +3,14 @@ package com.example.project_seekdeep;
 /**
  * Represents a user's location associated with a specific mood event.
  * This class stores store location data: latitude and longitude in Firestore database
+ * @author Saurabh
  */
 public class UserLocation {
     private double latitude;
     private double longitude;
     private EmotionalStates emotionalState;
     private String userId;
+    private String moodID;
 
     /**
      * Empty Constructor required for Firebase database operations
@@ -21,11 +23,12 @@ public class UserLocation {
      * @param latitude: The latitude coordinate
      * @param longitude: The longitude coordinate
      */
-    public UserLocation(double latitude, double longitude, EmotionalStates emotionalState, String userId) {
+    public UserLocation(double latitude, double longitude, EmotionalStates emotionalState, String userId, String moodID) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.emotionalState = emotionalState;
         this.userId = userId;
+        this.moodID = moodID;
     }
 
     /**
@@ -82,5 +85,21 @@ public class UserLocation {
      */
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    /**
+     * Gets the moodEvent ID
+     * @return
+     */
+    public String getMoodID() {
+        return moodID;
+    }
+
+    /**
+     * Sets the moodEvent ID
+     * @param moodID
+     */
+    public void setMoodID(String moodID) {
+        this.moodID = moodID;
     }
 }
