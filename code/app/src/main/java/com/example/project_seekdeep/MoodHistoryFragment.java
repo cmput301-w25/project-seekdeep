@@ -199,6 +199,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                            bundle.putSerializable("userProfile", loggedInUser);
                            ManageFollowRequestsFragment fragment = new ManageFollowRequestsFragment();
                            fragment.setArguments(bundle);
+                           Log.d(fragment.requireArguments().toString(), "Please crash");
                            fragment.show(getChildFragmentManager(), "requests");
                        }
                    });

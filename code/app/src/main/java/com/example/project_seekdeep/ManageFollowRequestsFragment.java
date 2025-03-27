@@ -1,0 +1,63 @@
+package com.example.project_seekdeep;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+
+public class ManageFollowRequestsFragment extends DialogFragment {
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        super.onCreateDialog(savedInstanceState);
+        Log.d(savedInstanceState.toString(), "Please dont crash :pleading:");
+        UserProfile currentUser = (UserProfile) getArguments().getSerializable("userProfile");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View view = getLayoutInflater().inflate(R.layout.fragment_manage_follow_requests,null);
+        ArrayList<FollowRequest> requests = new ArrayList<>();
+        ListView requestsList = view.findViewById(R.id.requests_list_view);
+        UserProvider userProvider = UserProvider.getInstance(requireContext(), currentUser);
+        ArrayAdapter<FollowRequest> requestArrayAdapter = new FollowRequestArrayAdapter(view.getContext(), requests, userProvider);
+
+        requestsList.setAdapter(requestArrayAdapter);
+        CollectionReference followRequestsRef = db.collection("followings and requests");
+        Query followRequestsQuery = followRequestsRef.whereEqualTo("status", "pending")
+                .whereEqualTo("followee", currentUser.getUsername());
+
+        followRequestsQuery.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.e("Firestore", error.toString());
+            }
+            if (value != null) {
+                if (!(requests == null)) {
+                    requests.clear();
+                    Log.d("NOT NANCY", "Clear arraylist");
+                };
+                for (QueryDocumentSnapshot snapshot : value) {
+                    FollowRequest tempRequest = new FollowRequest(snapshot.get("follower").toString(),
+                            snapshot.get("followee").toString(),
+                            snapshot.get("status").toString());
+                    tempRequest.setDocRef (snapshot.getReference());
+                    requests.add(tempRequest);
+                }
+            }
+        });
+    return builder.setView(view).create();
+    }
+}
