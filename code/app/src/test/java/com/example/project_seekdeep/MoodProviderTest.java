@@ -75,4 +75,20 @@ public class MoodProviderTest {
         moodProvider.deleteMood(mood);
         verify(mockDocReference).delete();
     }
+
+    @Test
+    public void testUpdateMood(){
+        //create mood
+        Mood mood = new Mood(testUser, EmotionalStates.ANGER);
+        mood.setDocRef(mockDocReference);
+        //add mood
+        moodProvider.addMoodEvent(mood);
+
+        mood.setReason("Edit reason");
+        moodProvider.updateMood(mood);
+
+        verify(mockDocReference).set(mood);
+
+
+    }
 }
