@@ -2,12 +2,15 @@ package com.example.project_seekdeep;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
@@ -174,6 +177,26 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                             new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
                         }
                     });
+
+                    //Implement the search bar
+                    EditText searchBar = view.findViewById(R.id.search_bar);
+                    final TextWatcher txtWatcher = new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        }
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            //get the keyword from search bar
+                            String keywords = searchBar.getText().toString();
+                            applySearchBarKeyword(keywords);
+
+                        }
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+                        }
+                    };
+                    searchBar.addTextChangedListener(txtWatcher);
+
                 }
             });
         }
@@ -249,7 +272,21 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
 
     @Override
     public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
+        Log.d("Following","onFiltersApplied here");
+
+        //Same implementation as on MoodHistoryFragment
         MoodFiltering.removeAllFilters();
+        //Check for selected emotional filters
+        MoodFiltering.removeAllFilters();
+        if(!selectedMoods.isEmpty()) {
+            MoodFiltering.addStates(selectedMoods);
+            MoodFiltering.applyFilter("states");
+        }
+        filteredMoodList = MoodFiltering.getFilteredMoods();
+        moodArrayAdapter.clear();
+        moodArrayAdapter.addAll(filteredMoodList);
+        moodArrayAdapter.notifyDataSetChanged();
+
         if(!selectedTimeline.isBlank()) {
             MoodFiltering.applyFilter(selectedTimeline);
             filteredMoodList = MoodFiltering.getFilteredMoods();
@@ -257,6 +294,17 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
             moodArrayAdapter.addAll(filteredMoodList);
             moodArrayAdapter.notifyDataSetChanged();
         }
+
+        if(!keyword.isEmpty()) {
+            MoodFiltering.addKeyword(keyword);
+            MoodFiltering.applyFilter("keyword");
+            filteredMoodList = MoodFiltering.getFilteredMoods();
+            moodArrayAdapter.clear();
+            moodArrayAdapter.addAll(filteredMoodList);
+            moodArrayAdapter.notifyDataSetChanged();
+        }
+
+        Log.d("Following","filters should be applied now");
     }
 
     @Override
@@ -266,6 +314,16 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
         moodArrayAdapter.clear();
         moodArrayAdapter.addAll(filteredMoodList);
         moodArrayAdapter.notifyDataSetChanged();
+    }
+
+    public void applySearchBarKeyword(String keyword) {
+        MoodFiltering.addKeyword(keyword);
+        MoodFiltering.applyFilter("keyword");
+        filteredMoodList = MoodFiltering.getFilteredMoods();
+        moodArrayAdapter.clear();
+        moodArrayAdapter.addAll(filteredMoodList);
+        moodArrayAdapter.notifyDataSetChanged();
+        Log.d("Following","search bar applied!!!");
     }
 
 }
