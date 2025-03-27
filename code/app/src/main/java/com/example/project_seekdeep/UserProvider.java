@@ -302,4 +302,17 @@ public class UserProvider {
                 });
     }
 
+    //Use this method in managing requests
+    public void acceptFollowRequest() {
+        //find the doc where followee == loggedInUser, follower==requester,
+        // and change the status from 'pending' to 'following'
+
+    }
+    //User this method in managing requests
+    public void denyFollowRequest() {
+        //find the doc where followee == loggedInUser, follower==requester,
+        // and delete this doc
+    }
+
+
 }
