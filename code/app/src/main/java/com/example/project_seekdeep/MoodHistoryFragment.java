@@ -241,6 +241,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         moodArrayAdapter.addAll(filteredMoodList);
         moodArrayAdapter.notifyDataSetChanged();
 
+        // Get the shared preference used for filter and empty all the strings.
         SharedPreferences sharedPref = getActivity().getSharedPreferences("MoodFilter",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("selected_moods", "");
@@ -250,10 +251,19 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         editor.apply();
     }
 
+    /**
+     * This method is used to save the Filters state and the ID's in a comma separated string in the Shared preference to be
+     * access in the mapsFragment to display.
+     * @param selectedMoods: An arraylist of emotional state(s) that are selected by the user
+     * @param selectedTimeline: A string of what the user wants to filter the timeline by in terms of the MoodFiltering class
+     * @param keyword: A string of keyword used to filter the mood events data
+     */
     private void saveFilterState(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
+        // Create shared prefernece and the editor to edit it.
         SharedPreferences sharedPref = getActivity().getSharedPreferences("MoodFilter",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
+        // Convert the ArrayList of enum EmotionalStates into a comma-separated string
         String moodsString = selectedMoods.stream()
                 .map(Enum::name)
                 .collect(Collectors.joining(","));
@@ -261,6 +271,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         editor.putString("selected_timeline", selectedTimeline);
         editor.putString("keyword", keyword);
 
+        // Convert the filteredMoodList into a comma-separated string of mood IDs
         String moodIdsString = filteredMoodList.stream()
                 .map(mood -> mood.getDocRef().getId())
                 .collect(Collectors.joining(","));
