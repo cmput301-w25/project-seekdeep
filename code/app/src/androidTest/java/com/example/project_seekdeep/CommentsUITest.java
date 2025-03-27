@@ -1,29 +1,40 @@
 package com.example.project_seekdeep;
 
+import static androidx.core.app.PendingIntentCompat.getActivity;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.CoreMatchers.anything;
+import static org.hamcrest.CoreMatchers.not;
+
 
 import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
 
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,6 +51,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RunWith(AndroidJUnit4.class)
@@ -65,7 +77,6 @@ public class CommentsUITest {
     @Before
     public void seedDatabase() throws InterruptedException {
         // Add some data
-
         UserProfile user1 = new UserProfile("check2", "pass");
 
         Calendar calendar = Calendar.getInstance();
@@ -183,7 +194,7 @@ public class CommentsUITest {
         onView(withId(R.id.feed_bottom_nav)).perform(click());
         Thread.sleep(1000);
 
-        // Click on first item
+        // Click on second item
         AtomicReference<Mood> moodAtomicReference = new AtomicReference<>();
         scenario.getScenario().onActivity(activity -> {
             ListView feedListView = activity.findViewById(R.id.list_view_moods);
@@ -211,5 +222,44 @@ public class CommentsUITest {
         for (Comment comment : comments) {
             onView(withText(comment.getComment())).check(matches(isDisplayed()));
         }
+    }
+
+    @Test
+    public void newCommentAddedShouldBeDisplayed() throws InterruptedException {
+        // Navigate to feed
+        onView(withId(R.id.feed_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+
+        // Click on first item
+        AtomicReference<Mood> moodAtomicReference = new AtomicReference<>();
+        scenario.getScenario().onActivity(activity -> {
+            ListView feedListView = activity.findViewById(R.id.list_view_moods);
+            moodAtomicReference.set((Mood) feedListView.getAdapter().getItem(0));
+        });
+        Mood clickedOnMood = moodAtomicReference.get();
+        onView(withText(clickedOnMood.getTrigger())).perform(click());
+
+        onView(withId(R.id.add_comment_input)).perform(ViewActions.typeText("This is a test comment!!!"));
+        onView(withContentDescription("Add comment")).perform(click());
+        Thread.sleep(1000);
+        onView(withText("This is a test comment!!!")).check(matches(isDisplayed()));
+        Thread.sleep(1000);
+
+        // Go back, add comment on the other mood event.
+        onView(withId(R.id.back_button)).perform(click());
+
+        // Click on second item
+        scenario.getScenario().onActivity(activity -> {
+            ListView feedListView = activity.findViewById(R.id.list_view_moods);
+            moodAtomicReference.set((Mood) feedListView.getAdapter().getItem(1));
+        });
+        clickedOnMood = moodAtomicReference.get();
+        onView(withText(clickedOnMood.getTrigger())).perform(click());
+
+        onView(withId(R.id.add_comment_input)).perform(ViewActions.typeText("This is another test comment!!!"));
+        onView(withContentDescription("Add comment")).perform(click());
+        Thread.sleep(1000);
+        onView(withText("This is another test comment!!!")).check(matches(isDisplayed()));
+        Thread.sleep(1000);
     }
 }

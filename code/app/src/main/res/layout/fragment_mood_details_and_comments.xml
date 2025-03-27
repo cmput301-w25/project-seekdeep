@@ -214,7 +214,7 @@
             android:layout_height="wrap_content"
             android:padding="12dp"
             app:endIconContentDescription="Add comment"
-            app:endIconDrawable="@drawable/baseline_add_circle_outline_24"
+            app:endIconDrawable="@android:drawable/ic_menu_send"
             app:endIconMode="custom"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

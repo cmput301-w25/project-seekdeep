@@ -107,12 +107,14 @@ public class ViewMoodDetailsFragment extends Fragment {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 Log.d("Added to comments DB", "DocumentSnapshot written with ID: " + documentReference.getId());
+                                addCommentInput.setText("");
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Log.w("Failed to add to comments DB", "Error adding document", e);
+                                addCommentInput.setText("");
                             }
                         });
             }
