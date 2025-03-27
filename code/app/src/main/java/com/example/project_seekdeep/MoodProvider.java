@@ -102,8 +102,6 @@ public class MoodProvider {
     public void updateMood(Mood mood) {
         DocumentReference documentReference = mood.getDocRef();
         documentReference.set(mood);
-
-        CollectionReference usersDB = FirebaseFirestore.getInstance().collection("users");
     }
 
     /**
