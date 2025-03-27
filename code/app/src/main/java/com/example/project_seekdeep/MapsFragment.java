@@ -186,20 +186,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        // Retrieve location based setting from shared Preferences
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("LocationPref", Context.MODE_PRIVATE);
-        boolean isLocationEnabled = sharedPreferences.getBoolean("location_enabled", false);
 
         // Attempt to enable location
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             enableLocationAndFetch();
         }
         else {
-            // If permission isn’t granted, request it and update shared preference
+            // If permission isn’t granted, request it
             requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("location_enabled", true);
-            editor.apply();
         }
         loadMap();
     }
