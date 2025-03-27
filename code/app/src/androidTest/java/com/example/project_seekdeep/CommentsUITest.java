@@ -15,7 +15,6 @@ import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.not;
 
-
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -28,6 +27,7 @@ import androidx.test.filters.LargeTest;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -98,16 +98,19 @@ public class CommentsUITest {
                 comment1.put("username", "User1");
                 comment1.put("comment", "Heck yeah! I love food too. We should get some food together");
                 comment1.put("mood", documentReference);
+                comment1.put("date", Timestamp.now().toDate());
 
                 Map<String, Object> comment2 = new HashMap<>();
                 comment2.put("username", "Saurabh");
                 comment2.put("comment", "Where is my invite?");
                 comment2.put("mood", documentReference);
+                comment2.put("date", Timestamp.now().toDate());
 
                 Map<String, Object> comment3 = new HashMap<>();
                 comment3.put("username", "George_Washington_1776");
                 comment3.put("comment", "What kind of food did you get?");
                 comment3.put("mood", documentReference);
+                comment3.put("date", Timestamp.now().toDate());
 
                 commentsRef.add(comment1);
                 commentsRef.add(comment2);
@@ -122,11 +125,13 @@ public class CommentsUITest {
                 comment1.put("username", "User42");
                 comment1.put("comment", "Study harder bud.");
                 comment1.put("mood", documentReference);
+                comment1.put("date", Timestamp.now().toDate());
 
                 Map<String, Object> comment3 = new HashMap<>();
                 comment3.put("username", "ZhongXiNa");
                 comment3.put("comment", "Can I study with?");
                 comment3.put("mood", documentReference);
+                comment3.put("date", Timestamp.now().toDate());
 
                 commentsRef.add(comment1);
                 commentsRef.add(comment3);

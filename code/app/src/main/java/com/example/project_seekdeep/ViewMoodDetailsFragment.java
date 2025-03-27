@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -32,6 +33,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -102,6 +105,7 @@ public class ViewMoodDetailsFragment extends Fragment {
                 newComment.put("comment", comment);
                 newComment.put("mood", clickedOnMood.getDocRef());
                 newComment.put("username",  loggedInUser.getUsername());
+                newComment.put("date", Timestamp.now().toDate());
                 Comments.add(newComment)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
@@ -149,13 +153,13 @@ public class ViewMoodDetailsFragment extends Fragment {
                     DocumentReference moodRef = snapshot.getDocumentReference("mood");
                     String username = snapshot.getString("username");
                     String comment = snapshot.getString("comment");
+                    Date date = Objects.requireNonNull(snapshot.getTimestamp("date")).toDate();
 
-                    Comment currentComment = new Comment(moodRef, username, comment);
-
-
+                    Comment currentComment = new Comment(moodRef, username, comment, date);
                     comments.add(currentComment);
                 }
             }
+            Collections.sort(comments);
             commentAdapter.notifyDataSetChanged();
         });
 
