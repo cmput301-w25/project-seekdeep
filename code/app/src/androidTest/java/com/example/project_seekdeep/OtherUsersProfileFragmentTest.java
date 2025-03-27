@@ -8,6 +8,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.anything;
+
 import android.util.Log;
 
 import androidx.test.espresso.matcher.BoundedMatcher;
@@ -79,8 +81,8 @@ public class OtherUsersProfileFragmentTest {
 
 
         // log in first
-        scenario.getScenario().onActivity(activity -> activity.successful_login());
         scenario.getScenario().onActivity(activity -> activity.setCurrentUser(testUser1));
+        scenario.getScenario().onActivity(activity -> activity.successful_login());
     }
 
     @After
