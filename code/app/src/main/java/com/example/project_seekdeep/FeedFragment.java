@@ -48,6 +48,9 @@ public class FeedFragment extends Fragment {
     private StorageReference storageRef;
     CollectionReference MoodDB;
 
+
+    private UserProfile loggedInUser;
+
     /**
      * Require empty public constructor for the Feed Fragment
      */
@@ -78,6 +81,12 @@ public class FeedFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         MoodDB = db.collection("MoodDB");
 
+        //set logged in User
+
+        if (getArguments() != null) {
+            loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+        }
+
 
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.layout_feed, container, false);
@@ -101,48 +110,56 @@ public class FeedFragment extends Fragment {
         ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList);
         moodListView.setAdapter(moodArrayAdapter);
 
-        Query MoodsQuery = MoodDB;
-        MoodsQuery.addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e("Firestore", error.toString());
-            }
-            if (value != null) {
-                moodArrayList.clear();
-                for (QueryDocumentSnapshot snapshot : value) {
 
-                    //idk why this here but it won't run without
-                    //probably needed to the casting below doesn't break
-                    Log.e("NANCY", snapshot.toString());
-                    //Log.d("NANCY", snapshot.get("owner").toString() + " | " + snapshot.getClass());
 
-                    HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
+        //only grab moods if the user is logged in
+        if(loggedInUser != null) {
 
-                    UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
-                            ownerSnapshot.get("password").toString());
-                    EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
-                    SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
-
-                    List<String> followers = (List<String>) snapshot.get("followers");
-                    Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
-                    String reason = (String) snapshot.get("reason");
-
-                    String imageStr = (String) snapshot.get("image");
-                    Uri image = null;
-                    if (imageStr != null){
-                        image = Uri.parse(imageStr);
-                    }
-                    
-
-                    Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
-
-                    mood.setImage(image);
-                    mood.setDocRef(snapshot.getReference());
-
-                    moodArrayList.add(mood);
+            Query MoodsQuery = MoodDB.whereNotEqualTo("owner.username", loggedInUser.getUsername());
+            MoodsQuery.addSnapshotListener((value, error) -> {
+                if (error != null) {
+                    Log.e("Firestore", error.toString());
                 }
-                moodArrayAdapter.notifyDataSetChanged();
-            }
-        });
+                if (value != null) {
+                    moodArrayList.clear();
+                    for (QueryDocumentSnapshot snapshot : value) {
+
+                        //idk why this here but it won't run without
+                        //probably needed to the casting below doesn't break
+                        Log.e("NANCY", snapshot.toString());
+                        //Log.d("NANCY", snapshot.get("owner").toString() + " | " + snapshot.getClass());
+
+                        HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
+
+                        UserProfile user = new UserProfile(ownerSnapshot.get("username").toString(),
+                                ownerSnapshot.get("password").toString());
+                        EmotionalStates emotionalState = EmotionalStates.valueOf((String) snapshot.get("emotionalState"));
+                        SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
+
+                        List<String> followers = (List<String>) snapshot.get("followers");
+                        Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                        String reason = (String) snapshot.get("reason");
+
+                        String imageStr = (String) snapshot.get("image");
+                        Uri image = null;
+                        if (imageStr != null) {
+                            image = Uri.parse(imageStr);
+                        }
+
+
+                        Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
+
+                        mood.setImage(image);
+                        mood.setDocRef(snapshot.getReference());
+
+                        moodArrayList.add(mood);
+                    }
+                    MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
+                    moodArrayAdapter.notifyDataSetChanged();
+                }
+            });
+
+        }
     }
 
 }

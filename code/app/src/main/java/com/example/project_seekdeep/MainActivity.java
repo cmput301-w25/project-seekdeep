@@ -119,7 +119,17 @@ public class MainActivity extends AppCompatActivity {
     public void successful_login() {
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
         navBar.setVisibility(View.VISIBLE);
-        fragManager.beginTransaction().replace(R.id.frameLayout, new FeedFragment()).commit();
+
+        //Altered by Nancy to display feed that doesn't have user's moods
+
+        Bundle bundle = new Bundle();
+        bundle.putString("username", getCurrentUsername().getUsername());
+        bundle.putSerializable("userProfile", currentUser);
+
+        Fragment newFeedFragment = new FeedFragment();
+        newFeedFragment.setArguments(bundle);
+
+        fragManager.beginTransaction().replace(R.id.frameLayout, newFeedFragment).commit();
         // FROM https://firebase.google.com/docs/database/android/offline-capabilities
         // Accessed by Deryk Fong on March 20th
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
