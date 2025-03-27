@@ -1,10 +1,9 @@
 package com.example.project_seekdeep;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.media.Image;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,8 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -36,6 +33,15 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
     private FirebaseStorage storage;
     private StorageReference storageRef;
+    private OnUsernameClickListener listener;
+
+    /**
+     * This interface will be implemented by FeedFragment when the user clicks on a mood event's username
+     */
+    public interface OnUsernameClickListener {
+        void onUsernameClick(UserProfile user);
+    }
+
 
     /**
      * Mandatory constructor class for MoodArrayAdapter
@@ -43,10 +49,11 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
      * @param context   , type Context
      * @param moods     , type ArrayList<Mood>
      */
-    public MoodArrayAdapter(Context context, ArrayList<Mood> moods) {
+    public MoodArrayAdapter(Context context, ArrayList<Mood> moods, OnUsernameClickListener listener) {
         super(context, 0, moods);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+        this.listener = listener;
     }
 
     /**
@@ -124,7 +131,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         } else{
             ; //ToDo for images
 
-
+            view.findViewById(R.id.image).setVisibility(View.VISIBLE);
             //Log.d("NANCY", "non null image: " + splitString.toString());
 
 
@@ -181,6 +188,24 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         box_outline.mutate();
         box_outline.setStroke(5, Color.parseColor(currentMood.getEmotionalState().getColour()));
 
+
+        /**
+         * This listens for when a user clicks on a mood event's username, which will trigger the listener implemented by FeedFragment.
+         */
+        //When the username clicks the listener, it calls the onUsernameClick method defined in FeedFragment.
+        user.setOnClickListener(view1 -> {
+            if (listener != null) {
+                listener.onUsernameClick(currentMood.getOwner());
+            }
+        });
+        /**
+         * This listens for when a user clicks on a mood event's profile pic, which will trigger the listener implemented by FeedFragment.
+         */
+        pfp.setOnClickListener(view1 -> {
+            if (listener != null) {
+                listener.onUsernameClick(currentMood.getOwner());
+            }
+        });
 
         return view;
     }

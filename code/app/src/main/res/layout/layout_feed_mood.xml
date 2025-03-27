@@ -10,8 +10,8 @@
         android:id="@+id/mood_details_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:layout_marginBottom="642dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="5dp"
         android:background="@drawable/layout_rounded_mood_bg"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,7 +29,8 @@
                 android:layout_height="20dp"
                 android:layout_weight="0"
                 android:contentDescription="User icon"
-                app:srcCompat="@drawable/profile_pic" />
+                app:srcCompat="@drawable/profile_pic"
+                android:clickable="true" />
 
             <TextView
                 android:id="@+id/username"

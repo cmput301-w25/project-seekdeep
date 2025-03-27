@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -129,6 +131,8 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         Query loggedInUserMoodsQuery = moods.whereEqualTo("owner.username", loggedInUser.getUsername());
 
         moodArrayAdapter = new UserMoodArrayAdapter(view.getContext(), moodArrayList);
+
+        Log.d("Nancy", "MOOD HISTORY ON VIEW CREATED");
 
 
         loggedInUserMoodsQuery.addSnapshotListener((value, error) -> {
