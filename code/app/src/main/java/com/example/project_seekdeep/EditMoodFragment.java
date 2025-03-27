@@ -49,8 +49,8 @@ public class EditMoodFragment extends DialogFragment {
     private Uri imageUri;
     private MoodProvider moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
 
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
+    private static FirebaseStorage storage;
+    private static StorageReference storageRef;
 
     //** btw i used seth's lab-07 code for this **//
 
@@ -62,6 +62,9 @@ public class EditMoodFragment extends DialogFragment {
     public static EditMoodFragment newInstance(Mood mood) {
         Bundle args = new Bundle();
         args.putSerializable("Mood", mood);
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
         EditMoodFragment fragment = new EditMoodFragment();
         fragment.setArguments(args);
@@ -85,7 +88,7 @@ public class EditMoodFragment extends DialogFragment {
                 try {
                     fileDescriptor = getContext().getContentResolver().openAssetFileDescriptor(imageUri, "r");
                 } catch (FileNotFoundException e) {
-                    Log.d("NANCY", "check file zie error");
+                    Log.d("NANCY", "check file size error");
                     throw new RuntimeException(e);
                 }
                 long fileSize = fileDescriptor.getLength();
@@ -146,9 +149,6 @@ public class EditMoodFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
 
         View view = getLayoutInflater().inflate(R.layout.fragment_edit_mood_details, null);
         editReason = view.findViewById(R.id.edit_reason);
@@ -264,14 +264,11 @@ public class EditMoodFragment extends DialogFragment {
 
                 if (imageUri != null) {
                     uploadImageToFirebase(imageUri);
+                    mood.setImage(imageUri);
                 }
-                mood.setImage(imageUri);
-
                 mood.setReason(reason);
                 mood.setEmotionalState(emotionalStates);
                 mood.setSocialSituation(socialSituations);
-
-                //todo add edit image functionality
 
                 moodProvider.updateMood(mood);
 
