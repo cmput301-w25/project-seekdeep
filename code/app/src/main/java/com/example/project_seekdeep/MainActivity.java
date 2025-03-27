@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -15,10 +16,19 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
@@ -28,9 +38,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragManager;
     private UserProfile currentUser;
-
-
     private ListView moodListView;
+    private UserProvider userProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
             bundle.putSerializable("userProfile", currentUser); //make currentUser Serializbale, with key "userProfile"
 //            bundle.putString("username", getCurrentUsername()); //username stored as string in the bundle
             selectedFragment.setArguments(bundle);  //attach bundle to the fragment
+        } else if (itemPressed == R.id.following_bottom_nav) {
+            selectedFragment = new FollowingFragment();
         }
 
         // Display selected fragment to screen
@@ -124,11 +135,24 @@ public class MainActivity extends AppCompatActivity {
         bundle.putSerializable("userProfile", currentUser);
         feedFragment.setArguments(bundle);
         fragManager.beginTransaction().replace(R.id.frameLayout, feedFragment).commit();
-
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true); //magic code to enable disk persistence
+        //fragManager.beginTransaction().replace(R.id.frameLayout, new FeedFragment()).commit();
+        // FROM https://firebase.google.com/docs/database/android/offline-capabilities
+        // Accessed by Deryk Fong on March 20th
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         // A placeholder for future functionality
         // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
 //      getParentFragmentManager().beginTransaction()
 //          .replace(R.id.frameLayout, feedFragment)
 //          .commit();
+
+        //Once login is successful, can create initizlize the followings list
+        //Use one instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
+        userProvider = UserProvider.getInstance(this, currentUser);
+        userProvider.initializeFollowingsList();
+        userProvider.listenForNewFollowRequests();
+        userProvider.listenForAcceptedRequests();
     }
+
+
 }

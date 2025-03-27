@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -32,6 +33,15 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
     private FirebaseStorage storage;
     private StorageReference storageRef;
+    private OnUsernameClickListener listener;
+
+    /**
+     * This interface will be implemented by FeedFragment when the user clicks on a mood event's username
+     */
+    public interface OnUsernameClickListener {
+        void onUsernameClick(UserProfile user);
+    }
+
 
     /**
      * Mandatory constructor class for MoodArrayAdapter
@@ -39,10 +49,11 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
      * @param context   , type Context
      * @param moods     , type ArrayList<Mood>
      */
-    public MoodArrayAdapter(Context context, ArrayList<Mood> moods) {
+    public MoodArrayAdapter(Context context, ArrayList<Mood> moods, OnUsernameClickListener listener) {
         super(context, 0, moods);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+        this.listener = listener;
     }
 
     /**
@@ -77,7 +88,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         TextView reason = view.findViewById(R.id.reason);
         TextView emotion = view.findViewById(R.id.emotion);
         TextView user = view.findViewById(R.id.username);
-        TextView trigger = view.findViewById(R.id.trigger);
+
         TextView socialSit = view.findViewById(R.id.social_situation);
         TextView date = view.findViewById(R.id.date);
         ImageView image = view.findViewById(R.id.mood_image);
@@ -86,41 +97,41 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         // set the text for the mood event (layout_mood.xml)
         reason.setText(currentMood.getReason());
         emotion.setText(currentMood.getEmotionalState().toString());
-        user.setText(currentMood.getOwnerString());
-        trigger.setText(currentMood.getTrigger());
-        socialSit.setText(currentMood.getSocialSituation().toString());
+        user.setText("@"+currentMood.getOwnerString());
+
+        socialSit.setText("(" + currentMood.getSocialSituation().toString() + ")");
         date.setText(currentMood.getPostedDate().toString());
 
 
         // i don't know how to do the image and pfp one - jachelle
 
-        //todo set up images for mood events
 
-        //if theres no trigger, hide it
-        if (currentMood.getTrigger() == null || Objects.equals(currentMood.getTrigger(), "")){
-            trigger.setVisibility(View.GONE);
-            view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
-        }
 
         // if no reason, hide it
         if(currentMood.getReason() == null){
             reason.setVisibility(View.GONE);
         }
+
+        //fix bug where when you scroll past it hides all social situations
+        socialSit.setVisibility(View.VISIBLE);
+        //view.findViewById(R.id.social_situation_icon).setVisibility(View.VISIBLE);
+
         //if no social situation, hide it
         if(currentMood.getSocialSituation().toString().equals("Social Situations")){
             socialSit.setVisibility(View.GONE);
-            view.findViewById(R.id.social_situation_icon).setVisibility(View.GONE);
+            //view.findViewById(R.id.social_situation_icon).setVisibility(View.GONE);
         }
 
         // if image DNE, then hide the image view?
         if (currentMood.getImage() == null){
+            view.findViewById(R.id.image).setVisibility(View.GONE);
             image.setImageDrawable(null);
 
             Log.d("NANCY", "null image");
         } else{
             ; //ToDo for images
 
-
+            view.findViewById(R.id.image).setVisibility(View.VISIBLE);
             //Log.d("NANCY", "non null image: " + splitString.toString());
 
 
@@ -177,6 +188,24 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         box_outline.mutate();
         box_outline.setStroke(5, Color.parseColor(currentMood.getEmotionalState().getColour()));
 
+
+        /**
+         * This listens for when a user clicks on a mood event's username, which will trigger the listener implemented by FeedFragment.
+         */
+        //When the username clicks the listener, it calls the onUsernameClick method defined in FeedFragment.
+        user.setOnClickListener(view1 -> {
+            if (listener != null) {
+                listener.onUsernameClick(currentMood.getOwner());
+            }
+        });
+        /**
+         * This listens for when a user clicks on a mood event's profile pic, which will trigger the listener implemented by FeedFragment.
+         */
+        pfp.setOnClickListener(view1 -> {
+            if (listener != null) {
+                listener.onUsernameClick(currentMood.getOwner());
+            }
+        });
 
         return view;
     }

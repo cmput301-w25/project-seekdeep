@@ -177,12 +177,9 @@ public class ViewMoodDetailsFragment extends Fragment {
         TextView emotion = (TextView) view.findViewById(R.id.emotion);
         emotion.setText(clickedOnMood.getEmotionalState().toString());
 
-        TextView trigger = (TextView) view.findViewById(R.id.trigger);
-        trigger.setText(clickedOnMood.getTrigger());
-        if (clickedOnMood.getTrigger() == null || Objects.equals(clickedOnMood.getTrigger(), "")){
-            trigger.setVisibility(View.GONE);
-            view.findViewById(R.id.trigger_icon).setVisibility(View.GONE);
-        }
+        //NOTE: THIS WAS COMMENTED OUT SINCE TRIGGER HAS BEEN REMOVED FROM MOOD AND THE NEW UI
+        //TextView trigger = (TextView) view.findViewById(R.id.trigger);
+        //trigger.setText(clickedOnMood.getTrigger());
 
         TextView social = (TextView) view.findViewById(R.id.social_situation);
         social.setText(clickedOnMood.getSocialSituation().toString());

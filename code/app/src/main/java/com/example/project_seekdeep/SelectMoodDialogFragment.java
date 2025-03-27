@@ -2,8 +2,10 @@ package com.example.project_seekdeep;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +20,7 @@ public class SelectMoodDialogFragment extends DialogFragment {
 
     TextView selectedMood; //displays the currently selected mood in the middle of wheel
     EmotionalStates mood; //this is the mood that will be passed back to CreateMoodEventFragment
+    private Button lastSelectedButton = null; // Track the last selected button (used for animating the pop-ups)
 
     public interface MoodSelectionListener {
         void moodHasBeenSelected(EmotionalStates mood);
@@ -52,64 +55,15 @@ public class SelectMoodDialogFragment extends DialogFragment {
         selectedMood = view.findViewById(R.id.currently_selected_mood);
 
         //Define actions for each mood button
-        view.findViewById(R.id.buttonSurprise).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //filled in later
-                selectedMood.setText("SURPRISED");
-                mood = EmotionalStates.SURPRISE;
-//                fragManager.beginTransaction().replace(R.id.fragment_container, new CreateMoodEventFragment()).commit();
-            }
-        });
-        view.findViewById(R.id.buttonShame).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedMood.setText("SHAME");
-                mood = EmotionalStates.SHAME;
-            }
-        });
-        view.findViewById(R.id.buttonSad).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedMood.setText("SAD");
-                mood = EmotionalStates.SADNESS;
-            }
-        });
-        view.findViewById(R.id.buttonHappy).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedMood.setText("HAPPY");
-                mood = EmotionalStates.HAPPINESS;
-            }
-        });
-        view.findViewById(R.id.buttonFear).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedMood.setText("FEAR");
-                mood = EmotionalStates.FEAR;
-            }
-        });
-        view.findViewById(R.id.buttonDisgusted).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedMood.setText("DISGUSTED");
-                mood = EmotionalStates.DISGUST;
-            }
-        });
-        view.findViewById(R.id.buttonConfused).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedMood.setText("CONFUSED");
-                mood = EmotionalStates.CONFUSION;
-            }
-        });
-        view.findViewById(R.id.buttonAngry).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedMood.setText("ANGRY");
-                mood = EmotionalStates.ANGER;
-            }
-        });
+        addButtonAnimation(view.findViewById(R.id.buttonSurprise), EmotionalStates.SURPRISE, "SURPRISED");
+        addButtonAnimation(view.findViewById(R.id.buttonShame), EmotionalStates.SHAME, "SHAME");
+        addButtonAnimation(view.findViewById(R.id.buttonSad), EmotionalStates.SADNESS, "SAD");
+        addButtonAnimation(view.findViewById(R.id.buttonHappy), EmotionalStates.HAPPINESS, "HAPPY");
+        addButtonAnimation(view.findViewById(R.id.buttonFear), EmotionalStates.FEAR, "FEAR");
+        addButtonAnimation(view.findViewById(R.id.buttonDisgusted), EmotionalStates.DISGUST, "DISGUSTED");
+        addButtonAnimation(view.findViewById(R.id.buttonConfused), EmotionalStates.CONFUSION, "CONFUSED");
+        addButtonAnimation(view.findViewById(R.id.buttonAngry), EmotionalStates.ANGER, "ANGRY");
+
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
         builder.setPositiveButton("Select", (dialog, which) -> {
             if (listener != null) {
@@ -121,4 +75,36 @@ public class SelectMoodDialogFragment extends DialogFragment {
         return builder.create(); // Return the built dialog
 
     }
+
+    /**
+     * This method sets an OnClickListener on a button,
+     *  and makes the currently selected emotion-button on the mood wheel pop-up on the screen.
+     * @param button This is the button that will be 'listened' to for clicks.
+     * @param moodState This is the EmotionState of the button.
+     * @param moodText This is the actual text that will display in the middle of the wheel (to tell users what they've selected)
+     */
+    private void addButtonAnimation(Button button, EmotionalStates moodState, String moodText) {
+        button.setOnClickListener(v -> {
+            // If there was a previously selected button, reset its scale back to normal
+            if (lastSelectedButton != null && lastSelectedButton != button) {
+                lastSelectedButton.animate().scaleX(1f).scaleY(1f).setDuration(200);
+            }
+
+            // Animate the current button to pop up and stay popped up
+            v.animate().scaleX(1.2f).scaleY(1.2f).setDuration(200);
+
+            // Update UI elements
+            selectedMood.setText(moodText);
+            selectedMood.setTextColor(Color.parseColor(moodState.getColour()));
+            mood = moodState;
+
+            // Update the last selected button to be the current button
+            lastSelectedButton = button;
+        });
+    }
+
+
+
+
+
 }

@@ -29,11 +29,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * This fragment class is designed to display all the moods (except for the logged-in user's moods) in the database.
- * @author Kevin Tu, Nancy Lin
+ * This fragment class displays all the moods from users that the logged-in user is following.
+ * @see UserProfile
+ * @author Sarah Chang
  */
-public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernameClickListener {
-
+// TODO: Implement filtering (by emotion/recent/last 3/text)
+public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnUsernameClickListener{
     private ListView moodListView;
 
     private ArrayList<Mood> moodArrayList;
@@ -51,7 +52,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
     /**
      * Require empty public constructor for the Feed Fragment
      */
-    public FeedFragment() {
+    public FollowingFragment() {
         // Required empty public constructor
     }
 
@@ -93,7 +94,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
         MoodDB = db.collection("MoodDB");
 
         // Inflate the layout for this fragment
-        View inflatedView = inflater.inflate(R.layout.layout_feed, container, false);
+        View inflatedView = inflater.inflate(R.layout.layout_following, container, false);
         return inflatedView;
     }
 
@@ -113,17 +114,18 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
 
 
         //set views
-        moodListView = view.findViewById(R.id.list_view_moods);
-        ArrayList<Mood> moodArrayList = new ArrayList<>();
-        ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, this); //"this" passes current instance of feedFragment
+        moodListView = view.findViewById(R.id.list_view_mood);
+        moodArrayList = new ArrayList<>();
+        moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, this); //"this" passes current instance of followingFragment
         moodListView.setAdapter(moodArrayAdapter);
 
         CollectionReference moods = db.collection("MoodDB");
 
-
-        if (loggedInUser != null){
-            Log.d("NANCY", "feed fragment logged in user |" + loggedInUser.getUsername());
-            Query MoodsQuery = moods.whereNotEqualTo("owner.username", loggedInUser.getUsername());
+        // When a user is added/removed from the following list, must leave this fragment and then re-enter to see the change.
+        // Resource: https://firebase.google.com/docs/firestore/query-data/queries#in_not-in_and_array-contains-any
+        // POSSIBLE PROBLEM: if the user's following list has over 30 names, then .whereIn might fail
+        if (loggedInUser != null && !loggedInUser.getFollowings().isEmpty()){
+            Query MoodsQuery = moods.whereIn("ownerString", loggedInUser.getFollowings());
 
             MoodsQuery.addSnapshotListener((value, error) -> {
                 if (error != null) {
@@ -133,40 +135,35 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                     moodArrayList.clear();
                     for (QueryDocumentSnapshot snapshot : value) {
 
+                        HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
 
+                        UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
+                                ownerSnapshot.get("password").toString());
+                        EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
+                        SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
 
-                HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
+                        List<String> followers = (List<String>) snapshot.get("followers");
+                        Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                        String reason = (String) snapshot.get("reason");
 
-                UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
-                        ownerSnapshot.get("password").toString());
-                EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
-                SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
+                        String imageStr = (String) snapshot.get("image");
+                        Uri image = null;
+                        if (imageStr != null){
+                            image = Uri.parse(imageStr);
+                        }
 
-                List<String> followers = (List<String>) snapshot.get("followers");
-                Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
-                String reason = (String) snapshot.get("reason");
+                        Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
 
-                String imageStr = (String) snapshot.get("image");
-                Uri image = null;
-                if (imageStr != null){
-                    image = Uri.parse(imageStr);
+                        mood.setImage(image);
+                        mood.setDocRef(snapshot.getReference());
+
+                        moodArrayList.add(mood);
+                    }
+                    MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
+                    moodArrayAdapter.notifyDataSetChanged();
+                    moodListView.setAdapter(moodArrayAdapter);                moodArrayAdapter.notifyDataSetChanged();
                 }
-
-                    Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
-
-                    mood.setImage(image);
-                    mood.setDocRef(snapshot.getReference());
-
-                    moodArrayList.add(mood);
-                }
-
-                //taken from Jachelle
-
-                MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
-                moodArrayAdapter.notifyDataSetChanged();
-                moodListView.setAdapter(moodArrayAdapter);                moodArrayAdapter.notifyDataSetChanged();
-        }
-        });
+            });
         }
         // From lab 3, and fragment manager documentation
         // https://developer.android.com/guide/fragments/fragmentmanager
