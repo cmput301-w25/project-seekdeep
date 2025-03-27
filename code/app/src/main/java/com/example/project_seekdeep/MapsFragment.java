@@ -70,6 +70,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private ActivityResultLauncher<String> requestLocationPermissionLauncher;       // API to request location permission
     private String currentMapView;
 
+    // Image buttons that are selectable
     private ImageButton filterMoodHistoryButton;
     private ImageButton filterMoodFollowingButton;
     private ImageButton filter5KmRadiusButton;
@@ -131,6 +132,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         filterMoodFollowingButton = view.findViewById(R.id.filter_mood_following);
         filter5KmRadiusButton = view.findViewById(R.id.filter_5_km_radius);
 
+        // Initialize the filtered mood history and other selectable buttons
         filterMoodHistoryButton.setOnClickListener(v -> {
             if (currentMapView == "Mood History") {
                 currentMapView = "";
@@ -144,6 +146,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             loadMap();
         });
 
+        // Initialize the filtered mood following and other selectable buttons
         filterMoodFollowingButton.setOnClickListener(v -> {
             if (currentMapView == "Mood Following") {
                 currentMapView = "";
@@ -157,6 +160,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             loadMap();
         });
 
+        // Initialize the filtered 5 KM radius and other selectable buttons
         filter5KmRadiusButton.setOnClickListener(v -> {
             if (currentMapView == "5 KM radius") {
                 currentMapView = "";
@@ -200,6 +204,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         loadMap();
     }
 
+    /**
+     * This method checks which display is selected and loads that display
+     */
     private void loadMap() {
         mMap.clear(); // Clear existing markers
         if ("Mood History".equals(currentMapView)) {
@@ -216,19 +223,27 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * This method loads the the emoticon markers on map that have been filtered from the mood history tab.
+     * When they are reset on the history tab all the filters are off and map just displays every Mood event of the user.
+     */
     private void loadMoodHistoryLocations() {
+        // Get the current user to match with database
         UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
         String userName = currentUserProfile.getUsername();
 
+        // Access the shared preference that stores the filter mood data
         SharedPreferences sharedPref = requireContext().getSharedPreferences("MoodFilter", Context.MODE_PRIVATE);
         String moodIdsString = sharedPref.getString("filtered_mood_ids", "");
 
+        // If the data is empty then load normal view
         if (moodIdsString.isEmpty()){
             Toast.makeText(requireContext(), "No Filter applied or such event doesn't exist", Toast.LENGTH_SHORT).show();
             loadMoodLocations();
             return;
         }
 
+        // Convert the comma separated ID string into a list
         List<String> mooodIds = Arrays.asList(moodIdsString.split(","));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Match the database locations with current user
@@ -254,13 +269,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 });
     }
 
+    /**
+     * This method loads the the emoticon markers on map that have been filtered from the mood following tab.
+     */
     private void loadMoodFollowingLocations(){
         Toast.makeText(requireContext(), "View is in development", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * This method filter the map by radius and only displays markers in 5 KM vicinity
+     */
     private void loadFilter5kmRadiusLocations(){
         Toast.makeText(requireContext(), "View is in development", Toast.LENGTH_SHORT).show();
     }
+
     /**
      * Enables the blue dot and fetches user location and move the camera to that location
      */
