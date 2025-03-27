@@ -119,7 +119,7 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
 
 
         //set views
-        moodListView = view.findViewById(R.id.list_view_mood);
+        moodListView = view.findViewById(R.id.listview_following);
         moodArrayList = new ArrayList<>();
         filteredMoodList = new ArrayList<>();
         moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, this); //"this" passes current instance of followingFragment

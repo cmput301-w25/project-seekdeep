@@ -94,7 +94,7 @@ public class OtherUsersProfileFragmentTest {
     }
 
     @Test
-    public void testClickOnAnothersUsernameToGoToProfile() throws InterruptedException {
+    public void testClickOnAnotherUsernameToGoToProfile() throws InterruptedException {
         //Give time to log into User1's account
         Thread.sleep(2000);
 

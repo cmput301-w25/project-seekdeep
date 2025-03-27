@@ -168,7 +168,7 @@ public class MoodFiltering {
         // Taken by: Jachelle Chan
         // Taken on: March 19, 2025
         // remove moods from the arraylist if it doesn't contain the keyword
-        moods.removeIf(mood -> !mood.getReason().toLowerCase().matches(".*\\b" + keyword.toLowerCase().trim() + "\\b.*"));  // matches whole word
+        moods.removeIf(mood -> !mood.getReason().toLowerCase().contains(keyword));
     }
 
 
