@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -34,10 +35,11 @@ import java.util.Objects;
  * @author Sarah Chang
  */
 // TODO: Implement filtering (by emotion/recent/last 3/text)
-public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnUsernameClickListener{
+public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnUsernameClickListener, FilterMenuDialogFragment.OnFilterSelectedListener {
     private ListView moodListView;
 
     private ArrayList<Mood> moodArrayList;
+    private ArrayList<Mood> filteredMoodList;
     private ArrayAdapter<Mood> moodArrayAdapter;
 
     private UserProfile loggedInUser;
@@ -116,6 +118,7 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
         //set views
         moodListView = view.findViewById(R.id.list_view_mood);
         moodArrayList = new ArrayList<>();
+        filteredMoodList = new ArrayList<>();
         moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, this); //"this" passes current instance of followingFragment
         moodListView.setAdapter(moodArrayAdapter);
 
@@ -162,6 +165,15 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                     MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                     moodArrayAdapter.notifyDataSetChanged();
                     moodListView.setAdapter(moodArrayAdapter);                moodArrayAdapter.notifyDataSetChanged();
+
+                    MoodFiltering.saveOriginal(moodArrayList);
+                    ImageButton filterButton = view.findViewById(R.id.following_filter_button);
+                    filterButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
+                        }
+                    });
                 }
             });
         }
@@ -233,6 +245,27 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                 .setReorderingAllowed(true)
                 .addToBackStack("feed")
                 .commit();
+    }
+
+    @Override
+    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
+        MoodFiltering.removeAllFilters();
+        if(!selectedTimeline.isBlank()) {
+            MoodFiltering.applyFilter(selectedTimeline);
+            filteredMoodList = MoodFiltering.getFilteredMoods();
+            moodArrayAdapter.clear();
+            moodArrayAdapter.addAll(filteredMoodList);
+            moodArrayAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onFiltersReset() {
+        MoodFiltering.removeAllFilters();
+        filteredMoodList = MoodFiltering.getFilteredMoods();
+        moodArrayAdapter.clear();
+        moodArrayAdapter.addAll(filteredMoodList);
+        moodArrayAdapter.notifyDataSetChanged();
     }
 
 }
