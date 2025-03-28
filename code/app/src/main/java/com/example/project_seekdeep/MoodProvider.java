@@ -90,7 +90,8 @@ public class MoodProvider {
     public void addMoodEvent(Mood mood) {
         //Create a new document for the mood.  Keep the parameter empty in document() so that firestore generates a unique Key
         DocumentReference moodDocRef = moodCollection.document();
-
+        //Set the document to the mood's DocRef right away so there aren't any bugs
+        mood.setDocRef(moodDocRef);
         //Populate the new document with mood
         moodDocRef.set(mood);
     }
