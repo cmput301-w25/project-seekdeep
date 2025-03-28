@@ -364,11 +364,13 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                     uploadImageToFirebase(imageUri);
                 }
                 moodEvent.setImage(imageUri);
+
                 //Upload the new Mood to firebase
                 moodProvider.addMoodEvent(moodEvent).addOnSuccessListener(documentReference -> {
                     String moodEventId = documentReference.getId();
                     moodEvent.setDocRef(documentReference);
-                    if (locationToggle.isChecked()) {
+                    if (locationToggle.isChecked() &&
+                            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         saveLocationToFirestore(moodEventId);          // Pass the ID to saveLocationToFirestore
                         Toast.makeText(requireContext(), "Location saved", Toast.LENGTH_SHORT).show();
                     }
