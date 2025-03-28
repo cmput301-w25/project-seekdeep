@@ -94,8 +94,8 @@ public class MoodHistoryFragmentUITest {
 
 
         // log in first
-        scenario.getScenario().onActivity(activity -> activity.successful_login());
         scenario.getScenario().onActivity(activity -> activity.setCurrentUser(testUser));
+        scenario.getScenario().onActivity(activity -> activity.successful_login());
     }
 
     @After
