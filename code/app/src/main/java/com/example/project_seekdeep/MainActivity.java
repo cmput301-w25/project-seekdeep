@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
             bundle.putString("username", getCurrentUsername().getUsername());
             bundle.putSerializable("userProfile", currentUser);
             selectedFragment.setArguments(bundle);
+            fragManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
         }
         return true;
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putString("username", getCurrentUsername().getUsername());
         bundle.putSerializable("userProfile", currentUser);
         feedFragment.setArguments(bundle);
+        fragManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         fragManager.beginTransaction().replace(R.id.frameLayout, feedFragment).commit();
         FirebaseDatabase.getInstance().setPersistenceEnabled(true); //magic code to enable disk persistence
         //fragManager.beginTransaction().replace(R.id.frameLayout, new FeedFragment()).commit();
