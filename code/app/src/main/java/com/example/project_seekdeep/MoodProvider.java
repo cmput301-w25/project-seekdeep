@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 /**
  *  This class is in charge of reflecting new/updated/deleted data between the app and the database
- *  @author Sarah Chang
+ *  @author Sarah Chang, Jachelle Chan
  */
 
 public class MoodProvider {
