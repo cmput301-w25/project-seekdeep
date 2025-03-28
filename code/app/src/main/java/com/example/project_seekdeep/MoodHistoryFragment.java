@@ -142,6 +142,26 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
             });
         }
 
+        if (loggedInUser.getUsername().equals("johnCena")){
+            ImageView avatar = view.findViewById(R.id.profile_pic);
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storage2 = storage.getReference("/Images/1000037614");
+            storage2.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL for 'users/me/profile.png'
+                    Glide.with(getContext())
+                            .load(uri)
+                            .into(avatar);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+        }
+
 
         // Instantiate database for usage
         db = FirebaseFirestore.getInstance();
