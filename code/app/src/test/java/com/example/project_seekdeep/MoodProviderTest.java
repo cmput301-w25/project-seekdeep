@@ -28,9 +28,9 @@ public class MoodProviderTest {
     @Mock
     private DocumentReference mockDocReference;
     @Mock
-    private Task<Void> mockSetTask;     // Mock for the set operation
+    private Task<Void> mockSetTask;
     @Mock
-    private Task<DocumentReference> mockContinueWithTask;   // Mock for the continueWith result
+    private Task<DocumentReference> mockContinueWithTask;
 
     private MoodProvider moodProvider;
     private UserProfile testUser = new UserProfile("jshello", "tofu123");
@@ -44,9 +44,8 @@ public class MoodProviderTest {
         when(mockMoodCollection.document()).thenReturn(mockDocReference);
         when(mockMoodCollection.document(anyString())).thenReturn(mockDocReference);
 
-        // Mock the set operation to return Task<Void>
+        // Mock the set to return Task<Void> and then return Task<DocumentReference> using thenAnswer
         when(mockDocReference.set(any())).thenReturn(mockSetTask);
-        // Mock the continueWith to return Task<DocumentReference> using thenAnswer
         when(mockSetTask.continueWith(any(Continuation.class))).thenAnswer(invocation -> {
             return mockContinueWithTask;
         });
