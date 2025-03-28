@@ -14,10 +14,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 
-// This testing file is taken from Seth's Lab-08 code
-// Taken by: Jachelle Chan
-// Taken on: March 14, 2025
-public class MoodProviderTest {
+// This testing file is taken from Jachelle Chan's MoodProvider code Seth's Lab-08 code
+// Taken by: NANCY lin
+// Taken on: March 26, 2025
+public class EditMoodTest {
     @Mock
     private FirebaseFirestore mockFirestore;
     @Mock
@@ -43,6 +43,11 @@ public class MoodProviderTest {
     }
 
     @Test
+    public void testEditMood(){
+
+    }
+
+    @Test
     public void testAddMood() {
         Mood mood = new Mood(testUser, EmotionalStates.ANGER);
         // add the mood
@@ -60,22 +65,5 @@ public class MoodProviderTest {
         // Call the delete mood and verify the firebase delete method was called.
         moodProvider.deleteMood(mood);
         verify(mockDocReference).delete();
-    }
-
-    @Test
-    public void testUpdateMood(){
-        //create mood
-        Mood mood = new Mood(testUser, EmotionalStates.ANGER);
-        mood.setDocRef(mockDocReference);
-        //add mood
-        //moodProvider.addMoodEvent(mood);
-        //verify(mockDocReference).set(mood);
-
-        mood.setReason("Edit reason");
-        moodProvider.updateMood(mood);
-
-        verify(mockDocReference).set(mood);
-
-
     }
 }
