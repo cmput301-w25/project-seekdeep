@@ -113,7 +113,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
 
         // set Textview for username placeholder to be the logged in user's username
         TextView username = view.findViewById(R.id.username_profile);
-        username.setText("@" + loggedInUser.getUsername());
+        username.setText(loggedInUser.getUsername());
 
 
         // Instantiate database for usage
