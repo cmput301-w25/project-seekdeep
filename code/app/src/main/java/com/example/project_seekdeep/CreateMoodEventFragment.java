@@ -1,13 +1,10 @@
 package com.example.project_seekdeep;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import android.Manifest;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -41,6 +39,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.FileNotFoundException;
+
 /**
  * This Fragment class is designed to display a Mood Event Card, and let users Create a mood.
  * When the user clicks to select an emotion, a SelectMoodDialogFragment will pop up.
