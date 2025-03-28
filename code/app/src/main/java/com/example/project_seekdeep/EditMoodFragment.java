@@ -134,6 +134,7 @@ public class EditMoodFragment extends DialogFragment {
                     locationToggle.setChecked(isLocation);
                     locationToggle.setCompoundDrawablesWithIntrinsicBounds(
                             isLocation ? R.drawable.location_on : R.drawable.location_off, 0, 0, 0);
+                    locationToggle.setEnabled(false);
                 });
 
         //PRIVACY (default set to OFF=private, because you might upload something and regret it)
