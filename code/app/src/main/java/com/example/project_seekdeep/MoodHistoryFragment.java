@@ -194,12 +194,11 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                    requestButton.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View view) {
+                           ManageFollowRequestsFragment fragment = new ManageFollowRequestsFragment();
                            Bundle bundle = new Bundle();
                            bundle.putString("username", loggedInUser.getUsername());
                            bundle.putSerializable("userProfile", loggedInUser);
-                           ManageFollowRequestsFragment fragment = new ManageFollowRequestsFragment();
                            fragment.setArguments(bundle);
-                           Log.d(fragment.requireArguments().toString(), "Please crash");
                            fragment.show(getChildFragmentManager(), "requests");
                        }
                    });

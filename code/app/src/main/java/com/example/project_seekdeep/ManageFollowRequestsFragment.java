@@ -25,7 +25,6 @@ public class ManageFollowRequestsFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
-        Log.d(savedInstanceState.toString(), "Please dont crash :pleading:");
         UserProfile currentUser = (UserProfile) getArguments().getSerializable("userProfile");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -45,10 +44,6 @@ public class ManageFollowRequestsFragment extends DialogFragment {
                 Log.e("Firestore", error.toString());
             }
             if (value != null) {
-                if (!(requests == null)) {
-                    requests.clear();
-                    Log.d("NOT NANCY", "Clear arraylist");
-                };
                 for (QueryDocumentSnapshot snapshot : value) {
                     FollowRequest tempRequest = new FollowRequest(snapshot.get("follower").toString(),
                             snapshot.get("followee").toString(),
