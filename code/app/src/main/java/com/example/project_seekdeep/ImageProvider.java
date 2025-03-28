@@ -71,16 +71,31 @@ public class ImageProvider {
         });
     }
 
+    /**
+     * Delete an image from firebase using the Uri / last path segment
+     *
+     * @param selectedImage The image Uri that corresponds to the image to be deleted
+     */
     public void deleteImageFromFirebase(Uri selectedImage){
         StorageReference selectedImageRef = imageStorageRef.child(selectedImage.getLastPathSegment());
         selectedImageRef.delete();
     }
 
 
+    /**
+     * Get the StorageReference to the firebase Storage/Images folder
+     *
+     * @return the StorageReference to the firebase Storage/Images folder
+     */
     public StorageReference getImagesStorageRef(){
         return imageStorageRef;
     }
 
+    /**
+     * Get the StorageReference to an image using the lastPathSeg of a Uri
+     * @param lastPathSeg   String lastPathSeg is kinda the identifier for the storage reference
+     * @return  The storage reference to the image you get using the lastPathSeg
+     */
     public StorageReference getStorageRefFromLastPathSeg(String lastPathSeg){
         return imageStorageRef.child(lastPathSeg);
     }
