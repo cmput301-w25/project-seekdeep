@@ -4,7 +4,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -13,25 +12,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.ArgumentMatchers.any;
-import com.google.android.gms.tasks.Continuation;
 
 
-// This testing file is taken from Seth's Lab-08 code
-// Taken by: Jachelle Chan
-// Taken on: March 14, 2025
-public class MoodProviderTest {
+// This testing file is taken from Jachelle Chan's MoodProvider code Seth's Lab-08 code
+// Taken by: NANCY lin
+// Taken on: March 26, 2025
+public class EditMoodTest {
     @Mock
     private FirebaseFirestore mockFirestore;
     @Mock
     private CollectionReference mockMoodCollection;
     @Mock
     private DocumentReference mockDocReference;
-    @Mock
-    private Task<Void> mockSetTask;
-    @Mock
-    private Task<DocumentReference> mockContinueWithTask;
-
     private MoodProvider moodProvider;
     private UserProfile testUser = new UserProfile("jshello", "tofu123");
 
@@ -44,15 +36,14 @@ public class MoodProviderTest {
         when(mockMoodCollection.document()).thenReturn(mockDocReference);
         when(mockMoodCollection.document(anyString())).thenReturn(mockDocReference);
 
-        // Mock the set to return Task<Void> and then return Task<DocumentReference> using thenAnswer
-        when(mockDocReference.set(any())).thenReturn(mockSetTask);
-        when(mockSetTask.continueWith(any(Continuation.class))).thenAnswer(invocation -> {
-            return mockContinueWithTask;
-        });
-
         // make sure we have a fresh instance for each test
         MoodProvider.setInstanceForTesting(mockFirestore);
         moodProvider = MoodProvider.getInstance(mockFirestore);
+
+    }
+
+    @Test
+    public void testEditMood(){
 
     }
 
@@ -74,22 +65,5 @@ public class MoodProviderTest {
         // Call the delete mood and verify the firebase delete method was called.
         moodProvider.deleteMood(mood);
         verify(mockDocReference).delete();
-    }
-
-    @Test
-    public void testUpdateMood(){
-        //create mood
-        Mood mood = new Mood(testUser, EmotionalStates.ANGER);
-        mood.setDocRef(mockDocReference);
-        //add mood
-        //moodProvider.addMoodEvent(mood);
-        //verify(mockDocReference).set(mood);
-
-        mood.setReason("Edit reason");
-        moodProvider.updateMood(mood);
-
-        verify(mockDocReference).set(mood);
-
-
     }
 }

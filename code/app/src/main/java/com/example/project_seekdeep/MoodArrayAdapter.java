@@ -1,11 +1,9 @@
 package com.example.project_seekdeep;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +21,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * This class is a custom array adapter for the Mood class.
@@ -31,8 +28,7 @@ import java.util.Objects;
  */
 public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
+    private ImageProvider imageProvider;
     private OnUsernameClickListener listener;
 
     /**
@@ -51,8 +47,11 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
      */
     public MoodArrayAdapter(Context context, ArrayList<Mood> moods, OnUsernameClickListener listener) {
         super(context, 0, moods);
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
+
+        //Initialize an instance of movieProvide (so can add new mood to firestore)
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        imageProvider = ImageProvider.getInstance(storage);
+
         this.listener = listener;
     }
 
@@ -126,33 +125,11 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         if (currentMood.getImage() == null){
             view.findViewById(R.id.image).setVisibility(View.GONE);
             image.setImageDrawable(null);
-
-            Log.d("NANCY", "null image");
         } else{
             ; //ToDo for images
-
             view.findViewById(R.id.image).setVisibility(View.VISIBLE);
-            //Log.d("NANCY", "non null image: " + splitString.toString());
-
-
-            StorageReference pathReference = storageRef.child("Images/" +
+            StorageReference imageFire = imageProvider.getStorageRefFromLastPathSeg(
                     currentMood.getImage().getLastPathSegment());
-
-            Log.d("NANCY", "Non null Pathref/ " + pathReference);
-
-
-
-            StorageReference imageFire = storage.getReference("Images/" +
-                    currentMood.getImage().getLastPathSegment());
-
-
-            Log.d("NANCY", "Non null image fire/ " + imageFire);
-
-
-            //Glide.with(getContext())
-            //       .load(imageFire)
-            //      .into(image);
-
 
             imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
@@ -161,7 +138,6 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
                     Glide.with(getContext())
                             .load(uri)
                             .into(image);
-
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
