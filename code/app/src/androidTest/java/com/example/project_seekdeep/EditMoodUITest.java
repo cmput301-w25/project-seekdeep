@@ -23,6 +23,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+
+// This doesn't work
+// maybe ill do it later
+// maybe it should be repurposed
 public class EditMoodUITest {
     // borrows code from Jachelle's tests and the Labs
     private UserProfile testUser = new UserProfile("jshello", "tofu123");

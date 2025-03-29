@@ -113,14 +113,9 @@ public class EditMoodFragment extends DialogFragment {
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
 
 
-            // Load the image from the mood into the dialog
+            // Load the image from the mood into the dialog if it exists
             imageUri = mood.getImage();
-            // if image DNE, then hide the image view
-            if (imageUri == null){
-                imageView.setVisibility(View.GONE);
-                imageView.setImageDrawable(null);
-            } else{
-                imageView.setVisibility(View.VISIBLE);
+            if (imageUri != null){
                 StorageReference imageFire = imageProvider.getStorageRefFromLastPathSeg(
                         imageUri.getLastPathSegment());
 
@@ -148,9 +143,6 @@ public class EditMoodFragment extends DialogFragment {
                             .build());
                 }
             });
-
-
-
 
         }
         else {
@@ -211,6 +203,8 @@ public class EditMoodFragment extends DialogFragment {
         dialog.setOnShowListener( d -> {
             Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             positiveButton.setOnClickListener(v -> {
+
+
                 String reason = editReason.getText().toString().trim();
 
                 //Validate length of reason to <= 200 chars
