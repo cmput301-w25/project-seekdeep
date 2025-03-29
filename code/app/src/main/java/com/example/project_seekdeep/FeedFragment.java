@@ -133,39 +133,52 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                     moodArrayList.clear();
                     for (QueryDocumentSnapshot snapshot : value) {
 
+                    HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
+
+                    UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
+                            ownerSnapshot.get("password").toString());
+
+                    Boolean isPrivate = (Boolean) snapshot.get("private");
+
+                    // For moods that are currently existing, but does not have the "private" field.
+                    // We'll allow these to be public for the sake of demo-ing.
+                    if (isPrivate == null) {
+                        isPrivate = false;
+                    } else if (isPrivate && !loggedInUser.equals(user)) {
+                        // This skips loading the mood into the feed since it is private and not owned by the currently logged in user.
+                        continue;
+                    }
+
+                    EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
+                    SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
+
+                    List<String> followers = (List<String>) snapshot.get("followers");
+                    Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                    String reason = (String) snapshot.get("reason");
 
 
-                HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
+                    String imageStr = (String) snapshot.get("image");
+                    Uri image = null;
+                    if (imageStr != null) {
+                        image = Uri.parse(imageStr);
+                    }
+                        String[] stringFields = {
+                                reason,
+                                socialSituation.toString()
+                        };
+                        Mood mood = new Mood(user, emotionalState, stringFields, followers, isPrivate, postedDate);
 
-                UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
-                        ownerSnapshot.get("password").toString());
-                EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
-                SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
+                        mood.setImage(image);
+                        mood.setDocRef(snapshot.getReference());
+                        moodArrayList.add(mood);
+                    }
 
-                List<String> followers = (List<String>) snapshot.get("followers");
-                Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
-                String reason = (String) snapshot.get("reason");
+                    //taken from Jachelle
 
-                String imageStr = (String) snapshot.get("image");
-                Uri image = null;
-                if (imageStr != null){
-                    image = Uri.parse(imageStr);
+                    MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
+                    moodArrayAdapter.notifyDataSetChanged();
                 }
-
-                    Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
-
-                    mood.setImage(image);
-                    mood.setDocRef(snapshot.getReference());
-
-                    moodArrayList.add(mood);
-                }
-
-                //taken from Jachelle
-
-                MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
-                moodArrayAdapter.notifyDataSetChanged();
-        }
-        });
+            });
         }
         // From lab 3, and fragment manager documentation
         // https://developer.android.com/guide/fragments/fragmentmanager
