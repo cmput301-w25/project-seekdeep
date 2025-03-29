@@ -3,7 +3,10 @@ package com.example.project_seekdeep;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -163,26 +166,32 @@ public class MoodFiltering {
      * @param moods: An ArrayList of Mood objects
      */
     public static void sortKeyword(ArrayList<Mood> moods) {
-        // the regex for this method is taken from https://stackoverflow.com/a/9464309
-        // Author: DNA
-        // Taken by: Jachelle Chan
-        // Taken on: March 19, 2025
-        // remove moods from the arraylist if it doesn't contain the keyword
         moods.removeIf(mood -> !mood.getReason().toLowerCase().contains(keyword));
     }
 
 
     /**
-     * This method filters an ArrayList of moods to only include those that are the most recent.
+     * This method filters an ArrayList of moods to only include those that are the most recent from every user followed.
      * @param moods: An ArrayList of Mood objects
      */
     public static void sortLast3(ArrayList<Mood> moods) {
-        // directly modify the arraylist
-        // keep only the first 3 moods by using sublist from the 3rd to the end of the arraylist and then clear
-        // only need to apply this to user's with more than 3 moods (to avoid out of bounds index errors)
-        if (moods.size() > 3) {     //avoid out of bounds index errors
-            moods.subList(3, moods.size()).clear();
+        Map<String, ArrayList<Mood>> userMoodsMap = new HashMap<>();
+        for (Mood mood: moods) {
+            // if followed user already has an arraylist associated, add the mood to the arraylist
+            // otherwise make a new arraylist for the user and use the owner string as the key
+            userMoodsMap.computeIfAbsent(mood.getOwnerString(), key -> new ArrayList<>()).add(mood);
         }
+        ArrayList<Mood> allRecentMoods = new ArrayList<>();
+        for (ArrayList<Mood> theMoods : userMoodsMap.values()) {
+            // limit up to 3 moods per user
+            // ensure that if the user being followed has less than 3 moods, then the limit is lower
+            int limit = Math.min(3, theMoods.size());
+            allRecentMoods.addAll(theMoods.subList(0, limit));
+        }
+        // sort reverse chronologically all recent moods now that all recent moods have been added
+        MoodFiltering.sortReverseChronological(allRecentMoods);
+        moods.clear();
+        moods.addAll(allRecentMoods);  // directly modify the given arraylist to keep everything consistent
     }
 
     /**
