@@ -173,6 +173,37 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
         }
         });
         }
+
+        //POPULATE THE list_view_users LISTVIEW UI (default hidden) - only display this listview when the Users tab is clicked
+        userListView = view.findViewById(R.id.list_view_users); //Set view to ui
+        CollectionReference usersRef = db.collection("users");
+        ArrayList<UserProfile> userArrayList = new ArrayList<>();
+        ArrayAdapter<UserProfile> userArrayAdapter = new UserArrayAdapter(view.getContext(), userArrayList); //link userArrayList and adapter
+        userListView.setAdapter(userArrayAdapter); //link the UI Listview to the array adapter
+        //Query firebase to fetch all users (except the logged-in user)
+        if (loggedInUser != null) { //if statement to prevent app crashing
+            Query usersQuery = usersRef.whereNotEqualTo("username", loggedInUser.getUsername());
+            usersQuery.addSnapshotListener((value, error) -> {
+                Log.d("SearchForUser", "user list should populate now!");
+                //Check for errors
+                if (error != null) {
+                    Log.e("SearchForUsers", error.toString());
+                    return; //exit if theres an error
+                }
+                //If a snapshot was taken
+                if (value != null) {
+                    userArrayList.clear();
+                    for (QueryDocumentSnapshot snapshot : value) {
+                        //Convert snapshots to UserProfile objects
+                        UserProfile user = snapshot.toObject(UserProfile.class);
+                        userArrayList.add(user);
+                    }
+                    //notify adapter that data has changed
+                    userArrayAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+
         // From lab 3, and fragment manager documentation
         // https://developer.android.com/guide/fragments/fragmentmanager
         // Ideas for the solution was adapted from the link below, surprisingly from the question itself and not an answer (lol)
@@ -202,43 +233,34 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                         .commit();
             }
         });
+        //Use same logic as above for when a user is clicked on the users tab
+        userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //Bundle up the original user object that was clicked on
+                Bundle usersBundle = new Bundle();
+                usersBundle.putSerializable("userBeingViewed", userArrayList.get(i));
+                usersBundle.putSerializable("loggedInUser", loggedInUser);
 
-        //POPULATE THE list_view_users LISTVIEW UI (default hidden) - only display this listview when the Users tab is clicked
-        //Set view to ui
-        userListView = view.findViewById(R.id.list_view_users);
-        //Get all users
-        CollectionReference usersRef = db.collection("users");
-        ArrayList<UserProfile> userArrayList = new ArrayList<>();
-        //link userArrayList and adapter
-        ArrayAdapter<UserProfile> userArrayAdapter = new UserArrayAdapter(view.getContext(), userArrayList);
-        //link the UI Listview to the array adapter
-        userListView.setAdapter(userArrayAdapter);
-        //Query firebase to fetch all users (except the logged-in user)
-        Query usersQuery = usersRef.whereNotEqualTo("username", loggedInUser.getUsername());
-        usersQuery.addSnapshotListener((value, error) -> {
-            Log.d("SearchForUser","user list should populate now!");
-            //Check for errors
-            if (error != null) {
-                Log.e("SearchForUsers", error.toString());
-                return; //exit if theres an error
-            }
-            //If a snapshot was taken
-            if (value != null) {
-                userArrayList.clear();
-                for (QueryDocumentSnapshot snapshot : value) {
-                    //Convert snapshots to UserProfile objects
-                    UserProfile user = snapshot.toObject(UserProfile.class);
-                    userArrayList.add(user);
-                }
-                //notify adapter that data has changed
-                userArrayAdapter.notifyDataSetChanged();
+                // This is used to navigate back and forth between a user's profile fragment and the feed fragment
+                FragmentManager fragManager = getParentFragmentManager();
+
+                //Create new fragment and send the userBeingViewed and loggedInUser to the new fragment
+                OtherUsersProfileFragment otherUsersProfileFragment = new OtherUsersProfileFragment();
+                otherUsersProfileFragment.setArguments(usersBundle);
+
+                fragManager.beginTransaction()
+                        .replace(R.id.frameLayout, otherUsersProfileFragment)
+                        .setReorderingAllowed(true)
+                        .addToBackStack("feed")
+                        .commit();
             }
         });
-
 
         //Setup tab switching logic
         moodsTab = view.findViewById(R.id.moods_tab);
         usersTab = view.findViewById(R.id.users_tab);
+        //If moodsTab is clicked, show the moods list
         moodsTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -252,6 +274,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                 userListView.setVisibility(View.GONE);
             }
         });
+        //If the usersTab is clicked, show the users list
         usersTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
