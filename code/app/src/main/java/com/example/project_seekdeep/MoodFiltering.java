@@ -87,7 +87,7 @@ public class MoodFiltering {
      * @param word
      */
     public static void addKeyword(String word) {
-        keyword = word;
+        keyword = word.toLowerCase().trim();
     }
 
     /**
