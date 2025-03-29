@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
@@ -127,6 +128,44 @@ public class PrivacyUITest {
             }
         });
 
+        moodsRef.add(mood3).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                Map<String, Object> comment1 = new HashMap<>();
+                comment1.put("username", "Churchill");
+                comment1.put("comment", "Lets go!!!");
+                comment1.put("mood", documentReference);
+                comment1.put("date", Timestamp.now().toDate());
+                commentsRef.add(comment1);
+            }
+        });
+
+        moodsRef.add(mood4).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                Map<String, Object> comment1 = new HashMap<>();
+                comment1.put("username", "JordanFan123");
+                comment1.put("comment", "Great words from the greatest.");
+                comment1.put("mood", documentReference);
+                comment1.put("date", Timestamp.now().toDate());
+
+                Map<String, Object> comment2 = new HashMap<>();
+                comment2.put("username", "ChicagoLover22");
+                comment2.put("comment", "Couldn't have said it any better.");
+                comment2.put("mood", documentReference);
+                comment2.put("date", Timestamp.now().toDate());
+
+                Map<String, Object> comment3 = new HashMap<>();
+                comment3.put("username", "Saurabh");
+                comment3.put("comment", "The goat!");
+                comment3.put("mood", documentReference);
+                comment3.put("date", Timestamp.now().toDate());
+
+                commentsRef.add(comment1);
+                commentsRef.add(comment2);
+            }
+        });
+
         // Force log in
         scenario.getScenario().onActivity(activity -> activity.setCurrentUser(testUser));
         scenario.getScenario().onActivity(MainActivity::successful_login);
@@ -154,5 +193,15 @@ public class PrivacyUITest {
                 urlConnection.disconnect();
             }
         }
+    }
+
+    /**
+     * This test is to ensure that previous moods in the DB that do not have the "private"
+     * field does not crash the entire app if that field is read. They should also have
+     * public visibility.
+     */
+    @Test
+    public void preExistingMoodsShouldBePublicAndShown() {
+
     }
 }
