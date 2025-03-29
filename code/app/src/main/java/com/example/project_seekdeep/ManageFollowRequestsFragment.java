@@ -33,11 +33,17 @@ public class ManageFollowRequestsFragment extends DialogFragment {
         CollectionReference followRequestsRef = db.collection("followings_and_requests");
         Query followRequestsQuery = followRequestsRef.whereEqualTo("status", "pending")
                 .whereEqualTo("followee", currentUser.getUsername());
+        ListView requestsList = view.findViewById(R.id.requests_list_view);
+        UserProvider userProvider = UserProvider.getInstance(requireContext(), currentUser);
+        ArrayAdapter<FollowRequest> requestArrayAdapter = new FollowRequestArrayAdapter(view.getContext(), requests, userProvider);
+        requestsList.setAdapter(requestArrayAdapter);
+
         followRequestsQuery.addSnapshotListener((value, error) -> {
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
             if (value != null) {
+                requests.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     FollowRequest tempRequest = new FollowRequest(snapshot.get("follower").toString(),
                             snapshot.get("followee").toString(),
@@ -46,15 +52,8 @@ public class ManageFollowRequestsFragment extends DialogFragment {
                     requests.add(tempRequest);
                 }
             }
+            requestArrayAdapter.notifyDataSetChanged();
         });
-        ListView requestsList = view.findViewById(R.id.requests_list_view);
-        UserProvider userProvider = UserProvider.getInstance(requireContext(), currentUser);
-        ArrayAdapter<FollowRequest> requestArrayAdapter = new FollowRequestArrayAdapter(view.getContext(), requests, userProvider);
-        requestsList.setAdapter(requestArrayAdapter);
-        Log.d("L", "Notifying data set change");
-        requestArrayAdapter.notifyDataSetChanged();
-
-
     return builder.setView(view).create();
     }
 }

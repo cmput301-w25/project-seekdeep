@@ -103,6 +103,8 @@ public class UserProvider {
                     }
 
                     //Update following list in the UserProfile class
+                    Log.d("CUNAME", currentUser.getUsername());
+                    Log.d("VIEWEDNAME", userBeingViewed.getUsername());
                     currentUser.removeFollowing(userBeingViewed.getUsername());
 
                     //Update the followings list in firestore
@@ -308,11 +310,51 @@ public class UserProvider {
         // and change the status from 'pending' to 'following'
 
     }
-    //User this method in managing requests
-    public void denyFollowRequest() {
-        //find the doc where followee == loggedInUser, follower==requester,
-        // and delete this doc
+    /**
+     * This method will edit the document where
+     * followee==loggedInUser and follower==userBeingViewed
+     * to change the pending request to a following one
+     */
+    public void acceptFollowRequest(UserProfile userBeingViewed) {
+        followingsAndRequestsCollectionRef
+                .whereEqualTo("follower", userBeingViewed.getUsername())
+                .whereEqualTo("followee", currentUser.getUsername())
+                .get()
+                .addOnSuccessListener(queryDocSnapshot -> {
+                    for (QueryDocumentSnapshot doc : queryDocSnapshot) {
+                        doc.getReference().update("status", "following")
+                                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Successfully allowed" + userBeingViewed.getUsername() + "to follow you!"))
+                                .addOnFailureListener(e -> Log.w("Firestore", "Error allow user to follow you", e));
+                    }
+
+                    //Update following list in the UserProfile class
+                    currentUser.addFollowing(userBeingViewed.getUsername());
+
+                })
+                .addOnFailureListener(e -> Log.w("Firestore", "Error finding follow document", e));
     }
+    /**
+     * This method will edit the document where
+     * followee==loggedInUser and follower==userBeingViewed
+     * to change the pending request to a following one
+     */
+    public void declineFollowRequest(UserProfile userBeingViewed) {
+        followingsAndRequestsCollectionRef
+                .whereEqualTo("follower", userBeingViewed.getUsername())
+                .whereEqualTo("followee", currentUser.getUsername())
+                .get()
+                .addOnSuccessListener(queryDocSnapshot -> {
+                    for (QueryDocumentSnapshot doc : queryDocSnapshot) {
+                        doc.getReference().delete()
+                                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Successfully declined " + userBeingViewed.getUsername()))
+                                .addOnFailureListener(e -> Log.w("Firestore", "Error declining user", e));
+                    }
+                    //Update following list in the UserProfile class
+                    currentUser.removeFollowing(userBeingViewed.getUsername());
 
-
+                    //Update the followings list in firestore
+                    removeFromFollowingsListInFirestore(userBeingViewed);
+                })
+                .addOnFailureListener(e -> Log.w("Firestore", "Error finding follow document", e));
+    }
 }

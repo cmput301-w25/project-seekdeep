@@ -24,11 +24,14 @@ public class FollowRequestArrayAdapter extends ArrayAdapter<FollowRequest> {
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private UserProvider userProvider;
+
     /**
-     * Constructor for Follow Requests' Array Adapter
+     * Constructor for FollowRequstArrayAdapter, uses userProvider to manage
      * @param context
      * @param requests
+     * @param userProvider
      */
+
     public FollowRequestArrayAdapter(Context context, ArrayList<FollowRequest> requests, UserProvider userProvider) {
         super(context, 0, requests);
         this.storage = FirebaseStorage.getInstance();
@@ -42,7 +45,6 @@ public class FollowRequestArrayAdapter extends ArrayAdapter<FollowRequest> {
         View view = convertView == null ?
                 LayoutInflater.from(getContext()).inflate(R.layout.layout_follow_request, parent, false):
                 convertView;
-        Log.d("L", view.toString());
         FollowRequest request = this.getItem(position);
         TextView userName = view.findViewById(R.id.request_name);
         Button declineButton = view.findViewById(R.id.decline_button);
@@ -51,13 +53,13 @@ public class FollowRequestArrayAdapter extends ArrayAdapter<FollowRequest> {
         declineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userProvider.unfollowThisUser(new UserProfile(request.getFollower(), "I really dont wanna do this") );
+                userProvider.declineFollowRequest(new UserProfile(request.getFollower(), "Hi Seth") );
             }
         });
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                request.setStatusToFollowing();
+                userProvider.acceptFollowRequest(new UserProfile(request.getFollower(), "Do you like these passwords?") );
             }
         });
         return view;
