@@ -67,9 +67,6 @@ public class MoodProviderTest {
         //create mood
         Mood mood = new Mood(testUser, EmotionalStates.ANGER);
         mood.setDocRef(mockDocReference);
-        //add mood
-        //moodProvider.addMoodEvent(mood);
-        //verify(mockDocReference).set(mood);
 
         mood.setReason("Edit reason");
         moodProvider.updateMood(mood);
