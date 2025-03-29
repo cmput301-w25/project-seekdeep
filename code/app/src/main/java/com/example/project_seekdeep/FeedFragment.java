@@ -143,7 +143,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                     // We'll allow these to be public for the sake of demo-ing.
                     if (isPrivate == null) {
                         isPrivate = false;
-                    } else if (isPrivate && !loggedInUser.equals(user)) {
+                    } else if (isPrivate || loggedInUser.equals(user)) {
                         // This skips loading the mood into the feed since it is private and not owned by the currently logged in user.
                         continue;
                     }

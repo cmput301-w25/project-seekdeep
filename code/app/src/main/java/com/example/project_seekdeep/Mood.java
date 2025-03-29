@@ -140,6 +140,7 @@ public class Mood implements Serializable {
                 this.socialSituation = SocialSituations.CROWD;
                 break;
         }
+        this.isPrivate = isPrivate;
     }
 
     /**
@@ -358,8 +359,13 @@ public class Mood implements Serializable {
         return docRef;
     }
 
-    public Boolean getPrivate() {
-        return isPrivate;
+    public boolean getPrivate() {
+        // For moods that are currently existing, but does not have the "private" field.
+        // We'll allow these to be public for the sake of demo-ing.
+        if (isPrivate == null) {
+            return false;
+        }
+        return isPrivate.booleanValue();
     }
 
     public void setPrivate(Boolean aPrivate) {

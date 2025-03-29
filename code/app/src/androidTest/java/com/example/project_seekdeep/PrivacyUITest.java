@@ -1,5 +1,15 @@
 package com.example.project_seekdeep;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.CoreMatchers.not;
+
 import android.util.Log;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -77,6 +87,12 @@ public class PrivacyUITest {
                 SocialSituations.ALONE.toString()
         };
         Mood mood4 = new Mood(michael, EmotionalStates.HAPPINESS, mood4Fields, false);
+
+        String[] mood5Fields = {
+            "Turing machine up and running",
+            SocialSituations.ALONE.toString()
+        };
+        Mood mood5 = new Mood(alan, EmotionalStates.HAPPINESS, mood5Fields, false);
 
         usersRef.document().set(user1);
 
@@ -166,6 +182,8 @@ public class PrivacyUITest {
             }
         });
 
+        moodsRef.add(mood5);
+
         // Force log in
         scenario.getScenario().onActivity(activity -> activity.setCurrentUser(testUser));
         scenario.getScenario().onActivity(MainActivity::successful_login);
@@ -201,7 +219,24 @@ public class PrivacyUITest {
      * public visibility.
      */
     @Test
-    public void preExistingMoodsShouldBePublicAndShown() {
+    public void preExistingMoodsShouldBePublicAndShown() throws InterruptedException {
+        // Navigate to feed
+        onView(withId(R.id.feed_bottom_nav)).perform(click());
+        Thread.sleep(1000);
 
+        // The moods with these reason fields are ones that are added to the db without private field.
+        onView(withText("I love food!")).check(matches(isDisplayed()));
+        onView(withText("I hate homework!!")).check(matches(isDisplayed()));
     }
+
+    @Test
+    public void privateMoodsShouldNotDisplay() throws InterruptedException {
+        // Navigate to feed
+        onView(withId(R.id.feed_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+
+        onView(withText("It works!!!")).check(doesNotExist());
+        onView(withText("Turing machine up and running")).check(doesNotExist());
+    }
+
 }
