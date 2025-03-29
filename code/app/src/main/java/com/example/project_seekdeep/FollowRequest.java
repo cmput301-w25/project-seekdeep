@@ -22,6 +22,12 @@ public class FollowRequest {
     private String status;
 
     /**
+     * Empty Constructor for Firebase
+     */
+    public FollowRequest(){
+
+    }
+    /**
      * Constructor for FollowRequest. When a new FollowRequest is made, the status is always initialized as "pending"
      * @param follower The user that sends a follow request
      * @param followee The user that receives a follow request

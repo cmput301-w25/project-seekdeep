@@ -34,7 +34,7 @@
                 android:textOff="Mood History"
                 android:textOn="Mood Following"
                 android:textColor="@color/raisin_black"
-                android:textSize="11sp"
+                android:textSize="10.5sp"
                 android:checked="false" />
         </LinearLayout>
 
@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mood History"
-                android:textSize="12sp"/>
+                android:textSize="10sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -79,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mood Following"
-                android:textSize="12sp"/>
+                android:textSize="10sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -101,7 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="5 KM Radius"
-                android:textSize="12sp"/>
+                android:textSize="10sp"/>
         </LinearLayout>
 
     </LinearLayout>
