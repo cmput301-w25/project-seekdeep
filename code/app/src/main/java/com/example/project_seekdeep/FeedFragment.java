@@ -1,5 +1,6 @@
 package com.example.project_seekdeep;
 
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +24,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,6 +48,8 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
     private FirebaseStorage storage;
     private StorageReference storageRef;
     CollectionReference MoodDB;
+    private TextView moodsTab;
+    private TextView usersTab;
 
 
 
@@ -194,6 +199,38 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                         .setReorderingAllowed(true)
                         .addToBackStack("feed")
                         .commit();
+            }
+        });
+
+        //Get all users
+        CollectionReference usersRef = db.collection("users");
+        ArrayList<UserProfile> userArrayList = new ArrayList<>();
+        ArrayAdapter<UserProfile> userArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, this);
+        Query usersQuery = usersRef.whereNotEqualTo("username", loggedInUser.getUsername());
+        usersQuery.addSnapshotListener(((value, error) -> {
+            //Check for errors
+            if (error != null) {
+                Log.e("Firestore", error.toString());
+            }
+            //If a snapshot was taken
+            if (value != null) {
+                userArrayList.clear();
+                for (QueryDocumentSnapshot snapshot : value) {
+        }))
+
+
+
+        //Listen to the user's tab
+        moodsTab = view.findViewById(R.id.moods_tab);
+        usersTab = view.findViewById(R.id.users_tab);
+        usersTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                usersTab.setTextSize(17);
+                usersTab.setTypeface(null, Typeface.BOLD);
+                moodsTab.setTextSize(15);
+                moodsTab.setTypeface(null,Typeface.NORMAL);
+
             }
         });
     }

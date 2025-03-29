@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:text="Moods"
-                android:textSize="16dp"
+                android:textSize="17dp"
                 android:textStyle="bold" />
 
             <TextView
