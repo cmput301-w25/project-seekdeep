@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+    android:gravity="start"
+    android:paddingStart="50dp">
+
+    <ImageView
+        android:id="@+id/pfp_users_tab"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:srcCompat="@drawable/profile_pic" />
+
+    <TextView
+        android:id="@+id/username_users_tab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textSize="22dp"
+        android:paddingHorizontal="10dp" />
+</LinearLayout>

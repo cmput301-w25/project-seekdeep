@@ -39,7 +39,6 @@ import java.util.Objects;
 public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernameClickListener {
 
     private ListView moodListView;
-
     private ArrayList<Mood> moodArrayList;
     private ArrayAdapter<Mood> moodArrayAdapter;
 
@@ -51,6 +50,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
     CollectionReference MoodDB;
     private TextView moodsTab;
     private TextView usersTab;
+    private ListView userListView;
 
 
 
@@ -203,41 +203,71 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
             }
         });
 
+        //POPULATE THE list_view_users LISTVIEW UI (default hidden) - only display this listview when the Users tab is clicked
+        //Set view to ui
+        userListView = view.findViewById(R.id.list_view_users);
         //Get all users
         CollectionReference usersRef = db.collection("users");
         ArrayList<UserProfile> userArrayList = new ArrayList<>();
-        ArrayAdapter<UserProfile> userArrayAdapter = new userArrayAdapter(view.getContext(), moodArrayList, this);
+        //link userArrayList and adapter
+        ArrayAdapter<UserProfile> userArrayAdapter = new UserArrayAdapter(view.getContext(), userArrayList);
+        //link the UI Listview to the array adapter
+        userListView.setAdapter(userArrayAdapter);
+        //Query firebase to fetch all users (except the logged-in user)
         Query usersQuery = usersRef.whereNotEqualTo("username", loggedInUser.getUsername());
         usersQuery.addSnapshotListener((value, error) -> {
+            Log.d("SearchForUser","user list should populate now!");
             //Check for errors
             if (error != null) {
-                Log.e("Firestore", error.toString());
+                Log.e("SearchForUsers", error.toString());
+                return; //exit if theres an error
             }
             //If a snapshot was taken
             if (value != null) {
                 userArrayList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     //Convert snapshots to UserProfile objects
-                    UserProfile user = snapshot.toObject()
+                    UserProfile user = snapshot.toObject(UserProfile.class);
+                    userArrayList.add(user);
                 }
+                //notify adapter that data has changed
+                userArrayAdapter.notifyDataSetChanged();
+            }
         });
 
 
-
-        //Listen to the user's tab
+        //Setup tab switching logic
         moodsTab = view.findViewById(R.id.moods_tab);
         usersTab = view.findViewById(R.id.users_tab);
+        moodsTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //update the tabs ui
+                moodsTab.setTextSize(17);
+                moodsTab.setTypeface(null,Typeface.BOLD);
+                usersTab.setTextSize(15);
+                usersTab.setTypeface(null, Typeface.NORMAL);
+                //display the list of all moods (except for logged-in user's)
+                moodListView.setVisibility(View.VISIBLE);
+                userListView.setVisibility(View.GONE);
+            }
+        });
         usersTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //update the tabs ui
                 usersTab.setTextSize(17);
                 usersTab.setTypeface(null, Typeface.BOLD);
                 moodsTab.setTextSize(15);
                 moodsTab.setTypeface(null,Typeface.NORMAL);
-
+                //display the list of all users (except for the logged-in user)
+                moodListView.setVisibility(View.GONE);
+                userListView.setVisibility(View.VISIBLE);
             }
         });
+
     }
+
     /**
      * Implementation of the OnUsernameClickListener from the MoodArrayAdapter's interface
      * @param clickUsername the username that was clicked on

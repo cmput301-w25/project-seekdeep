@@ -82,7 +82,15 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/list_view_moods"
-        app:layout_constraintTop_toBottomOf="@id/feed_header"></LinearLayout>
+        app:layout_constraintTop_toBottomOf="@id/feed_header" >
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="results" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/list_view_moods"
@@ -93,8 +101,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/results_bar_feed">
-
-    </ListView>
+        app:layout_constraintTop_toBottomOf="@id/results_bar_feed"/>
+    <ListView
+        android:id="@+id/list_view_users"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/results_bar_feed"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
