@@ -28,8 +28,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
 import android.Manifest;
+import android.widget.ToggleButton;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -75,6 +78,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
     private ImageButton filterMoodHistoryButton;
     private ImageButton filterMoodFollowingButton;
     private ImageButton filter5KmRadiusButton;
+
+    // Toggle button map display
+    private ToggleButton displayToggle;
 
     /**
      * Empty constructor required by database
@@ -132,6 +138,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         filterMoodHistoryButton = view.findViewById(R.id.filter_mood_history);
         filterMoodFollowingButton = view.findViewById(R.id.filter_mood_following);
         filter5KmRadiusButton = view.findViewById(R.id.filter_5_km_radius);
+        displayToggle = view.findViewById(R.id.display_toggle);
 
         filterMoodHistoryButton.setOnClickListener(v -> {
             new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
