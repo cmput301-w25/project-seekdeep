@@ -179,7 +179,10 @@ public class MoodFiltering {
     public static void sortLast3(ArrayList<Mood> moods) {
         // directly modify the arraylist
         // keep only the first 3 moods by using sublist from the 3rd to the end of the arraylist and then clear
-        moods.subList(3,moods.size()).clear();
+        // only need to apply this to user's with more than 3 moods (to avoid out of bounds index errors)
+        if (moods.size() > 3) {     //avoid out of bounds index errors
+            moods.subList(3, moods.size()).clear();
+        }
     }
 
     /**
