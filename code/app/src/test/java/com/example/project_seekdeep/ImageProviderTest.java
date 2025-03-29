@@ -17,7 +17,7 @@ import org.mockito.MockitoAnnotations;
 // This testing file is taken from Jachelle Chan's MoodProvider code Seth's Lab-08 code
 // Taken by: NANCY lin
 // Taken on: March 26, 2025
-public class EditMoodTest {
+public class ImageProviderTest {
     @Mock
     private FirebaseFirestore mockFirestore;
     @Mock

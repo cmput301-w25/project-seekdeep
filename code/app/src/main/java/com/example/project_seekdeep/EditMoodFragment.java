@@ -243,7 +243,9 @@ public class EditMoodFragment extends DialogFragment {
                 mood.setReason(reason);
                 mood.setEmotionalState(emotionalStates);
                 mood.setSocialSituation(socialSituations);
-                mood.setImage(imageUri);
+
+                // Upload to the MoodsCollection a simplified image Uri
+                mood.setImage(Uri.parse(imageUri.getLastPathSegment()));
                 if (imageUri != null){
                     imageProvider.uploadImageToFirebase(imageUri);
                 }
@@ -252,8 +254,6 @@ public class EditMoodFragment extends DialogFragment {
                 moodProvider.updateMood(mood);
                 dialog.dismiss();
 
-
-                // the only required thing is emotional state i believe
             });
         });
         return dialog;
