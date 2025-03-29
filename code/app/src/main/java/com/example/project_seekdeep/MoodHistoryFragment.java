@@ -199,7 +199,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
      * @param selectedTimeline: A string of what the user wants to filter the timeline by in terms of the MoodFiltering class
      */
     @Override
-    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
+    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, List<String> keywords) {
         // apply the selected filters if they arent empty
         MoodFiltering.removeAllFilters();
         if(!selectedMoods.isEmpty()) {
@@ -219,8 +219,8 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
             moodArrayAdapter.notifyDataSetChanged();
         }
 
-        if(!keyword.isEmpty()) {
-            MoodFiltering.addKeyword(keyword);
+        if(!keywords.isEmpty()) {
+            MoodFiltering.addKeyword(keywords);
             MoodFiltering.applyFilter("keyword");
             filteredMoodList = MoodFiltering.getFilteredMoods();
             moodArrayAdapter.clear();

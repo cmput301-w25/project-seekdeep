@@ -20,6 +20,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +43,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
     private ArrayList<EmotionalStates> selectedStates = new ArrayList<>();
     private OnFilterSelectedListener listener;
     private String selectedTimeline = "";
-    private String keyword = "";
+    private List<String> keywords = new ArrayList<>();
 
     @Override
     public void onAttach(@NonNull android.content.Context context) {
@@ -158,11 +159,13 @@ public class FilterMenuDialogFragment extends DialogFragment {
                 // the code for input handling has been reused from CreateMoodEvenFragment by Sarah Chang
                 // Taken by: Jachelle Chan
                 // Taken on: March 22, 2025
+                /*
                 keyword = keywordTextView.getText().toString().trim();
                 if(keyword.split(" ").length > 1) {
                     keywordTextView.setError("1 keyword only!");
                     return;  // stop the execution for the rest of this click method
-                }
+                }*/
+                keywords = Arrays.asList(keywordTextView.getText().toString().split(" "));
                 applyFilters();
             }
         });
@@ -186,7 +189,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
      * You will need to implement your own interface for this because every fragment has different needs.
      */
     public interface OnFilterSelectedListener {
-        void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword);
+        void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, List<String> keywords);
         void onFiltersReset();
     }
 
@@ -213,7 +216,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
     private void applyFilters() {
         // send the selected filters back to the parent fragment
         if (listener != null) {
-            listener.onFiltersApplied(selectedStates, selectedTimeline, keyword);
+            listener.onFiltersApplied(selectedStates, selectedTimeline, keywords);
         }
         dismiss(); // close the dialog after applying the filters
     }

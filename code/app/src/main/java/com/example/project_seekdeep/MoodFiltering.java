@@ -1,5 +1,6 @@
 package com.example.project_seekdeep;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,7 +44,7 @@ public class MoodFiltering {
     private static Set<String> filters = new HashSet<>(); // the filters applied
 
     private static Set<EmotionalStates> selectedStates = new HashSet<>(); // the selected emotional state(s) to filter by
-    private static String keyword = "";
+    private static ArrayList<String> keywords = new ArrayList<>();
 
     /**
      * This method saves a copy of the original array
@@ -84,10 +85,14 @@ public class MoodFiltering {
 
     /**
      * This method adds the keyword the user wants to filter
-     * @param word
+     * @param words: An arraylist of keywords the user is searching for
      */
-    public static void addKeyword(String word) {
-        keyword = word.toLowerCase().trim();
+    public static void addKeyword(List<String> words) {
+        //keyword = word.replaceAll("[^a-zA-Z ]", "").toLowerCase().trim();
+        keywords.clear();
+        for (String keyword: words) {
+            keywords.add(keyword.replaceAll("[^a-zA-Z ]", "").toLowerCase().trim());
+        }
     }
 
     /**
@@ -166,7 +171,11 @@ public class MoodFiltering {
      * @param moods: An ArrayList of Mood objects
      */
     public static void sortKeyword(ArrayList<Mood> moods) {
-        moods.removeIf(mood -> !mood.getReason().toLowerCase().contains(keyword));
+        //moods.removeIf(mood -> !mood.getReason().replaceAll("[^a-zA-Z ]", "").toLowerCase().contains(keyword));
+        moods.removeIf(mood -> {
+            String reason = mood.getReason().replaceAll("[^a-zA-Z ]", "").toLowerCase();
+            return keywords.stream().noneMatch(reason::contains);
+        });
     }
 
 
