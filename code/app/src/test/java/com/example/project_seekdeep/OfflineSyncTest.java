@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import static android.content.Context.WIFI_SERVICE;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,6 +11,8 @@ import android.net.wifi.WifiManager;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,6 +31,11 @@ public class OfflineSyncTest {
     private CollectionReference mockMoodCollection;
     @Mock
     private DocumentReference mockDocReference;
+    @Mock
+    private Task<Void> mockSetTask;
+    @Mock
+    private Task<DocumentReference> mockContinueWithTask;
+
     private MoodProvider moodProvider;
     private WifiManager wifiManager;
     private UserProfile testUser = new UserProfile("pivner", "abcdefg4321");
@@ -45,6 +53,12 @@ public class OfflineSyncTest {
         when(mockFirestore.collection("MoodDB")).thenReturn(mockMoodCollection);
         when(mockMoodCollection.document()).thenReturn(mockDocReference);
         when(mockMoodCollection.document(anyString())).thenReturn(mockDocReference);
+
+        // Mock the set to return Task<Void> and then return Task<DocumentReference> using thenAnswer
+        when(mockDocReference.set(any())).thenReturn(mockSetTask);
+        when(mockSetTask.continueWith(any(Continuation.class))).thenAnswer(invocation -> {
+            return mockContinueWithTask;
+        });
 
         // make sure we have a fresh instance for each test
         MoodProvider.setInstanceForTesting(mockFirestore);
