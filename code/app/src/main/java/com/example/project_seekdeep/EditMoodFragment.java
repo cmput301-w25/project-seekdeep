@@ -28,7 +28,7 @@ import java.util.Dictionary;
 /**
  * This class is used for editing moods
  *
- * @author Jachelle Chan, modified by Nancy Lin
+ * @author Jachelle Chan, modified by Nancy Lin, Saurabh
  * reuses code from Lab 7
  */
 public class EditMoodFragment extends DialogFragment {
@@ -99,7 +99,6 @@ public class EditMoodFragment extends DialogFragment {
             emotionSpinner.setSelection(mood.getEmotionalState().ordinal());
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
 
-
             //todo add edit image functionality
         }
         else {
@@ -124,12 +123,19 @@ public class EditMoodFragment extends DialogFragment {
         };
         editReason.addTextChangedListener(txtWatcher);
 
-        //THIS CONTROLS THE TOGGLES FOR GEOLOCATION AND PRIVACY:
-        //LOCATION switch (default set to 'off')
-        locationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int drawable = isChecked ? R.drawable.location_on : R.drawable.location_off;
-            locationToggle.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
-        });
+      //THIS CONTROLS THE TOGGLES FOR GEOLOCATION AND PRIVACY:
+        // Set location toggle by checking if a location exists in the locations collection
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("locations")
+                .whereEqualTo("moodID", mood.getDocRef().getId())
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    boolean isLocation = !queryDocumentSnapshots.isEmpty();
+                    locationToggle.setChecked(isLocation);
+                    locationToggle.setCompoundDrawablesWithIntrinsicBounds(
+                            isLocation ? R.drawable.location_on : R.drawable.location_off, 0, 0, 0);
+                    locationToggle.setEnabled(false);
+                });
 
         //PRIVACY (default set to OFF=private, because you might upload something and regret it)
         privacySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
