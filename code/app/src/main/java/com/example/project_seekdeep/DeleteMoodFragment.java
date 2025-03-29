@@ -68,6 +68,7 @@ public class DeleteMoodFragment extends DialogFragment {
                 .setPositiveButton("Delete", (dialog, which) -> {
                     moodProvider.deleteMood(mood);
 
+                    // Delete location as well
                     db.collection("locations")
                             .whereEqualTo("moodID", mood.getDocRef().getId())
                             .get()
