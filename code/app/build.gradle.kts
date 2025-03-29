@@ -71,4 +71,9 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.7.0")
     testImplementation("org.mockito:mockito-inline:5.2.0")
     implementation("net.bytebuddy:byte-buddy:1.17.1")
+
+    //PowerMock testing dependencies
+    testImplementation("org.powermock:powermock-api-mockito:1.4.12")
+    testImplementation("org.powermock:powermock-module-junit4:1.6.2")
+
 }
