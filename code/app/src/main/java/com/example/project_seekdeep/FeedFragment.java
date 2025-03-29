@@ -35,7 +35,6 @@ import java.util.Objects;
 public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernameClickListener {
 
     private ListView moodListView;
-
     private ArrayList<Mood> moodArrayList;
     private ArrayAdapter<Mood> moodArrayAdapter;
 
