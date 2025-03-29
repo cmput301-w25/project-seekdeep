@@ -8,7 +8,7 @@
     <LinearLayout
         android:id="@+id/feed_header"
         android:layout_width="match_parent"
-        android:layout_height="115dp"
+        android:layout_height="120dp"
         android:background="@color/pastel_lavender"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,7 +52,8 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:orientation="horizontal"
-            android:paddingHorizontal="10dp">
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp">
 
             <TextView
                 android:id="@+id/moods_tab"
@@ -76,21 +77,13 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/results_bar_feed"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/feed_results_textview"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@id/list_view_moods"
-        app:layout_constraintTop_toBottomOf="@id/feed_header" >
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="results" />
-    </LinearLayout>
+        android:text=""
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/feed_header" />
 
     <ListView
         android:id="@+id/list_view_moods"
@@ -101,7 +94,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/results_bar_feed"/>
+        app:layout_constraintTop_toBottomOf="@id/feed_results_textview"/>
     <ListView
         android:id="@+id/list_view_users"
         android:layout_width="0dp"
@@ -112,6 +105,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/results_bar_feed"/>
+        app:layout_constraintTop_toBottomOf="@id/feed_results_textview"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

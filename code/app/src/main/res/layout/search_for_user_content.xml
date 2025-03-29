@@ -5,18 +5,20 @@
      android:layout_width="match_parent"
      android:layout_height="match_parent"
     android:gravity="start"
-    android:paddingStart="50dp">
+    android:paddingStart="20dp">
 
     <ImageView
         android:id="@+id/pfp_users_tab"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:layout_marginBottom="10dp"
         app:srcCompat="@drawable/profile_pic" />
 
     <TextView
         android:id="@+id/username_users_tab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:text="Username"
         android:textSize="22dp"
         android:paddingHorizontal="10dp" />
