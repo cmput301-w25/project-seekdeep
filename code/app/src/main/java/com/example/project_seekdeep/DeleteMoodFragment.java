@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 /**
  * This class is used for deleting moods
@@ -21,6 +22,7 @@ public class DeleteMoodFragment extends DialogFragment {
 
     //private DeleteMoodDialogListener listener;
     private MoodProvider moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
     /**
@@ -65,6 +67,16 @@ public class DeleteMoodFragment extends DialogFragment {
                 .setMessage("Are you sure you want to delete this mood?")
                 .setPositiveButton("Delete", (dialog, which) -> {
                     moodProvider.deleteMood(mood);
+
+                    // Delete location as well
+                    db.collection("locations")
+                            .whereEqualTo("moodID", mood.getDocRef().getId())
+                            .get()
+                            .addOnSuccessListener(queryDocumentSnapshots -> {
+                                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                    document.getReference().delete();
+                                }
+                            });
                 })
                 .create();
     }

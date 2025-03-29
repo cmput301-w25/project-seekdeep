@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 /**
  * This is a class that represents the emotional state of the user.
- * @author Jachelle Chan
+ * @author Jachelle Chan, modified by Saurabh
  *
  */
 public enum EmotionalStates {
@@ -74,5 +74,13 @@ public enum EmotionalStates {
      */
     public void setColour(String colour) {
         this.colour = colour;
+    }
+
+    /**
+     * This method returns just the uppercase name of the state.
+     * @return
+     */
+    public String getStateName() {
+        return this.name();
     }
 }
