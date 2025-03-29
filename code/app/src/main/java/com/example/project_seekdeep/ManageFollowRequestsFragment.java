@@ -34,7 +34,7 @@ public class ManageFollowRequestsFragment extends DialogFragment {
         Query followRequestsQuery = followRequestsRef.whereEqualTo("status", "pending")
                 .whereEqualTo("followee", currentUser.getUsername());
         ListView requestsList = view.findViewById(R.id.requests_list_view);
-        UserProvider userProvider = UserProvider.getInstance(currentUser);
+        UserProvider userProvider = UserProvider.getInstance(currentUser, db);
         ArrayAdapter<FollowRequest> requestArrayAdapter = new FollowRequestArrayAdapter(view.getContext(), requests, userProvider);
         requestsList.setAdapter(requestArrayAdapter);
 

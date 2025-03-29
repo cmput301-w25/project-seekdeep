@@ -10,6 +10,7 @@ import android.os.Process;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,10 +32,6 @@ public class UserProviderTest {
     @Mock
     private DocumentReference mockDocReference;
     private UserProvider userProvider;
-    @Mock
-    private Context mockContext;
-    @Mock
-    private Process mockProcess;
 
     private UserProfile testUser1 = new UserProfile("follower", "Does he even read our tests?");
     private UserProfile testUser2 = new UserProfile("followee", "Probably does right?");
@@ -47,11 +44,9 @@ public class UserProviderTest {
         when(mockFirestore.collection("followings_and_requests")).thenReturn(mockFollowingsList);
         when(mockFollowingsList.document()).thenReturn(mockDocReference);
         when(mockFollowingsList.document(anyString())).thenReturn(mockDocReference);
-        when(Process.myPid()).thenReturn(10000);
         // make sure we have a fresh instance for each test
         MoodProvider.setInstanceForTesting(mockFirestore);
-        userProvider = UserProvider.getInstance(mockContext, testUser2);
-
+        userProvider = UserProvider.getInstance(testUser2, mockFirestore);
     }
 
 

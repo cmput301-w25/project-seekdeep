@@ -54,9 +54,9 @@ public class UserProvider {
         this.currentUser = currentUser;
     }
 
-    public static synchronized UserProvider getInstance(UserProfile currentUser) {
+    public static synchronized UserProvider getInstance(UserProfile currentUser, FirebaseFirestore db) {
         if (instance == null) {
-            instance = new UserProvider( currentUser, FirebaseFirestore.getInstance());
+            instance = new UserProvider( currentUser, db);
         }
         return instance;
     }

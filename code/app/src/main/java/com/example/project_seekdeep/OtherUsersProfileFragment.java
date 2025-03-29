@@ -112,7 +112,7 @@ public class OtherUsersProfileFragment extends Fragment {
 
         //Instantiate userProvide (to use its firebase methods)
         //userProvider = new UserProvider(requireContext(), loggedInUser);
-        userProvider = UserProvider.getInstance(loggedInUser); //use the same instance of userProvider that mainactivity uses
+        userProvider = UserProvider.getInstance(loggedInUser, db); //use the same instance of userProvider that mainactivity uses
 
         //Setup the username
         usernameTextView = view.findViewById(R.id.username_profile);
