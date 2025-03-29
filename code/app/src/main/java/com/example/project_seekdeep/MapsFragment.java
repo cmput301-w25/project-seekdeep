@@ -59,15 +59,16 @@ import java.util.Objects;
 /**
  * MAP fragments uses google maps API to show the user's current location and mood based emoji markers.
  * It retrieves locations from the firebase database and displays them on the map with specified mood details.
- * Resources used:
- *  https://stackoverflow.com/questions/62111235/how-do-you-use-a-google-mapview-inside-of-a-fragment
- *  https://stackoverflow.com/questions/74367916/how-can-i-create-location-request-in-android-locationrequest-create-is-depr
- *  https://youtube.com/playlist?list=PLHQRWugvckFrWppucVnQ6XhiJyDbaCU79&si=LXVl0HjJwen_ij05
- *  https://developers.google.com/maps/documentation/android-sdk/reference/com/google/android/libraries/maps/model/BitmapDescriptorFactory#HUE_YELLOW
- *  https://stackoverflow.com/questions/17839388/creating-a-scaled-bitmap-with-createscaledbitmap-in-android
- *  https://stackoverflow.com/questions/47807621/draw-emoji-on-bitmap-with-drawtextonpath?utm_source=chatgpt.com
  * @author Saurabh
  */
+// Resources used:
+// https://stackoverflow.com/questions/62111235/how-do-you-use-a-google-mapview-inside-of-a-fragment
+// https://stackoverflow.com/questions/74367916/how-can-i-create-location-request-in-android-locationrequest-create-is-depr
+// https://youtube.com/playlist?list=PLHQRWugvckFrWppucVnQ6XhiJyDbaCU79&si=LXVl0HjJwen_ij05
+// https://developers.google.com/maps/documentation/android-sdk/reference/com/google/android/libraries/maps/model/BitmapDescriptorFactory#HUE_YELLOW
+// https://stackoverflow.com/questions/17839388/creating-a-scaled-bitmap-with-createscaledbitmap-in-android
+// https://stackoverflow.com/questions/47807621/draw-emoji-on-bitmap-with-drawtextonpath?utm_source=chatgpt.com
+
 public class MapsFragment extends Fragment implements OnMapReadyCallback, FilterMenuDialogFragment.OnFilterSelectedListener {
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -140,17 +141,45 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         filter5KmRadiusButton = view.findViewById(R.id.filter_5_km_radius);
         displayToggle = view.findViewById(R.id.display_toggle);
 
+        // Only use mood filter when showing mood history markers
         filterMoodHistoryButton.setOnClickListener(v -> {
-            new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
+            if (!displayToggle.isChecked()) {
+                new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
+            }
+            else {
+                Toast.makeText(requireContext(), "Filters unavailable in Mood Following mode", Toast.LENGTH_SHORT).show();
+            }
         });
 
+        // Only use following filter when showing mood following markers
         filterMoodFollowingButton.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "View is in development", Toast.LENGTH_SHORT).show();
+            if (displayToggle.isChecked()) {
+                Toast.makeText(requireContext(), "View is in development", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(requireContext(), "Filters unavailable in Mood History mode", Toast.LENGTH_SHORT).show();
+            }
+
         });
 
         filter5KmRadiusButton.setOnClickListener(v -> {
             Toast.makeText(requireContext(), "View is in development", Toast.LENGTH_SHORT).show();
         });
+
+        displayToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            mMap.clear();
+            // Display the respective view and enable the filters
+            if (displayToggle.isChecked()) {
+                loadFollowingLocations();
+                filterMoodFollowingButton.setEnabled(displayToggle.isChecked());
+            } else {
+                loadMoodLocations();
+                filterMoodHistoryButton.setEnabled(!displayToggle.isChecked());
+            }
+            filterMoodHistoryButton.setSelected(false);
+            filterMoodFollowingButton.setSelected(false);
+        });
+
         return view;
     }
 
@@ -173,7 +202,84 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
             requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
         mMap.clear();
-        loadMoodLocations();
+        if (displayToggle.isChecked()) {
+            loadFollowingLocations();
+        } else {
+            loadMoodLocations();
+        }
+    }
+
+    /**
+     * Enables the blue dot and fetches user location and move the camera to that location
+     */
+    private void enableLocationAndFetch() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        // Request last known location from client
+        fusedLocationProviderClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        // Create the latlng object and move camera to this retrieved location
+                        LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+                    } else {
+                        requestLocationUpdates();
+                    }
+                }).addOnFailureListener(e -> {
+                    Log.e("MapsFragment", "Error fetching last location", e);
+                    requestLocationUpdates();
+                });
+    }
+
+    /**
+     * Requests regular location updates when the last location isn’t available or the user moves
+     * Moves the map camera to the first valid location received and stops updates.
+     */
+    private void requestLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                if (locationResult.getLastLocation() != null) {
+                    LatLng myLocation = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+                    fusedLocationProviderClient.removeLocationUpdates(this);
+                }
+            }
+        }, Looper.getMainLooper()).addOnFailureListener(e -> {
+            Log.e("MapsFragment", "Failed to request location updates", e);
+            Toast.makeText(requireContext(), "Unable to get location updates", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    /**
+     * Return the bitmap descriptor of custom marker based on mood
+     * @param emotionalState: The emotional state enum
+     * @return
+     */
+    // BitmapDescriptor is class of google maps API, vs Bitmap is class of android graphics
+    private BitmapDescriptor getEmotionalLocation(EmotionalStates emotionalState) {
+        String emoji = emotionalState.getEmoticon();
+        // Create a 100 x 100 bitmap and a canvas to display upon
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        // Set up the paint for the emoji
+        TextPaint textPaint = new TextPaint();
+        textPaint.setTextSize(64);
+        textPaint.setAntiAlias(true);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+
+        // Draw the emoji at the center of the canvas
+        float x = canvas.getWidth() / 2f;
+        float y = (canvas.getHeight() / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f);        // Align the emoji vertically
+        canvas.drawText(emoji, x, y, textPaint);
+
+        return BitmapDescriptorFactory.fromBitmap(bitmap);         // Convert bitmap to bitmapDescriptor
     }
 
     /**
@@ -289,52 +395,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         loadMoodLocations();
     }
 
-    /**
-     * Enables the blue dot and fetches user location and move the camera to that location
-     */
-    private void enableLocationAndFetch() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
-        // Request last known location from client
-        fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(location -> {
-                    if (location != null) {
-                        // Create the latlng object and move camera to this retrieved location
-                        LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
-                    } else {
-                        requestLocationUpdates();
-                    }
-                }).addOnFailureListener(e -> {
-                    Log.e("MapsFragment", "Error fetching last location", e);
-                    requestLocationUpdates();
-                });
-    }
 
-    /**
-     * Requests regular location updates when the last location isn’t available or the user moves
-     * Moves the map camera to the first valid location received and stops updates.
-     */
-    private void requestLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                if (locationResult.getLastLocation() != null) {
-                    LatLng myLocation = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
-                    fusedLocationProviderClient.removeLocationUpdates(this);
-                }
-            }
-        }, Looper.getMainLooper()).addOnFailureListener(e -> {
-            Log.e("MapsFragment", "Failed to request location updates", e);
-            Toast.makeText(requireContext(), "Unable to get location updates", Toast.LENGTH_SHORT).show();
-        });
-    }
 
     /**
      * Loads the mood based location markers that are emojis of the specified mood.
@@ -366,29 +427,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
                 });
     }
 
-    /**
-     * Return the bitmap descriptor of custom marker based on mood
-     * @param emotionalState: The emotional state enum
-     * @return
-     */
-    // BitmapDescriptor is class of google maps API, vs Bitmap is class of android graphics
-    private BitmapDescriptor getEmotionalLocation(EmotionalStates emotionalState) {
-        String emoji = emotionalState.getEmoticon();
-        // Create a 100 x 100 bitmap and a canvas to display upon
-        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
+    private void loadFollowingLocations(){
 
-        // Set up the paint for the emoji
-        TextPaint textPaint = new TextPaint();
-        textPaint.setTextSize(64);
-        textPaint.setAntiAlias(true);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-
-        // Draw the emoji at the center of the canvas
-        float x = canvas.getWidth() / 2f;
-        float y = (canvas.getHeight() / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f);        // Align the emoji vertically
-        canvas.drawText(emoji, x, y, textPaint);
-
-        return BitmapDescriptorFactory.fromBitmap(bitmap);         // Convert bitmap to bitmapDescriptor
     }
+
+
 }
