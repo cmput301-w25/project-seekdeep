@@ -119,7 +119,7 @@ public class OtherUsersProfileFragment extends Fragment {
         //Set up the username on the profile page
         String username = userBeingViewed.getUsername();
         usernameTextView = view.findViewById(R.id.username_profile);
-        usernameTextView.setText("@" + username);
+        usernameTextView.setText(username);
 
         //debugging: prevent further execution if userBeingViewed was not passed into this fragment
         if (userBeingViewed == null) {

@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -12,6 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import static org.mockito.ArgumentMatchers.any;
+import com.google.android.gms.tasks.Continuation;
 
 
 // This testing file is taken from Seth's Lab-08 code
@@ -24,6 +27,11 @@ public class MoodProviderTest {
     private CollectionReference mockMoodCollection;
     @Mock
     private DocumentReference mockDocReference;
+    @Mock
+    private Task<Void> mockSetTask;
+    @Mock
+    private Task<DocumentReference> mockContinueWithTask;
+
     private MoodProvider moodProvider;
     private UserProfile testUser = new UserProfile("jshello", "tofu123");
 
@@ -35,6 +43,12 @@ public class MoodProviderTest {
         when(mockFirestore.collection("MoodDB")).thenReturn(mockMoodCollection);
         when(mockMoodCollection.document()).thenReturn(mockDocReference);
         when(mockMoodCollection.document(anyString())).thenReturn(mockDocReference);
+
+        // Mock the set to return Task<Void> and then return Task<DocumentReference> using thenAnswer
+        when(mockDocReference.set(any())).thenReturn(mockSetTask);
+        when(mockSetTask.continueWith(any(Continuation.class))).thenAnswer(invocation -> {
+            return mockContinueWithTask;
+        });
 
         // make sure we have a fresh instance for each test
         MoodProvider.setInstanceForTesting(mockFirestore);

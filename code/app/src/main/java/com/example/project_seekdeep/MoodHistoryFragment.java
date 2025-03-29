@@ -1,6 +1,8 @@
 package com.example.project_seekdeep;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,6 +52,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
@@ -97,9 +100,6 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         db = FirebaseFirestore.getInstance();
         CollectionReference users = db.collection("UserDB");
         CollectionReference moods = db.collection("MoodDB");
-
-
-
     }
 
     /**
@@ -118,7 +118,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
 
         // set Textview for username placeholder to be the logged in user's username
         TextView username = view.findViewById(R.id.username_profile);
-        username.setText("@" + loggedInUser.getUsername());
+        username.setText(loggedInUser.getUsername());
 
         if (loggedInUser.getUsername().equals("johnCena")){
             ImageView avatar = view.findViewById(R.id.profile_pic);
@@ -179,15 +179,14 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                     Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
                     String reason = (String) snapshot.get("reason");
 
-                   String imageStr = (String) snapshot.get("image");
-                   Uri image = null;
-                   if (imageStr != null){
+                    String imageStr = (String) snapshot.get("image");
+                    Uri image = null;
+                    if (imageStr != null){
                        image = Uri.parse(imageStr);
-                   }
+                    }
 
 
                     Mood mood = new Mood(loggedInUser, emotionalState, socialSituation, followers, postedDate, reason);
-
                     mood.setDocRef (snapshot.getReference());
                     mood.setImage(image);
 

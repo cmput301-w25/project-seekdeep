@@ -645,6 +645,48 @@ public class MoodFilteringTest {
         assertTrue("Filtered moods should contain shame", containsMood2);
     }
 
+    @Test
+    public void testSortLast3() {
+        ArrayList<Mood> moods = getMoods();
+        // add another mood so there's 4 moods instead of 3
+        Calendar calendar = Calendar.getInstance();
+        Mood amood = new Mood(testUser, EmotionalStates.HAPPINESS, calendar.getTime(), "3");
+        moods.add(amood);
+
+        // sort reverse chronological and recent 3
+        MoodFiltering.sortReverseChronological(moods);
+        MoodFiltering.sortLast3(moods);
+
+        // should now only contain [happiness, sadness, shame]
+        boolean containsMood1 = false;
+        boolean containsMood2 = false;
+        boolean containsMood3 = false;
+        boolean containsMood4 = false;
+
+
+        // iterate through the filtered moods to check the emotional states
+        for (Mood mood : moods) {
+            if (mood.getEmotionalState().equals(EmotionalStates.ANGER)) {
+                containsMood1 = true;
+            }
+            else if (mood.getEmotionalState().equals(EmotionalStates.SHAME)) {
+                containsMood2 = true;
+            }
+            else if (mood.getEmotionalState().equals(EmotionalStates.SADNESS)) {
+                containsMood3 = true;
+            }
+            else if (mood.getEmotionalState().equals(EmotionalStates.HAPPINESS)) {
+                containsMood4 = true;
+            }
+        }
+        // check to see if anger is the only one not there and the rest are
+        assertFalse("Filtered moods should NOT contain anger", containsMood1);
+        assertTrue("Filtered moods should contain sadness", containsMood3);
+        assertTrue("Filtered moods should contain shame", containsMood2);
+        assertTrue("Filtered moods should contain happiness", containsMood4);
+
+    }
+
     @NonNull
     private ArrayList<Mood> getMoods() {
         // creating moods to work with

@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * This is a class to hold user information (pulled from 4-us-030101 on 3/7/25 ~10pm).
- * @author Saurabh Baghel
+ * @author Saurabh Singh Baghel
  */
 public class UserProfile implements Serializable {
     private String username;
