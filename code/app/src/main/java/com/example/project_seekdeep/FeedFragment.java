@@ -21,6 +21,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -205,9 +206,9 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
         //Get all users
         CollectionReference usersRef = db.collection("users");
         ArrayList<UserProfile> userArrayList = new ArrayList<>();
-        ArrayAdapter<UserProfile> userArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, this);
+        ArrayAdapter<UserProfile> userArrayAdapter = new userArrayAdapter(view.getContext(), moodArrayList, this);
         Query usersQuery = usersRef.whereNotEqualTo("username", loggedInUser.getUsername());
-        usersQuery.addSnapshotListener(((value, error) -> {
+        usersQuery.addSnapshotListener((value, error) -> {
             //Check for errors
             if (error != null) {
                 Log.e("Firestore", error.toString());
@@ -216,7 +217,10 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
             if (value != null) {
                 userArrayList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
-        }))
+                    //Convert snapshots to UserProfile objects
+                    UserProfile user = snapshot.toObject()
+                }
+        });
 
 
 
