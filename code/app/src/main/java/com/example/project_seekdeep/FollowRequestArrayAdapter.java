@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,19 +39,14 @@ public class FollowRequestArrayAdapter extends ArrayAdapter<FollowRequest> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-
-        View view;
+        View view = convertView == null ?
+                LayoutInflater.from(getContext()).inflate(R.layout.layout_follow_request, parent, false):
+                convertView;
+        Log.d("L", view.toString());
         FollowRequest request = this.getItem(position);
-        if (convertView == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.layout_follow_request, parent, false);
-        }
-        else {
-            view = convertView;
-        }
         TextView userName = view.findViewById(R.id.request_name);
         Button declineButton = view.findViewById(R.id.decline_button);
         Button acceptButton = view.findViewById(R.id.accept_button);
-
         userName.setText("@" + getItem(position).getFollower());
         declineButton.setOnClickListener(new View.OnClickListener() {
             @Override
