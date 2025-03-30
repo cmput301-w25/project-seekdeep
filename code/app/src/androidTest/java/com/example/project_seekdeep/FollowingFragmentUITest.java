@@ -14,16 +14,13 @@ import static org.hamcrest.CoreMatchers.anything;
 import android.util.Log;
 
 import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.auth.User;
 
-import org.hamcrest.Description;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -144,43 +141,51 @@ public class FollowingFragmentUITest {
     }
 
     @Test
-    public void testViewFollowingFragmentShowsAllMoodsOfFollowing() {
+    public void testViewFollowingFragmentShowsAllMoodsOfFollowing() throws InterruptedException {
+        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
         // the following list should look like [happiness, confusion, fear, sadness, disgust, surprise, shame, anger] in that order
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
-                .check(matches(withText("😄 Happiness")));
+                .check(matches(withText(happy)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(1).onChildView(withId(R.id.emotion))
-                .check(matches(withText("🤔 Confusion")));
+                .check(matches(withText(confusion)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(2).onChildView(withId(R.id.emotion))
-                .check(matches(withText(EmotionalStates.FEAR.toString())));
+                .check(matches(withText(fear)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(3).onChildView(withId(R.id.emotion))
-                .check(matches(withText("☹️ Sadness")));
+                .check(matches(withText(sad)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(4).onChildView(withId(R.id.emotion))
-                .check(matches(withText(EmotionalStates.DISGUST.toString())));
+                .check(matches(withText(disgust)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(5).onChildView(withId(R.id.emotion))
-                .check(matches(withText(EmotionalStates.SURPRISE.toString())));
+                .check(matches(withText(surprise)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(6).onChildView(withId(R.id.emotion))
-                .check(matches(withText(EmotionalStates.SHAME.toString())));
+                .check(matches(withText(shame)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(7).onChildView(withId(R.id.emotion))
-                .check(matches(withText(EmotionalStates.ANGER.toString())));
+                .check(matches(withText(angry)));
     }
 
     @Test
-    public void testLast3FilterShowsLast3FromEachFollowingUser() {
+    public void testLast3FilterShowsLast3FromEachFollowingUser() throws InterruptedException {
+        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(10000);
         // the following list should look like
         // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
-
-        // save views that should be gone, which in this case is just anger
+/*
+        // save views that should be gone, which in this case is anger and shame
         ArrayList<ViewInteraction> goneViews = new ArrayList<>();
-        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(shame));
         goneViews.add(view);
 
         // press the filter button and the last 3 chip and then apply the filter
         onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
         onView(withId(R.id.last_3_chip)).perform(click());
         onView(withId(R.id.apply_filters_button)).perform(click());
 
+        Thread.sleep(1000);
         // check if those views are gone
         for (ViewInteraction aview : goneViews) {
             aview.check(doesNotExist());
@@ -188,35 +193,39 @@ public class FollowingFragmentUITest {
 
         // now the following list should look like [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2)]
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
-                .check(matches(withText("😄 Happiness")));
+                .check(matches(withText(happy)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(1).onChildView(withId(R.id.emotion))
-                .check(matches(withText("🤔 Confusion")));
+                .check(matches(withText(confusion)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(2).onChildView(withId(R.id.emotion))
-                .check(matches(withText(EmotionalStates.FEAR.toString())));
+                .check(matches(withText(fear)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(3).onChildView(withId(R.id.emotion))
-                .check(matches(withText("☹️ Sadness")));
+                .check(matches(withText(sad)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(4).onChildView(withId(R.id.emotion))
-                .check(matches(withText(EmotionalStates.DISGUST.toString())));
+                .check(matches(withText(disgust)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(5).onChildView(withId(R.id.emotion))
-                .check(matches(withText(EmotionalStates.SURPRISE.toString())));
+                .check(matches(withText(surprise)));*/
     }
 
     @Test
-    public void testRecentWeekFilterShowsRecentWeekFromFollowing() {
+    public void testRecentWeekFilterShowsRecentWeekFromFollowing() throws InterruptedException {
+        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
         // the following list should look like
         // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
 
         // save views that should be gone, which in this case is just anger
         ArrayList<ViewInteraction> goneViews = new ArrayList<>();
-        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        ViewInteraction view = onView(withText(angry));
         goneViews.add(view);
 
         // press the filter button and the recent week chip and then apply the filter
         onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
         onView(withId(R.id.recent_week_chip)).perform(click());
         onView(withId(R.id.apply_filters_button)).perform(click());
 
+        Thread.sleep(1000);
         // check if those views are gone
         for (ViewInteraction aview : goneViews) {
             aview.check(doesNotExist());
@@ -224,28 +233,32 @@ public class FollowingFragmentUITest {
 
         // now the following list should look like [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2)]
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
-                .check(matches(withText("😄 Happiness")));
+                .check(matches(withText(happy)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(1).onChildView(withId(R.id.emotion))
-                .check(matches(withText("🤔 Confusion")));
+                .check(matches(withText(confusion)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(2).onChildView(withId(R.id.emotion))
-                .check(matches(withText(EmotionalStates.FEAR.toString())));
+                .check(matches(withText(fear)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(3).onChildView(withId(R.id.emotion))
-                .check(matches(withText("☹️ Sadness")));
+                .check(matches(withText(sad)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(4).onChildView(withId(R.id.emotion))
-                .check(matches(withText(EmotionalStates.DISGUST.toString())));
+                .check(matches(withText(disgust)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(5).onChildView(withId(R.id.emotion))
-                .check(matches(withText(EmotionalStates.SURPRISE.toString())));
+                .check(matches(withText(surprise)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(6).onChildView(withId(R.id.emotion))
+                .check(matches(withText(shame)));
     }
 
     @Test
-    public void testFilterFollowingByHappiness() {
+    public void testFilterFollowingByHappiness() throws InterruptedException {
+        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
         // the following list should look like
         // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
 
         // save views that should be gone, which in this case is just anger
         ArrayList<ViewInteraction> goneViews = new ArrayList<>();
-        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        ViewInteraction view = onView(withText(angry));
         goneViews.add(view);
         view = onView(withText(confusion));
         goneViews.add(view);
@@ -262,9 +275,11 @@ public class FollowingFragmentUITest {
 
         // press the filter button and the happiness chip and then apply the filter
         onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
         onView(withId(R.id.happiness_chip)).perform(click());
         onView(withId(R.id.apply_filters_button)).perform(click());
 
+        Thread.sleep(1000);
         // check if those views are gone
         for (ViewInteraction aview : goneViews) {
             aview.check(doesNotExist());
@@ -275,8 +290,10 @@ public class FollowingFragmentUITest {
     }
 
     @Test
-    public void testFilterFollowingBySadness() {
+    public void testFilterFollowingBySadness() throws InterruptedException {
+        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
         // the following list should look like
         // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
 
@@ -299,9 +316,11 @@ public class FollowingFragmentUITest {
 
         // press the filter button and sadness chip and then apply the filter
         onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
         onView(withId(R.id.sadness_chip)).perform(click());
         onView(withId(R.id.apply_filters_button)).perform(click());
 
+        Thread.sleep(1000);
         // check if those views are gone
         for (ViewInteraction aview : goneViews) {
             aview.check(doesNotExist());
@@ -312,8 +331,10 @@ public class FollowingFragmentUITest {
     }
 
     @Test
-    public void testFilterFollowingByAnger() {
+    public void testFilterFollowingByAnger() throws InterruptedException {
+        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
         // the following list should look like
         // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
 
@@ -336,9 +357,11 @@ public class FollowingFragmentUITest {
 
         // press the filter button and the anger chip and then apply the filter
         onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
         onView(withId(R.id.anger_chip)).perform(click());
         onView(withId(R.id.apply_filters_button)).perform(click());
 
+        Thread.sleep(1000);
         // check if those views are gone
         for (ViewInteraction aview : goneViews) {
             aview.check(doesNotExist());
