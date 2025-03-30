@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,6 +21,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -43,6 +46,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -115,6 +120,26 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         TextView username = view.findViewById(R.id.username_profile);
         username.setText(loggedInUser.getUsername());
 
+        if (loggedInUser.getUsername().equals("johnCena")){
+            ImageView avatar = view.findViewById(R.id.profile_pic);
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storage2 = storage.getReference("/Images/1000037614");
+            storage2.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL for 'users/me/profile.png'
+                    Glide.with(getContext())
+                            .load(uri)
+                            .into(avatar);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+        }
+
 
         // Instantiate database for usage
         db = FirebaseFirestore.getInstance();
@@ -185,6 +210,32 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                        @Override
                        public void onClick(View view) {
                            new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
+                       }
+                   });
+                   // Taken from Kevin's implementation of comments and viewing moods
+                   // Taken by: Jachelle Chan on March 30, 2025
+                   moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                       @Override
+                       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                           // Bundle up the original Mood object that was clicked on
+                           Bundle moodAndUserBundle = new Bundle();
+                           moodAndUserBundle.putSerializable("mood", moodArrayList.get(position));
+
+                           UserProfile loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+                           moodAndUserBundle.putSerializable("userProfile", loggedInUser);
+
+                           // This is used to navigate back and forth between a mood comment section and the feed or history
+                           FragmentManager fragManager = getParentFragmentManager();
+
+                           // Create new fragment and send Mood off into new fragment
+                           ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
+                           viewMoodDetailsFragment.setArguments(moodAndUserBundle);
+
+                           fragManager.beginTransaction()
+                                   .replace(R.id.frameLayout, viewMoodDetailsFragment)
+                                   .setReorderingAllowed(true)
+                                   .addToBackStack("feed")
+                                   .commit();
                        }
                    });
                }

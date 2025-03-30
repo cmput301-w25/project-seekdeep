@@ -21,11 +21,11 @@ import androidx.fragment.app.FragmentManager;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * This class is a custom array adapter for the Mood class.
@@ -35,6 +35,7 @@ import java.util.Objects;
 public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 
     //private Context context;
+    private ImageProvider imageProvider;
 
     private FirebaseStorage storage;
     private StorageReference storageRef;
@@ -47,8 +48,7 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
      */
     public UserMoodArrayAdapter(Context context, ArrayList<Mood> moods) {
         super(context, 0, moods);
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
+        imageProvider = ImageProvider.getInstance(FirebaseStorage.getInstance());
     }
 
     /**
@@ -100,10 +100,6 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 
         // todo Set up image for mood events
 
-        // Create a reference with an initial file path and name
-
-
-
 
         // if no reason, hide it
         if(currentMood.getReason() == null){
@@ -126,34 +122,15 @@ public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
             view.findViewById(R.id.image).setVisibility(View.GONE); //removes the ImageView UI
         } else{
             image.setVisibility(View.VISIBLE);
-            ; //ToDo for images
-            StorageReference pathReference = storageRef.child("Images/" +
+            StorageReference imageFire = imageProvider.getStorageRefFromLastPathSeg(
                     currentMood.getImage().getLastPathSegment());
-
-            Log.d("NANCY", "Non null Pathref/ " + pathReference);
-
-
-
-            StorageReference imageFire = storage.getReference("Images/" +
-                    currentMood.getImage().getLastPathSegment());
-
-
-            Log.d("NANCY", "Non null image fire/ " + imageFire);
-
-
-            //Glide.with(getContext())
-             //       .load(imageFire)
-              //      .into(image);
-
 
             imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    // Got the download URL for 'users/me/profile.png'
                     Glide.with(getContext())
                             .load(uri)
                             .into(image);
-
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override

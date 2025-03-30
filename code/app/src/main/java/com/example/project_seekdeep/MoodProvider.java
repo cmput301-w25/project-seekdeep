@@ -90,7 +90,8 @@ public class MoodProvider {
     public Task<DocumentReference> addMoodEvent(Mood mood) {
         //Create a new document for the mood.  Keep the parameter empty in document() so that firestore generates a unique Key
         DocumentReference moodDocRef = moodCollection.document();
-
+        //Set the document to the mood's DocRef right away so there aren't any bugs
+        mood.setDocRef(moodDocRef);
         //Populate the new document with mood
         return moodDocRef.set(mood).continueWith(task -> moodDocRef);
     }
@@ -102,8 +103,6 @@ public class MoodProvider {
     public void updateMood(Mood mood) {
         DocumentReference documentReference = mood.getDocRef();
         documentReference.set(mood);
-
-        CollectionReference usersDB = FirebaseFirestore.getInstance().collection("users");
     }
 
     /**
