@@ -129,14 +129,14 @@
             android:layout_width="wrap_content"
 
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:minHeight="32sp"
             android:padding="10sp"
             android:text="Edit"
+
             android:textColor="@color/raisin_black"
 
-            android:textSize="10sp"
-
-            />
+            android:textSize="10sp" />
 
         <Button
             android:id="@+id/delete_mood_button"
@@ -144,12 +144,13 @@
             android:layout_width="wrap_content"
 
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:minHeight="32sp"
             android:padding="10sp"
+
             android:text="Delete"
 
             android:textColor="@color/raisin_black"
-
             android:textSize="10sp" />
     </LinearLayout>
 
