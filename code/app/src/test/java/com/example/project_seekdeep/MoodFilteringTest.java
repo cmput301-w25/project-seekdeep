@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import org.junit.Test;
@@ -11,6 +13,7 @@ import org.junit.Test;
 import java.util.Calendar;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MoodFilteringTest {
     private UserProfile testUser = new UserProfile("jshello", "tofu123");
@@ -442,11 +445,14 @@ public class MoodFilteringTest {
         MoodFiltering.removeAllFilters();
         ArrayList<Mood> moods = getMoods();
         MoodFiltering.saveOriginal(moods);
-        MoodFiltering.addKeyword("123 ");
+        List<String> keywords = new ArrayList<>();
+        keywords.add("123 ");
+        MoodFiltering.addKeyword(keywords);
         MoodFiltering.applyFilter("keyword");
 
         ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
-        // filteredMoods should now contain [ANGER] only
+
+        // filteredMoods should now contain [ANGER and shame] since they both contain 123 either as a word or substring
         boolean containsMood1 = false;
         boolean containsMood2 = false;
         boolean containsMood3 = false;
@@ -463,10 +469,10 @@ public class MoodFilteringTest {
                 containsMood3 = true;
             }
         }
-        // check to see if anger is the only one
+        // check to see if anger and shame are there only
         assertTrue("Filtered moods should contain anger", containsMood1);
+        assertTrue("Filtered moods should contain shame", containsMood2);
         assertFalse("Filtered moods should NOT contain sadness", containsMood3);
-        assertFalse("Filtered moods should NOT contain shame", containsMood2);
     }
 
     @Test
@@ -531,7 +537,9 @@ public class MoodFilteringTest {
         // sort by anger and keyword
         states.add(EmotionalStates.ANGER);
         MoodFiltering.addStates(states);
-        MoodFiltering.addKeyword("123 ");
+        List<String> keywords = new ArrayList<>();
+        keywords.add("123 ");
+        MoodFiltering.addKeyword(keywords);
         MoodFiltering.applyFilter("keyword");
         MoodFiltering.applyFilter("states");
 
@@ -579,7 +587,9 @@ public class MoodFilteringTest {
         // sort by anger and keyword
         states.add(EmotionalStates.ANGER);
         MoodFiltering.addStates(states);
-        MoodFiltering.addKeyword("123 ");
+        List<String> keywords = new ArrayList<>();
+        keywords.add("123 ");
+        MoodFiltering.addKeyword(keywords);
         MoodFiltering.applyFilter("keyword");
         MoodFiltering.applyFilter("states");
         MoodFiltering.applyFilter("recent");
@@ -618,7 +628,9 @@ public class MoodFilteringTest {
         MoodFiltering.removeAllFilters();
         ArrayList<Mood> moods = getMoods();
         MoodFiltering.saveOriginal(moods);
-        MoodFiltering.addKeyword("GUYS ");
+        List<String> keywords = new ArrayList<>();
+        keywords.add("GUYS ");
+        MoodFiltering.addKeyword(keywords);
         MoodFiltering.applyFilter("keyword");
 
         ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();

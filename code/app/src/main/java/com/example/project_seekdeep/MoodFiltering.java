@@ -94,7 +94,7 @@ public class MoodFiltering {
             // Author: Bohemian
             // Taken by: Jachelle Chan
             // Taken on: March 29, 2025
-            keywords.add(keyword.replaceAll("[^a-zA-Z ]", "").toLowerCase().trim());
+            keywords.add(keyword.replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase().trim());
         }
     }
 
@@ -175,7 +175,7 @@ public class MoodFiltering {
      */
     public static void sortKeyword(ArrayList<Mood> moods) {
         moods.removeIf(mood -> {
-            String reason = mood.getReason().replaceAll("[^a-zA-Z ]", "").toLowerCase();
+            String reason = mood.getReason().replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase();
             return keywords.stream().noneMatch(reason::contains);
         });
     }
