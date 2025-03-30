@@ -166,6 +166,7 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
 
                         moodArrayList.add(mood);
                     }
+                    MoodFiltering.removeAllFilters();  // as a preventative to having other fragment's filters
                     MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                     moodArrayAdapter.notifyDataSetChanged();
                     moodListView.setAdapter(moodArrayAdapter);                moodArrayAdapter.notifyDataSetChanged();
