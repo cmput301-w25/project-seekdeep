@@ -184,6 +184,8 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
 
                 MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                 moodArrayAdapter.notifyDataSetChanged();
+                moodListView.setAdapter(moodArrayAdapter);                moodArrayAdapter.notifyDataSetChanged();
+
                 MoodFiltering.saveOriginal(moodArrayList);
 
                 //Implement the search bar
@@ -391,18 +393,26 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
     }
 
     public void applySearchBarToMoods(List<String> keywords) {
-//        moodListView.setAdapter(moodArrayAdapter);
-//        moodArrayAdapter.notifyDataSetChanged();
-        MoodFiltering.saveOriginal(moodArrayList);
+////        moodListView.setAdapter(moodArrayAdapter);
+////        moodArrayAdapter.notifyDataSetChanged();
+//        MoodFiltering.saveOriginal(moodArrayList);
+//        MoodFiltering.addKeyword(keywords);
+//        MoodFiltering.applyFilter("keyword");
+//        filteredMoodArrayList = MoodFiltering.getFilteredMoods(); //CRASHES HERE
+////        moodArrayAdapter.clear();
+////        moodArrayAdapter.addAll(moodArrayList);
+////        moodArrayAdapter.notifyDataSetChanged();
+//        Log.d("Feed","1 search bar applied!!!");
+//        MoodFiltering.removeAllFilters();
+//        Log.d("Feed","2 search bar applied!!!");
+
         MoodFiltering.addKeyword(keywords);
         MoodFiltering.applyFilter("keyword");
-//        filteredMoodArrayList = MoodFiltering.getFilteredMoods(); //CRASHES HERE
-//        moodArrayAdapter.clear();
-//        moodArrayAdapter.addAll(moodArrayList);
-//        moodArrayAdapter.notifyDataSetChanged();
-        Log.d("Feed","1 search bar applied!!!");
-        MoodFiltering.removeAllFilters();
-        Log.d("Feed","2 search bar applied!!!");
+        filteredMoodArrayList = MoodFiltering.getFilteredMoods(); //CRASHES HERE
+        moodArrayAdapter.clear();
+        moodArrayAdapter.addAll(filteredMoodArrayList);
+        moodArrayAdapter.notifyDataSetChanged();
+        Log.d("Feed","search bar applied to moods!!!");
     }
 
     public void applySearchBarToUser(List<String> keywords) {
