@@ -212,6 +212,32 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                            new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
                        }
                    });
+                   // Taken from Kevin's implementation of comments and viewing moods
+                   // Taken by: Jachelle Chan on March 30, 2025
+                   moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                       @Override
+                       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                           // Bundle up the original Mood object that was clicked on
+                           Bundle moodAndUserBundle = new Bundle();
+                           moodAndUserBundle.putSerializable("mood", moodArrayList.get(position));
+
+                           UserProfile loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+                           moodAndUserBundle.putSerializable("userProfile", loggedInUser);
+
+                           // This is used to navigate back and forth between a mood comment section and the feed or history
+                           FragmentManager fragManager = getParentFragmentManager();
+
+                           // Create new fragment and send Mood off into new fragment
+                           ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
+                           viewMoodDetailsFragment.setArguments(moodAndUserBundle);
+
+                           fragManager.beginTransaction()
+                                   .replace(R.id.frameLayout, viewMoodDetailsFragment)
+                                   .setReorderingAllowed(true)
+                                   .addToBackStack("feed")
+                                   .commit();
+                       }
+                   });
                }
 
            }
