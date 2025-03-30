@@ -15,6 +15,7 @@ import static org.hamcrest.CoreMatchers.not;
 
 import android.util.Log;
 
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -347,5 +348,17 @@ public class PrivacyUITest {
 
         onView(withId(R.id.feed_bottom_nav)).perform(click());
         onView(withText("This is a test mood2!")).check(doesNotExist());
+
+        ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class);
+
+        UserProfile testUser2 = new UserProfile("person", "123");
+        scenario.onActivity(activity -> {
+            activity.setCurrentUser(testUser2);
+            activity.successful_login();
+        });
+
+        onView(withId(R.id.feed_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        onView(withText("This is a test mood2!")).check(matches(isDisplayed()));
     }
 }

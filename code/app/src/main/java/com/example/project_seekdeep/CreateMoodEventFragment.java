@@ -350,12 +350,12 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
                      TO DO: SocialSituation might need a NULL field
                      */
-                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {reason, socialSit.toString()}, privacySwitch.isChecked());
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {reason, socialSit.toString()}, !privacySwitch.isChecked());
                 }
 
                 //Default: create Mood object with only the UserProfile and EmotionalState
                 else {
-                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {null, socialSit.toString()}, privacySwitch.isChecked());
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {null, socialSit.toString()}, !privacySwitch.isChecked());
                 }
 
                 //Log.d("NANCY", imageUri.toString());
