@@ -211,6 +211,8 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         reasonEditText.addTextChangedListener(txtWatcher);
 
 
+        uploadImageHere.setImageResource(R.drawable.twotone_add_photo_alternate_24);
+
         //Set a listener for when the imageView is clicked on
         uploadImageHere.setOnClickListener(new View.OnClickListener() {
             @Override

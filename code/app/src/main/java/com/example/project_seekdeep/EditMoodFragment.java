@@ -4,12 +4,14 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+import android.graphics.Color;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,11 +28,13 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -52,6 +56,8 @@ public class EditMoodFragment extends DialogFragment {
     private Uri imageUri;
     private MoodProvider moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
     private ImageProvider imageProvider = ImageProvider.getInstance(FirebaseStorage.getInstance());
+    private CardView cardView;
+    private FloatingActionButton cancelImageFab;
     private TextView char_count;
     private Switch locationToggle;
     private Switch privacySwitch;
@@ -87,9 +93,8 @@ public class EditMoodFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
-        Log.d("NANCY", "Did we get here?");
-
         View view = getLayoutInflater().inflate(R.layout.fragment_edit_mood_details, null);
+
         editReason = view.findViewById(R.id.edit_reason);
         char_count = view.findViewById(R.id.char_count);
         emotionSpinner = view.findViewById(R.id.emotion_spinner);
@@ -102,6 +107,13 @@ public class EditMoodFragment extends DialogFragment {
         emotionSpinner.setAdapter(new ArrayAdapter<EmotionalStates>(getContext(), android.R.layout.simple_spinner_item, EmotionalStates.values()));
         socialSituationSpinner.setAdapter(new ArrayAdapter<SocialSituations>(getContext(), android.R.layout.simple_spinner_item, SocialSituations.values()));
 
+        //make sure the cancel image floating action bar is in front and visible
+        cancelImageFab = view.findViewById(R.id.image_delete);
+        cancelImageFab.setVisibility(View.VISIBLE);
+        cancelImageFab.bringToFront();
+
+        cardView = view.findViewById(R.id.card_view);
+
         String tag = getTag();
         Bundle bundle = getArguments();
         Mood mood;
@@ -112,10 +124,12 @@ public class EditMoodFragment extends DialogFragment {
             emotionSpinner.setSelection(mood.getEmotionalState().ordinal());
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
 
-
             // Load the image from the mood into the dialog if it exists
             imageUri = mood.getImage();
             if (imageUri != null){
+
+                cardView.setCardElevation(0);
+
                 StorageReference imageFire = imageProvider.getStorageRefFromLastPathSeg(
                         imageUri.getLastPathSegment());
 
@@ -132,6 +146,11 @@ public class EditMoodFragment extends DialogFragment {
                         // Handle any errors
                     }
                 });
+            } else{
+                // hide the cancel image FAB if image doesn't exist
+                cancelImageFab.setVisibility(View.GONE);
+                //set the empty image placeholder to something else
+                imageView.setImageResource(R.drawable.outline_collections_24);
             }
             //set an on click listener for the image
             imageView.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +162,31 @@ public class EditMoodFragment extends DialogFragment {
                             .build());
                 }
             });
+
+            //set on hover? listener
+            imageView.setOnHoverListener(new View.OnHoverListener() {
+                @Override
+                public boolean onHover(View v, MotionEvent event) {
+                    View imageBackground = view.findViewById(R.id.image_constraint_layout);
+                    return false;
+                }
+            });
+
+            //set an on click listener for the cancel image FAB
+            cancelImageFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    imageView.setImageResource(R.drawable.outline_add_photo_alternate_24);
+                    cardView.setCardElevation(6);
+                    //imageView.setBackgroundColor(Color.parseColor("#CAD5CA"));
+                    imageUri = null;
+                    cancelImageFab.setVisibility(View.GONE);
+                }
+            });
+
+
+            Log.d("Nancy", "imageView drawables|" + imageView.getDrawable().getConstantState());
+
 
         }
         else {
@@ -249,6 +293,8 @@ public class EditMoodFragment extends DialogFragment {
                 if (imageUri != null){
                     imageProvider.uploadImageToFirebase(imageUri);
                     mood.setImage(Uri.parse(imageUri.getLastPathSegment()));
+                } else{
+                    mood.setImage(null);
                 }
 
 
@@ -296,6 +342,8 @@ public class EditMoodFragment extends DialogFragment {
                     Toast.makeText(requireContext(), "Image too large, must be under 65536 bytes", Toast.LENGTH_SHORT).show();
                 } else {
                     Glide.with(requireContext()).load(imageUriActivty).into(imageView);
+                    cancelImageFab.setVisibility(View.VISIBLE);
+                    cancelImageFab.bringToFront();
                 }
 
             }

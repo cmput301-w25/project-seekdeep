@@ -58,6 +58,15 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
         navBar.setOnItemSelectedListener(navListener);
 
+        //change navbar height
+        // Taken from https://stackoverflow.com/questions/72415724/bottom-navigation-view-size-height-up
+        // Taken on 3/30/2025 by nancy Lin
+        ViewCompat.setOnApplyWindowInsetsListener(navBar, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, 0, systemBars.right, 0);
+            return insets;
+        });
+
         // Initially hide the navigation bar until a successful log-in
         navBar.setVisibility(View.GONE);
 
