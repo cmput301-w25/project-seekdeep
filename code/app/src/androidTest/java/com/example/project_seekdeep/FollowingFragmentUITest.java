@@ -402,8 +402,168 @@ public class FollowingFragmentUITest {
             aview.check(doesNotExist());
         }
 
-        // now the following list should look like [anger(1)]
+        // now the following list should look like [surprise(2)]
         onView(withText(surprise)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testFilterFollowingByFear() throws InterruptedException {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone, which in this case is just anger
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(happy));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+
+        // press the filter button and the fear chip and then apply the filter
+        onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.fear_chip)).perform(click());
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        Thread.sleep(1000);
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // now the following list should look like [fear(2)]
+        onView(withText(fear)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testFilteredFollowingByDisgust() throws InterruptedException {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone, which in this case is just anger
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(happy));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+
+        // press the filter button and the disgust chip and then apply the filter
+        onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.disgust_chip)).perform(click());
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        Thread.sleep(1000);
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // now the following list should look like [disgust(2)]
+        onView(withText(disgust)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testFilteredFollowingByShame() throws InterruptedException {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone, which in this case is just anger
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(happy));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+
+        // press the filter button and the shame chip and then apply the filter
+        onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.shame_chip)).perform(click());
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        Thread.sleep(1000);
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // now the following list should look like [shame(2)]
+        onView(withText(shame)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testFilteredFollowingByConfusion() throws InterruptedException {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone, which in this case is just anger
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(happy));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+
+        // press the filter button and the confusion chip and then apply the filter
+        onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.confusion_chip)).perform(click());
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        Thread.sleep(1000);
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // now the following list should look like [confusion(1)]
+        onView(withText(confusion)).check(matches(isDisplayed()));
     }
 
 }
