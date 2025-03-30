@@ -1,5 +1,6 @@
 package com.example.project_seekdeep;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -28,6 +29,12 @@ public class LogInFragment extends Fragment {
     private MaterialButton logInButton;
     private CollectionReference usersRef;
     private TextView goToSignUp;
+
+    // Sound effects for login button and create new account button (if successful)
+    // https://www.youtube.com/watch?v=iMAJRHcC2dQ
+    // Taken by: Kevin Tu
+    // Taken on: 2025-03-30
+    private MediaPlayer soundEffect;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.log_in_fragment, container, false);
@@ -59,6 +66,9 @@ public class LogInFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+
+        // Create sound effect player
+        soundEffect = MediaPlayer.create(getContext(), R.raw.xiaohongshu);
 
         // Click listener for login button
         logInButton.setOnClickListener(v -> logInUser());
@@ -96,6 +106,7 @@ public class LogInFragment extends Fragment {
 
                             // Call the successful_login() method to show BottomNavigationView and navigate to FeedFragment
                             ((MainActivity) requireActivity()).successful_login();
+                            soundEffect.start();
 
                         }
                         // If the password is incorrect, display an error
