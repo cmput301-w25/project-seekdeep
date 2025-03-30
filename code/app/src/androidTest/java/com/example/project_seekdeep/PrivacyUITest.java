@@ -2,9 +2,12 @@ package com.example.project_seekdeep;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -12,6 +15,7 @@ import static org.hamcrest.CoreMatchers.not;
 
 import android.util.Log;
 
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -92,7 +96,7 @@ public class PrivacyUITest {
             "Turing machine up and running",
             SocialSituations.ALONE.toString()
         };
-        Mood mood5 = new Mood(alan, EmotionalStates.HAPPINESS, mood5Fields, false);
+        Mood mood5 = new Mood(alan, EmotionalStates.HAPPINESS, mood5Fields, true);
 
         usersRef.document().set(user1);
 
@@ -239,4 +243,102 @@ public class PrivacyUITest {
         onView(withText("Turing machine up and running")).check(doesNotExist());
     }
 
+    @Test
+    public void publicMoodsShouldBeDisplayed() throws InterruptedException {
+        // Navigate to feed
+        onView(withId(R.id.feed_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+
+        onView(withText("I love food!")).check(matches(isDisplayed()));
+        onView(withText("I hate homework!!")).check(matches(isDisplayed()));
+        onView(withText("I've missed more than 9000 shots in my career. I've lost almost 300 games. 26 times, I've been trusted to take the game winning shot and missed. I've failed over and over and over again in my life. And that is why I succeed.")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void privateFieldShouldNotAffectDisplayingCommentsOfMood() throws InterruptedException {
+        // Navigate to feed
+        onView(withId(R.id.feed_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+
+        onView(withText("I love food!")).perform(click());
+        Thread.sleep(1000);
+        onView(withText("I love food!")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.add_comment_input)).perform(ViewActions.typeText("This is a test comment!!!"));
+        onView(withContentDescription("Add comment")).perform(click());
+        Thread.sleep(1000);
+        onView(withText("This is a test comment!!!")).check(matches(isDisplayed()));
+        Thread.sleep(1000);
+
+        // Go back, add comment on the other mood event.
+        onView(withId(R.id.back_button)).perform(click());
+
+        onView(withText("I hate homework!!")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void createNewPrivateMoodShouldNotBeDisplayedToOtherUsers() throws InterruptedException {
+        // Navigate to create mood
+        onView(withId(R.id.create_mood_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.edit_emotion_editText)).perform(click());
+        Thread.sleep(2000);
+        onView(withId(R.id.buttonSurprise)).perform(click());
+        Thread.sleep(1000);
+
+        // This solution was taken through piotrek1543's answer on StackedOverflow
+        // https://stackoverflow.com/questions/39376856/how-to-use-espresso-to-press-a-alertdialog-button
+        // Taken by: Kevin Tu
+        // Taken on: 2025-03-29
+        onView(withText("SELECT"))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(click());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.edit_reason)).perform(typeText("This is a test mood!"));
+        Thread.sleep(1000);
+
+        onView(withText("Create")).perform(click());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.feed_bottom_nav)).perform(click());
+
+        onView(withText("This is a test mood!")).check(doesNotExist());
+    }
+
+    @Test
+    public void createNewPublicMoodShouldBeDisplayedToOtherUsers() throws InterruptedException {
+        // Navigate to create mood
+        onView(withId(R.id.create_mood_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.edit_emotion_editText)).perform(click());
+        Thread.sleep(2000);
+        onView(withId(R.id.buttonSurprise)).perform(click());
+        Thread.sleep(1000);
+
+        // This solution was taken through piotrek1543's answer on StackedOverflow
+        // https://stackoverflow.com/questions/39376856/how-to-use-espresso-to-press-a-alertdialog-button
+        // Taken by: Kevin Tu
+        // Taken on: 2025-03-29
+        onView(withText("SELECT"))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(click());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.edit_reason)).perform(typeText("This is a test mood2!"));
+        Thread.sleep(1000);
+
+        onView(withId(R.id.privacy_switch)).perform(click());
+
+        onView(withText("Create")).perform(click());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.feed_bottom_nav)).perform(click());
+
+        onView(withText("This is a test mood2!")).check(matches(isDisplayed()));
+    }
 }
