@@ -3,6 +3,7 @@ package com.example.project_seekdeep;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -99,7 +100,7 @@ public class FollowingFragmentUITest {
         mood3 = new Mood(testUser2, EmotionalStates.SURPRISE, SocialSituations.CROWD, calendar.getTime(), "Didn't fail");
         calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -6);
-        mood4 = new Mood(testUser2, EmotionalStates.SHAME, SocialSituations.SEVERAL_PEOPLE, calendar.getTime(), "Failed");
+        mood4 = new Mood(testUser2, EmotionalStates.SHAME, SocialSituations.SEVERAL_PEOPLE, calendar.getTime(), "Failed my test");
 
         usersRef.document().set(testUser2);
 
@@ -834,7 +835,7 @@ public class FollowingFragmentUITest {
     }
 
     @Test
-    public void tesAllEmotionalStateFilterOnFollowing() throws InterruptedException {
+    public void testAllEmotionalStateFilterOnFollowing() throws InterruptedException {
         onView(withId(R.id.following_bottom_nav)).perform(click());
         Thread.sleep(1000);
         // the following list should look like
@@ -872,6 +873,262 @@ public class FollowingFragmentUITest {
                 .check(matches(withText(shame)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(7).onChildView(withId(R.id.emotion))
                 .check(matches(withText(angry)));
+    }
+
+    @Test
+    public void testOneKeywordFilterInFollowing() throws InterruptedException {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+        // save views that should be gone
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+        // type in the keyword search bar at the top
+        onView(withId(R.id.search_bar)).perform(typeText("test"));
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+        // now should contain [happiness, confusion, shame] in that order
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText(happy)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText(confusion)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText(shame)));
+    }
+
+    @Test
+    public void testTwoKeywordsFilterOnFollowing() throws InterruptedException {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(sad));
+        goneViews.add(view);
+        // type in the keyword search bar at the top
+        onView(withId(R.id.search_bar)).perform(typeText("test finals"));
+
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+        // now should contain [happiness, confusion, fear, shame] in that order
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText(happy)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText(confusion)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText(fear)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText(shame)));
+    }
+
+    @Test
+    public void testKeywordShouldNotBeCaseSensitive() throws InterruptedException {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(sad));
+        goneViews.add(view);
+        // type in the keyword search bar at the top
+        onView(withId(R.id.search_bar)).perform(typeText("teST FINALS"));
+
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+        // now should contain [happiness, confusion, fear, shame] in that order
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText(happy)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText(confusion)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText(fear)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText(shame)));
+    }
+
+    @Test
+    public void testKeywordPunctuationShouldNotInterfereWithSearchInFollowing() throws InterruptedException {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(sad));
+        goneViews.add(view);
+        // type in the keyword search bar at the top
+        onView(withId(R.id.search_bar)).perform(typeText("teST FINALS!"));
+
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+        // now should contain [happiness, confusion, fear, shame] in that order
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText(happy)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText(confusion)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText(fear)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText(shame)));
+    }
+
+    @Test
+    public void testKeywordSearchBarShouldntAddEnterAsACharacter() throws InterruptedException {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(sad));
+        goneViews.add(view);
+        // type in the keyword search bar at the top
+        onView(withId(R.id.search_bar)).perform(typeText("teST FINALS!\n"));
+        onView(withId(R.id.search_bar)).check(matches(withText("teST FINALS!")));
+
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+        // now should contain [happiness, confusion, fear, shame] in that order
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText(happy)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText(confusion)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText(fear)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText(shame)));
+    }
+
+    @Test
+    public void testStack3MostRecentAndEmotionalState() throws InterruptedException {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+        // save views that should be gone
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+
+        // click on filter button and then select happiness and last 3
+        onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.happiness_chip)).perform(click());
+        onView(withId(R.id.last_3_chip)).perform(click());
+        // apply the filter
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // now should show only [happiness]
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // check if happiness is there
+        onView(withText(happy)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testStackRecentWeekAndEmotionalStateButNothingShouldBeDisplayed() throws InterruptedException {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+        // save views that should be gone
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText(happy));
+        goneViews.add(view);
+
+        // click on filter button and then select anger and recent week
+        onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.anger_chip)).perform(click());
+        onView(withId(R.id.recent_week_chip)).perform(click());
+        // apply the filer
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // now nothing should be displayed so
+        // check if all those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
     }
 
 }
