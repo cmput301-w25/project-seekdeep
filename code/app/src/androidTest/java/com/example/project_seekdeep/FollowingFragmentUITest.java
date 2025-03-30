@@ -371,4 +371,45 @@ public class FollowingFragmentUITest {
         onView(withText(angry)).check(matches(isDisplayed()));
     }
 
+    @Test
+    public void testFilterFollowingBySurprise() throws InterruptedException {
+        Thread.sleep(1000);
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone, which in this case is just anger
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(happy));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+
+        // press the filter button and the surprise chip and then apply the filter
+        onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.surprise_chip)).perform(click());
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        Thread.sleep(1000);
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // now the following list should look like [anger(1)]
+        onView(withText(surprise)).check(matches(isDisplayed()));
+    }
+
 }
