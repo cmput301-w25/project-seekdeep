@@ -154,7 +154,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
             if (!displayToggle.isChecked()) {
                 new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
             } else {
-                Toast.makeText(requireContext(), "Filters unavailable in Mood Following mode", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "History filter unavailable in Mood Following mode", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -163,7 +163,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
             if (displayToggle.isChecked()) {
                 new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
             } else {
-                Toast.makeText(requireContext(), "Filters unavailable in Mood History mode", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Following filter unavailable in Mood History mode", Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -473,22 +473,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
     private void mapFilteredMoods(List<String> moodIds, String userId, ImageButton filterButton, boolean filterByUserId){
         if (moodIds.isEmpty()) {
             mMap.clear();
-            Toast.makeText(requireContext(), "No mood events match the filters", Toast.LENGTH_SHORT).show();
             filterButton.setSelected(false);
             return;
         }
         // Since firebase has a limit of 30 for whereIn argument, we are gonna turn it into chunks.
         // https://stackoverflow.com/questions/61354866/is-there-a-workaround-for-the-firebase-query-in-limit-to-10
-        List<List<String>> sublist = new ArrayList<>();
-        for (int i = 0; i < moodIds.size(); i += 30) {
-            int j = Math.min(i + 30, moodIds.size());
-            sublist.add(moodIds.subList(i, j));
-        }
-
         List<UserLocation> locationCollection = new ArrayList<>();
         int[] completedQueries = {0};
+        int totalQueries = (int) Math.ceil(moodIds.size() / 30.0);
 
-        for (List<String> chunk : sublist) {
+        for (int i = 0; i < moodIds.size(); i += 30) {
+            int j = Math.min(i + 30, moodIds.size());
+            List<String> chunk = moodIds.subList(i,j);
+
             Query query = db.collection("locations")
                     .whereIn("moodID", chunk);
             // Filter by userId for personal mood history
@@ -502,7 +499,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
                             locationCollection.add(location);
                         }
                         completedQueries[0]++;
-                        if (completedQueries[0] == sublist.size()) {
+                        if (completedQueries[0] == totalQueries) {
                             displayLocationsOnMap(locationCollection, filterButton);
                         }
                     })
