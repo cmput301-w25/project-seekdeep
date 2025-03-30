@@ -181,11 +181,9 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                 }
 
                 //taken from Jachelle
-
                 MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                 moodArrayAdapter.notifyDataSetChanged();
-                moodListView.setAdapter(moodArrayAdapter);                moodArrayAdapter.notifyDataSetChanged();
-
+                //Everytime the feed is displayed/updated, must save the original in MoodFiltering incase filters get applied (ie. search bar is used)
                 MoodFiltering.saveOriginal(moodArrayList);
 
                 //Implement the search bar
@@ -210,7 +208,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                         else {
                             Log.d("Feed", "apply search bar to Users!!");
                             //Searching for users only needs one keyword
-                            List<String> keyword = Arrays.asList(feedSearchEditText.getText().toString());
+                            List<String> keyword = Arrays.asList(feedSearchEditText.getText().toString().split(" "));
                             Log.d("Feed", "apply search bar to Users!!"+keyword);
                             applySearchBarToUser(keyword);
                         }
@@ -326,7 +324,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                 //display the list of all moods (except for logged-in user's)
                 moodListView.setVisibility(View.VISIBLE);
                 userListView.setVisibility(View.GONE);
-
+                //Update tab tracker
                 onUsersTab = false;
             }
         });
@@ -342,11 +340,8 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                 //display the list of all users (except for the logged-in user)
                 moodListView.setVisibility(View.GONE);
                 userListView.setVisibility(View.VISIBLE);
-
+                // Update tab tracker
                 onUsersTab = true;
-
-                //now implement search bar on users
-
             }
         });
 
@@ -392,29 +387,26 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                 .commit();
     }
 
+    /**
+     * This method is used when the user types in the search bar while on the Moods tab in the Feed page.
+     * It filters the entire feed to find moods that contain at least one of the given keywords in the search bar.
+     * @param keywords The words typed into the search bar (keywords are separated by spaces)
+     */
     public void applySearchBarToMoods(List<String> keywords) {
-////        moodListView.setAdapter(moodArrayAdapter);
-////        moodArrayAdapter.notifyDataSetChanged();
-//        MoodFiltering.saveOriginal(moodArrayList);
-//        MoodFiltering.addKeyword(keywords);
-//        MoodFiltering.applyFilter("keyword");
-//        filteredMoodArrayList = MoodFiltering.getFilteredMoods(); //CRASHES HERE
-////        moodArrayAdapter.clear();
-////        moodArrayAdapter.addAll(moodArrayList);
-////        moodArrayAdapter.notifyDataSetChanged();
-//        Log.d("Feed","1 search bar applied!!!");
-//        MoodFiltering.removeAllFilters();
-//        Log.d("Feed","2 search bar applied!!!");
-
         MoodFiltering.addKeyword(keywords);
         MoodFiltering.applyFilter("keyword");
-        filteredMoodArrayList = MoodFiltering.getFilteredMoods(); //CRASHES HERE
+        filteredMoodArrayList = MoodFiltering.getFilteredMoods();
         moodArrayAdapter.clear();
         moodArrayAdapter.addAll(filteredMoodArrayList);
         moodArrayAdapter.notifyDataSetChanged();
         Log.d("Feed","search bar applied to moods!!!");
     }
 
+    /**
+     * This method is used when the user types in the search bar while on the Users tab in Feed page.
+     * It filters the entire list of users and displays usernames that contain the given keyword in the search bar.
+     * @param keywords The words typed into the search bar (keywords are separated by space)
+     */
     public void applySearchBarToUser(List<String> keywords) {
         Log.d("Feed","applySearchBarToUsers");
 
