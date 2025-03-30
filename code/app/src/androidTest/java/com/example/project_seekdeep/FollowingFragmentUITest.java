@@ -34,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 
 @RunWith(AndroidJUnit4.class)
@@ -68,7 +69,7 @@ public class FollowingFragmentUITest {
     }
 
     @Before
-    public void seedDatabase() throws InterruptedException {
+    public void seedDatabase() {
         Calendar calendar = Calendar.getInstance();
         Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, calendar.getTime(), "Done testing!");
         calendar.add(Calendar.DAY_OF_YEAR, -1);
@@ -142,7 +143,6 @@ public class FollowingFragmentUITest {
 
     @Test
     public void testViewFollowingFragmentShowsAllMoodsOfFollowing() throws InterruptedException {
-        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
         Thread.sleep(1000);
         // the following list should look like [happiness, confusion, fear, sadness, disgust, surprise, shame, anger] in that order
@@ -166,12 +166,11 @@ public class FollowingFragmentUITest {
 
     @Test
     public void testLast3FilterShowsLast3FromEachFollowingUser() throws InterruptedException {
-        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
         Thread.sleep(10000);
         // the following list should look like
         // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
-/*
+
         // save views that should be gone, which in this case is anger and shame
         ArrayList<ViewInteraction> goneViews = new ArrayList<>();
         ViewInteraction view = onView(withText(angry));
@@ -203,12 +202,11 @@ public class FollowingFragmentUITest {
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(4).onChildView(withId(R.id.emotion))
                 .check(matches(withText(disgust)));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(5).onChildView(withId(R.id.emotion))
-                .check(matches(withText(surprise)));*/
+                .check(matches(withText(surprise)));
     }
 
     @Test
     public void testRecentWeekFilterShowsRecentWeekFromFollowing() throws InterruptedException {
-        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
         Thread.sleep(1000);
         // the following list should look like
@@ -250,7 +248,6 @@ public class FollowingFragmentUITest {
 
     @Test
     public void testFilterFollowingByHappiness() throws InterruptedException {
-        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
         Thread.sleep(1000);
         // the following list should look like
@@ -291,7 +288,6 @@ public class FollowingFragmentUITest {
 
     @Test
     public void testFilterFollowingBySadness() throws InterruptedException {
-        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
         Thread.sleep(1000);
         // the following list should look like
@@ -332,7 +328,6 @@ public class FollowingFragmentUITest {
 
     @Test
     public void testFilterFollowingByAnger() throws InterruptedException {
-        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
         Thread.sleep(1000);
         // the following list should look like
@@ -373,7 +368,6 @@ public class FollowingFragmentUITest {
 
     @Test
     public void testFilterFollowingBySurprise() throws InterruptedException {
-        Thread.sleep(1000);
         onView(withId(R.id.following_bottom_nav)).perform(click());
         Thread.sleep(1000);
         // the following list should look like
