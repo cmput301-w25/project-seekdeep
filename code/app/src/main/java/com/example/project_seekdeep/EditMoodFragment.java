@@ -39,6 +39,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.w3c.dom.Text;
+
 import java.io.FileNotFoundException;
 import java.util.Dictionary;
 
@@ -103,6 +105,7 @@ public class EditMoodFragment extends DialogFragment {
         locationToggle = view.findViewById(R.id.switch1);
         privacySwitch = view.findViewById(R.id.privacy_switch);
         explainPrivacy = view.findViewById(R.id.explain_privacy);
+        TextView dateView = view.findViewById(R.id.date);
 
         emotionSpinner.setAdapter(new ArrayAdapter<EmotionalStates>(getContext(), android.R.layout.simple_spinner_item, EmotionalStates.values()));
         socialSituationSpinner.setAdapter(new ArrayAdapter<SocialSituations>(getContext(), android.R.layout.simple_spinner_item, SocialSituations.values()));
@@ -123,6 +126,7 @@ public class EditMoodFragment extends DialogFragment {
             editReason.setText(mood.getReason());
             emotionSpinner.setSelection(mood.getEmotionalState().ordinal());
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
+            dateView.setText(mood.getPostedDate().toString());
 
             // Load the image from the mood into the dialog if it exists
             imageUri = mood.getImage();

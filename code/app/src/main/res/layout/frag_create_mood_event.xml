@@ -121,48 +121,62 @@
             android:id="@+id/social_situation_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:layout_weight="0"
             android:tooltipText="Select social situation" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="12dp"
             android:orientation="horizontal">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/geolocat_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/location_toggle_text" />
+
+                <Switch
+                    android:id="@+id/switch1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/location_off"
+                    android:drawablePadding="-5dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/explain_privacy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/private_mode" />
+
+                <Switch
+                    android:id="@+id/privacy_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/private_symbol"
+                    android:drawablePadding="-5dp"
+                    android:textOff="@string/private_mode"
+                    android:textOn="@string/public_mode" />
+            </LinearLayout>
+
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/geolocat_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:paddingTop="12dp"
-            android:text="Attach my current location to this mood event" />
-
-        <Switch
-            android:id="@+id/switch1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/location_off"
-            android:drawablePadding="-5dp" />
-
-        <TextView
-            android:id="@+id/explain_privacy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="12dp"
-            android:text="@string/private_mode" />
-
-        <Switch
-            android:id="@+id/privacy_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/private_symbol"
-            android:drawablePadding="-5dp"
-            android:textOff="@string/private_mode"
-            android:textOn="@string/public_mode" />
 
 
     </LinearLayout>
