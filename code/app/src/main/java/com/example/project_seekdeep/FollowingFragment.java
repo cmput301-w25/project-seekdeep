@@ -175,6 +175,8 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                     filterButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            EditText searchBar = getView().findViewById(R.id.search_bar);
+                            searchBar.setText("");  // clear the search bar
                             new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
                         }
                     });
@@ -215,6 +217,8 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
         moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                EditText searchBar = getView().findViewById(R.id.search_bar);
+                searchBar.setText("");  // clear the search bar
                 // Bundle up the original Mood object that was clicked on
                 Bundle moodAndUserBundle = new Bundle();
                 moodAndUserBundle.putSerializable("mood", moodArrayList.get(position));
@@ -244,6 +248,8 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
     @Override
     public void onUsernameClick(UserProfile clickUsername) {
         //Check if the clickedUsername is the same as the logged-in user.
+        EditText searchBar = getView().findViewById(R.id.search_bar);
+        searchBar.setText("");  // clear the search bar
         String clickedUsernameString = clickUsername.getUsername();
         String loggedInUser = (String) getArguments().getString("username");
 
@@ -317,6 +323,8 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
     @Override
     public void onFiltersReset() {
         MoodFiltering.removeAllFilters();
+        EditText searchBar = getView().findViewById(R.id.search_bar);
+        searchBar.setText("");  // clear the search bar
         filteredMoodList = MoodFiltering.getFilteredMoods();
         moodArrayAdapter.clear();
         moodArrayAdapter.addAll(filteredMoodList);

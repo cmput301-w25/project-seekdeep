@@ -1128,7 +1128,196 @@ public class FollowingFragmentUITest {
         for (ViewInteraction aview : goneViews) {
             aview.check(doesNotExist());
         }
+    }
 
+    @Test
+    public void testStackEmotionalStateAndKeyword() throws InterruptedException {
+        // add another mood to test with
+        Calendar calendar = Calendar.getInstance();
+        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, calendar.getTime(), "passed my midterms");
+        usersRef.document().set(testUser);
+        moodsRef.document().set(mood1);
+        // the following list should look like
+        // [happiness(1), happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+        // save views that should be gone
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText("Done testing!"));  // in place of happiness since tehre's two now
+        goneViews.add(view);
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+
+        // click on filter button and then select happiness
+        onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.happiness_chip)).perform(click());
+        // apply the filer
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // type in keyword search
+        onView(withId(R.id.search_bar)).perform(typeText("midterms"));
+
+        // now nothing should be displayed so
+        // check if all those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // check if the happiness mood wiht "passed my midterms" reason is there
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText(happy)));
+
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.reason))
+                .check(matches(withText("passed my midterms")));
+
+    }
+
+    @Test
+    public void testStackEmotionalStateAndRecentWeekAndKeyword() throws InterruptedException {
+        // add another mood to test with
+        Calendar calendar = Calendar.getInstance();
+        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, calendar.getTime(), "passed my midterms");
+        usersRef.document().set(testUser);
+        moodsRef.document().set(mood1);
+        // the following list should look like
+        // [happiness(1), happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+        // save views that should be gone
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText("Done testing!"));  // in place of happiness since tehre's two now
+        goneViews.add(view);
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+
+        // click on filter button and then select happiness and recent week
+        onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.happiness_chip)).perform(click());
+        onView(withId(R.id.recent_week_chip)).perform(click());
+        // apply the filer
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // type in keyword search
+        onView(withId(R.id.search_bar)).perform(typeText("midterms"));
+
+        // now nothing should be displayed so
+        // check if all those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // check if the happiness mood wiht "passed my midterms" reason is there
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText(happy)));
+
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.reason))
+                .check(matches(withText("passed my midterms")));
+    }
+
+    @Test
+    public void testResetFiltersOnFollowingListShouldReturnListViewToOGState() throws InterruptedException {
+        // add another mood to test with
+        Calendar calendar = Calendar.getInstance();
+        Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, SocialSituations.ALONE, calendar.getTime(), "passed my midterms");
+        usersRef.document().set(testUser);
+        moodsRef.document().set(mood1);
+        // the following list should look like
+        // [happiness(1), happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+        // save views that should be gone
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText("Done testing!"));  // in place of happiness since tehre's two now
+        goneViews.add(view);
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+
+        // click on filter button and then select happiness and recent week
+        onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.happiness_chip)).perform(click());
+        onView(withId(R.id.recent_week_chip)).perform(click());
+        // apply the filer
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // type in keyword search
+        onView(withId(R.id.search_bar)).perform(typeText("midterms"));
+
+        // now nothing should be displayed so
+        // check if all those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // check if the happiness mood wiht "passed my midterms" reason is there
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText(happy)));
+
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.reason))
+                .check(matches(withText("passed my midterms")));
+
+        // now press reset all filters
+        onView(withId(R.id.following_filter_button)).perform(click());
+        Thread.sleep(1000);
+
+        // listview should be the way it was before
+        onView(withId(R.id.reset_filters_button)).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText(happy)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText(happy)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText(confusion)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText(fear)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(4).onChildView(withId(R.id.emotion))
+                .check(matches(withText(sad)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(5).onChildView(withId(R.id.emotion))
+                .check(matches(withText(disgust)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(6).onChildView(withId(R.id.emotion))
+                .check(matches(withText(surprise)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(7).onChildView(withId(R.id.emotion))
+                .check(matches(withText(shame)));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(8).onChildView(withId(R.id.emotion))
+                .check(matches(withText(angry)));
     }
 
 }
