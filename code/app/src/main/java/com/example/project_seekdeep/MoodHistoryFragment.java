@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -121,7 +123,23 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         CollectionReference users = db.collection("UserDB");
         CollectionReference moods = db.collection("MoodDB");
 
+        TextView logoutText = view.findViewById(R.id.logout_text);
+        logoutText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragManager = getParentFragmentManager();
 
+                MainActivity mainActivity = (MainActivity) getActivity();
+                assert mainActivity != null;
+
+                BottomNavigationView navBar = mainActivity.findViewById(R.id.bottomNavigationView);
+                navBar.setVisibility(View.GONE);
+
+                fragManager.beginTransaction()
+                        .remove(mainActivity.getSelectedFragment())
+                        .replace(R.id.frameLayout, new LogInFragment()).commit();
+            }
+        });
 
         //2. query collection to get all mood from user
         //https://firebase.google.com/docs/firestore/query-data/queries#java_2
@@ -191,6 +209,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
 
            }
         });
+
     }
 
     /**
