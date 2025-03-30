@@ -3,6 +3,7 @@ package com.example.project_seekdeep;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -11,6 +12,7 @@ import static org.hamcrest.CoreMatchers.anything;
 
 import android.util.Log;
 
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Objects;
 
@@ -158,10 +161,59 @@ public class FollowingFragmentUITest {
         onView(withId(R.id.following_bottom_nav)).perform(click());
         // the following list should look like
         // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone, which in this case is just anger
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        goneViews.add(view);
+
+        // press the filter button and the last 3 chip and then apply the filter
         onView(withId(R.id.following_filter_button)).perform(click());
         onView(withId(R.id.last_3_chip)).perform(click());
         onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
         // now the following list should look like [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2)]
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText("😄 Happiness")));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText("🤔 Confusion")));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText(EmotionalStates.FEAR.toString())));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(3).onChildView(withId(R.id.emotion))
+                .check(matches(withText("☹️ Sadness")));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(4).onChildView(withId(R.id.emotion))
+                .check(matches(withText(EmotionalStates.DISGUST.toString())));
+        onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(5).onChildView(withId(R.id.emotion))
+                .check(matches(withText(EmotionalStates.SURPRISE.toString())));
+    }
+
+    @Test
+    public void testRecentWeekFilterShowsRecentWeekFromFollowing() {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone, which in this case is just anger
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        goneViews.add(view);
+
+        // press the filter button and the recent week chip and then apply the filter
+        onView(withId(R.id.following_filter_button)).perform(click());
+        onView(withId(R.id.recent_week_chip)).perform(click());
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // now the following list should look like [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2)]
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(0).onChildView(withId(R.id.emotion))
                 .check(matches(withText("😄 Happiness")));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(1).onChildView(withId(R.id.emotion))
