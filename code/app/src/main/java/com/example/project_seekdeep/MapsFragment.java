@@ -48,6 +48,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListResourceBundle;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * MAP fragments uses google maps API to show the user's current location and mood based emoji markers.
@@ -85,6 +87,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
     // Toggle button map display
     private ToggleButton displayToggle;
 
+    private FirebaseFirestore db;
+
     /**
      * Empty constructor required by database
      */
@@ -105,6 +109,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
+        // Initialize instance of database
+        db = FirebaseFirestore.getInstance();
 
         // Initialize the map fragment
         SupportMapFragment supportMapFragment = (SupportMapFragment)
@@ -258,8 +264,75 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
     }
 
     /**
+     * Loads the mood based location markers of user that are emojis of the specified mood.
+     */
+    private void loadMoodHistoryLocations(){
+        // Current user's profile
+        UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
+        String userName = currentUserProfile.getUsername();
+        loadMoodLocations(userName);
+    }
+
+    /**
+     * The method that actually query the database and set the marker that is to be
+     * displayed on the map.
+     * @param user
+     */
+    private void loadMoodLocations(String user) {
+        // Current user's profile
+        String userName = user;
+        // Match the database locations with current user
+        db.collection("locations")
+                .whereEqualTo("userId", userName)
+                .get()
+                .addOnSuccessListener(queryLocationSnapshots -> {
+                    // Iterate throught each item in the database collection 'locations'
+                    for (QueryDocumentSnapshot document : queryLocationSnapshots) {
+                        UserLocation location = document.toObject(UserLocation.class);
+                        EmotionalStates emotionalState = location.getEmotionalState();
+                        Double latitude = location.getLatitude();
+                        Double longitude = location.getLongitude();
+                        if (latitude != null && longitude != null && emotionalState != null) {
+                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            String markerTitle = emotionalState.getStateName();
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .title(markerTitle)
+                                    .icon(getEmotionalLocation(emotionalState)));
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(requireContext(), "Failed to load your mood locations", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /**
+     * Loads the followings' mood based location markers that are emojis of the specified mood.
+     */
+    private void loadFollowingLocations(){
+        // Current user's profile
+        UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
+        String userName = currentUserProfile.getUsername();
+
+        db.collection("followings_and_requests")
+                .whereEqualTo("follower", userName)
+                .whereEqualTo("status", "following")
+                .get()
+                .addOnSuccessListener(queryFollowingSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryFollowingSnapshots) {
+                        FollowRequest follow = document.toObject(FollowRequest.class);
+                        String followee = follow.getFollowee();
+                        loadMoodLocations(followee);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(requireContext(), "Failed to load your following mood locations", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /**
      * Return the bitmap descriptor of custom marker based on mood
-     *
      * @param emotionalState: The emotional state enum
      * @return
      */
@@ -297,7 +370,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         // Current user's profile
         UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
         String userName = currentUserProfile.getUsername();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Filter the Mood History
         if (!displayToggle.isChecked()) {
@@ -308,30 +380,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         ArrayList<Mood> moodList = new ArrayList<>();
                         for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                            EmotionalStates emotionalState = EmotionalStates.valueOf((String) snapshot.get("emotionalState"));
-                            SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
-
-                            List<String> followers = (List<String>) snapshot.get("followers");
-                            Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
-                            String reason = (String) snapshot.get("reason");
-
-                            String imageStr = (String) snapshot.get("image");
-                            Uri image = null;
-                            if (imageStr != null) {
-                                image = Uri.parse(imageStr);
-                            }
-                            Mood mood = new Mood(currentUserProfile, emotionalState, socialSituation, followers, postedDate, reason);
-                            mood.setDocRef(snapshot.getReference());
-                            mood.setImage(image);
-
-                            moodList.add(mood);
+                            moodList.add(createMoodFromSnapshot(snapshot, currentUserProfile));
                         }
 
                         applyFilters(moodList, selectedMoods, selectedTimeline, keyword);
                         // Create Arraylist for filtered moods
                         ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
 
-                        mapFilteredMoods(filteredMoods, userName, filterMoodHistoryButton);
+                        List<String> moodIds = filteredMoods.stream()
+                                .map(mood -> mood.getDocRef().getId())
+                                .collect(Collectors.toList());
+                        mapFilteredMoods(moodIds, userName, filterMoodHistoryButton, true);
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(requireContext(), "Failed to load moods", Toast.LENGTH_SHORT).show();
@@ -362,24 +421,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
                                         .addOnSuccessListener(queryDocumentSnapshots -> {
                                             ArrayList<Mood> moodList = new ArrayList<>();
                                             for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                                                EmotionalStates emotionalState = EmotionalStates.valueOf((String) snapshot.get("emotionalState"));
-                                                SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
-
-                                                List<String> followers = (List<String>) snapshot.get("followers");
-                                                Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
-                                                String reason = (String) snapshot.get("reason");
-
-                                                String imageStr = (String) snapshot.get("image");
-                                                Uri image = null;
-                                                if (imageStr != null) {
-                                                    image = Uri.parse(imageStr);
-                                                }
                                                 UserProfile user = new UserProfile(followee);
-                                                Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
-                                                mood.setDocRef(snapshot.getReference());
-                                                mood.setImage(image);
-
-                                                moodList.add(mood);
+                                                moodList.add(createMoodFromSnapshot(snapshot, user));
                                             }
 
                                             applyFilters(moodList, selectedMoods, selectedTimeline, keyword);
@@ -388,11 +431,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
                                             for (Mood mood : filteredMoods) {
                                                 allFilteredMoodIds.add(mood.getDocRef().getId());
                                             }
-                                            mapAllFilteredMoods(allFilteredMoodIds, filterMoodFollowingButton);
+                                            mapFilteredMoods(allFilteredMoodIds,null, filterMoodFollowingButton, false );
                                         })
                                         .addOnFailureListener(e -> {
                                             Toast.makeText(requireContext(), "Failed to load moods", Toast.LENGTH_SHORT).show();
-                                            mapAllFilteredMoods(allFilteredMoodIds, filterMoodFollowingButton);
 
                                         });
                             }
@@ -404,6 +446,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         }
     }
 
+    /**
+     * Apllies the filters required on the mood display based on the History and Following fragments
+     * @param moodList
+     * @param selectedMoods
+     * @param selectedTimeline
+     * @param keyword
+     */
     private void applyFilters(ArrayList<Mood> moodList, ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
         // Apply the selected filters if they aren't empty
         MoodFiltering.removeAllFilters();
@@ -412,97 +461,41 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
             MoodFiltering.addStates(selectedMoods);
             MoodFiltering.applyFilter("states");
         }
-
         if (!selectedTimeline.isBlank()) {
             MoodFiltering.applyFilter(selectedTimeline);
         }
-
         if (!keyword.isEmpty()) {
             MoodFiltering.addKeyword(keyword);
             MoodFiltering.applyFilter("keyword");
         }
     }
 
-    private void mapFilteredMoods(ArrayList<Mood> filteredMoods, String userName, ImageButton filterButton) {
-        // Extract mood IDs from filtered moods
-        List<String> filteredMoodIds = new ArrayList<>();
-        for (Mood mood : filteredMoods) {
-            filteredMoodIds.add(mood.getDocRef().getId());
-        }
-        if (!filteredMoodIds.isEmpty()) {
-            // Since firebase has a limit of 30 for whereIn argument, we are gonna turn it into chunks.
-            // https://stackoverflow.com/questions/61354866/is-there-a-workaround-for-the-firebase-query-in-limit-to-10
-            List<List<String>> sublist = new ArrayList<>();
-            for (int i = 0; i < filteredMoodIds.size(); i += 30) {
-                int j = Math.min(i + 30, filteredMoodIds.size());
-                sublist.add(filteredMoodIds.subList(i, j));
-            }
-
-            List<UserLocation> locationCollection = new ArrayList<>();
-            int[] completedQueries = {0};
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            for (List<String> chunk : sublist) {
-                db.collection("locations")
-                        .whereEqualTo("userId", userName)
-                        .whereIn("moodID", chunk)
-                        .get()
-                        .addOnSuccessListener(locationSnapshots -> {
-                            mMap.clear();
-                            for (QueryDocumentSnapshot document : locationSnapshots) {
-                                UserLocation location = document.toObject(UserLocation.class);
-                                locationCollection.add(location);
-                            }
-                            completedQueries[0]++;
-                            if (completedQueries[0] == sublist.size()) {
-                                mMap.clear();
-                                for (UserLocation location : locationCollection) {
-                                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                    EmotionalStates emotionalState = location.getEmotionalState();
-                                    String markerTitle = emotionalState.getStateName();
-                                    mMap.addMarker(new MarkerOptions()
-                                            .position(latLng)
-                                            .title(markerTitle)
-                                            .icon(getEmotionalLocation(emotionalState)));
-                                }
-                                if (locationCollection.isEmpty()) {
-                                    Toast.makeText(requireContext(), "No mood events match the filters", Toast.LENGTH_SHORT).show();
-                                }
-                                filterButton.setSelected(!filteredMoods.isEmpty());
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(requireContext(), "Failed to load filtered locations", Toast.LENGTH_SHORT).show();
-                        });
-            }
-        } else {
-            mMap.clear();
-            Toast.makeText(requireContext(), "No mood events match the filters", Toast.LENGTH_SHORT).show();
-            filterButton.setSelected(false);
-        }
-    }
-
-    private void mapAllFilteredMoods(List<String> allFilteredMoodIds, ImageButton filterButton){
-        if (allFilteredMoodIds.isEmpty()) {
+    private void mapFilteredMoods(List<String> moodIds, String userId, ImageButton filterButton, boolean filterByUserId){
+        if (moodIds.isEmpty()) {
             mMap.clear();
             Toast.makeText(requireContext(), "No mood events match the filters", Toast.LENGTH_SHORT).show();
             filterButton.setSelected(false);
             return;
         }
-
+        // Since firebase has a limit of 30 for whereIn argument, we are gonna turn it into chunks.
+        // https://stackoverflow.com/questions/61354866/is-there-a-workaround-for-the-firebase-query-in-limit-to-10
         List<List<String>> sublist = new ArrayList<>();
-        for (int i = 0; i < allFilteredMoodIds.size(); i += 30) {
-            int j = Math.min(i + 30, allFilteredMoodIds.size());
-            sublist.add(allFilteredMoodIds.subList(i, j));
+        for (int i = 0; i < moodIds.size(); i += 30) {
+            int j = Math.min(i + 30, moodIds.size());
+            sublist.add(moodIds.subList(i, j));
         }
 
         List<UserLocation> locationCollection = new ArrayList<>();
         int[] completedQueries = {0};
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         for (List<String> chunk : sublist) {
-            db.collection("locations")
-                    .whereIn("moodID", chunk)
-                    .get()
+            Query query = db.collection("locations")
+                    .whereIn("moodID", chunk);
+            // Filter by userId for personal mood history
+            if (filterByUserId) {
+                query = query.whereEqualTo("userId", userId);
+            }
+            query.get()
                     .addOnSuccessListener(locationSnapshots -> {
                         for (QueryDocumentSnapshot document : locationSnapshots) {
                             UserLocation location = document.toObject(UserLocation.class);
@@ -510,23 +503,28 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
                         }
                         completedQueries[0]++;
                         if (completedQueries[0] == sublist.size()) {
-                            mMap.clear();
-                            for (UserLocation location : locationCollection) {
-                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                EmotionalStates emotionalState = location.getEmotionalState();
-                                String markerTitle = emotionalState.getStateName();
-                                mMap.addMarker(new MarkerOptions()
-                                        .position(latLng)
-                                        .title(markerTitle)
-                                        .icon(getEmotionalLocation(emotionalState)));
-                            }
-                            filterButton.setSelected(!locationCollection.isEmpty());
+                            displayLocationsOnMap(locationCollection, filterButton);
                         }
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(requireContext(), "Failed to load filtered locations", Toast.LENGTH_SHORT).show();
                     });
         }
+    }
+
+    private void displayLocationsOnMap(List<UserLocation> locationCollection, ImageButton filterButton){
+        mMap.clear();
+        for (UserLocation location : locationCollection) {
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            EmotionalStates emotionalState = location.getEmotionalState();
+            String markerTitle = emotionalState.getStateName();
+            mMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title(markerTitle)
+                    .icon(getEmotionalLocation(emotionalState)));
+        }
+        filterButton.setSelected(!locationCollection.isEmpty());
+
     }
     /**
      * This method resets the filters and displays the map with all mood events.
@@ -543,69 +541,29 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
 
     }
 
-    private void loadMoodHistoryLocations(){
-        // Current user's profile
-        UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
-        String userName = currentUserProfile.getUsername();
-        loadMoodLocations(userName);
-    }
-
     /**
-     * Loads the mood based location markers that are emojis of the specified mood.
+     * Creates a Mood object from a Firestore document snapshot
+     * @param snapshot
+     * @param currentUserProfile
+     * @return
      */
-    private void loadMoodLocations(String user) {
-        // Current user's profile
-        String userName = user;
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Match the database locations with current user
-        db.collection("locations")
-                .whereEqualTo("userId", userName)
-                .get()
-                .addOnSuccessListener(queryLocationSnapshots -> {
-                    // Iterate throught each item in the database collection 'locations'
-                    for (QueryDocumentSnapshot document : queryLocationSnapshots) {
-                        UserLocation location = document.toObject(UserLocation.class);
-                        EmotionalStates emotionalState = location.getEmotionalState();
-                        Double latitude = location.getLatitude();
-                        Double longitude = location.getLongitude();
-                        if (latitude != null && longitude != null && emotionalState != null) {
-                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            String markerTitle = emotionalState.getStateName();
-                            mMap.addMarker(new MarkerOptions()
-                                    .position(latLng)
-                                    .title(markerTitle)
-                                    .icon(getEmotionalLocation(emotionalState)));
-                        }
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(requireContext(), "Failed to load your mood locations", Toast.LENGTH_SHORT).show();
-                });
-    }
+    // Taken from MoodHistoryFragment.java
+    private Mood createMoodFromSnapshot(QueryDocumentSnapshot snapshot, UserProfile currentUserProfile){
+        EmotionalStates emotionalState = EmotionalStates.valueOf((String) snapshot.get("emotionalState"));
+        SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
+        List<String> followers = (List<String>) snapshot.get("followers");
+        Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+        String reason = (String) snapshot.get("reason");
 
-    private void loadFollowingLocations(){
-        // Current user's profile
-        UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
-        String userName = currentUserProfile.getUsername();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String imageStr = (String) snapshot.get("image");
+        Uri image = null;
+        if (imageStr != null) {
+            image = Uri.parse(imageStr);
+        }
+        Mood mood = new Mood(currentUserProfile, emotionalState, socialSituation, followers, postedDate, reason);
+        mood.setDocRef(snapshot.getReference());
+        mood.setImage(image);
 
-        db.collection("followings_and_requests")
-                .whereEqualTo("follower", userName)
-                .whereEqualTo("status", "following")
-                .get()
-                .addOnSuccessListener(queryFollowingSnapshots -> {
-                    for (QueryDocumentSnapshot document : queryFollowingSnapshots) {
-                        FollowRequest follow = document.toObject(FollowRequest.class);
-                        String followee = follow.getFollowee();
-                        if (followee != null) {
-                            loadMoodLocations(followee);
-                        }
-                    }
-
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(requireContext(), "Failed to load your following mood locations", Toast.LENGTH_SHORT).show();
-                });
-
+        return mood;
     }
 }
