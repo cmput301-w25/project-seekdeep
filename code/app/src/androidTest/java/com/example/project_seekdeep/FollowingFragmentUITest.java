@@ -5,6 +5,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -51,6 +52,14 @@ public class FollowingFragmentUITest {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference usersRef = db.collection("UserDB");
     private final CollectionReference moodsRef = db.collection("MoodDB");
+    private final String happy = EmotionalStates.HAPPINESS.toString();
+    private final String sad = EmotionalStates.SADNESS.toString();
+    private final String surprise = EmotionalStates.SURPRISE.toString();
+    private final String angry = EmotionalStates.ANGER.toString();
+    private final String shame = EmotionalStates.SHAME.toString();
+    private final String disgust = EmotionalStates.DISGUST.toString();
+    private final String confusion = EmotionalStates.CONFUSION.toString();
+    private final String fear = EmotionalStates.FEAR.toString();
 
     @BeforeClass
     public static void setup() {
@@ -226,6 +235,117 @@ public class FollowingFragmentUITest {
                 .check(matches(withText(EmotionalStates.DISGUST.toString())));
         onData(anything()).inAdapterView(withId(R.id.listview_following)).atPosition(5).onChildView(withId(R.id.emotion))
                 .check(matches(withText(EmotionalStates.SURPRISE.toString())));
+    }
+
+    @Test
+    public void testFilterFollowingByHappiness() {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone, which in this case is just anger
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText("\uD83D\uDE20 Anger"));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+
+        // press the filter button and the happiness chip and then apply the filter
+        onView(withId(R.id.following_filter_button)).perform(click());
+        onView(withId(R.id.happiness_chip)).perform(click());
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // now the following list should look like [happiness(1)]
+        onView(withText(happy)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testFilterFollowingBySadness() {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone, which in this case is just anger
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(angry));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(happy));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+
+        // press the filter button and sadness chip and then apply the filter
+        onView(withId(R.id.following_filter_button)).perform(click());
+        onView(withId(R.id.sadness_chip)).perform(click());
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // now the following list should look like [sadness(1)]
+        onView(withText(sad)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testFilterFollowingByAnger() {
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        // the following list should look like
+        // [happiness(1), confusion(1), fear(2), sadness(1), disgust(2), surprise(2), shame(2), anger(1)] in that order initially
+
+        // save views that should be gone, which in this case is just anger
+        ArrayList<ViewInteraction> goneViews = new ArrayList<>();
+        ViewInteraction view = onView(withText(sad));
+        goneViews.add(view);
+        view = onView(withText(confusion));
+        goneViews.add(view);
+        view = onView(withText(happy));
+        goneViews.add(view);
+        view = onView(withText(shame));
+        goneViews.add(view);
+        view = onView(withText(surprise));
+        goneViews.add(view);
+        view = onView(withText(disgust));
+        goneViews.add(view);
+        view = onView(withText(fear));
+        goneViews.add(view);
+
+        // press the filter button and the anger chip and then apply the filter
+        onView(withId(R.id.following_filter_button)).perform(click());
+        onView(withId(R.id.anger_chip)).perform(click());
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if those views are gone
+        for (ViewInteraction aview : goneViews) {
+            aview.check(doesNotExist());
+        }
+
+        // now the following list should look like [anger(1)]
+        onView(withText(angry)).check(matches(isDisplayed()));
     }
 
 }
