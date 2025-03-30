@@ -133,6 +133,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                 assert mainActivity != null;
 
                 BottomNavigationView navBar = mainActivity.findViewById(R.id.bottomNavigationView);
+                navBar.setSelectedItemId(R.id.feed_bottom_nav);
                 navBar.setVisibility(View.GONE);
 
                 fragManager.beginTransaction()
