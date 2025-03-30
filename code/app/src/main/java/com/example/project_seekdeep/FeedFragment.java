@@ -3,6 +3,8 @@ package com.example.project_seekdeep;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +30,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +45,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
     private ListView moodListView;
     private ArrayList<Mood> moodArrayList;
     private ArrayAdapter<Mood> moodArrayAdapter;
+    private ArrayList<Mood> filteredMoodArrayList;
 
     private UserProfile loggedInUser;
 
@@ -52,7 +56,12 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
     private TextView moodsTab;
     private TextView usersTab;
     private ListView userListView;
+    private ArrayList<UserProfile> userArrayList;
+    private ArrayList<UserProfile> originalUsersArrayList;
+    private ArrayAdapter<UserProfile> userArrayAdapter;
+    private CollectionReference usersRef;
     private EditText feedSearchEditText;
+    private boolean onUsersTab = false;
 
 
 
@@ -122,8 +131,11 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
 
         //set views
         moodListView = view.findViewById(R.id.list_view_moods);
-        ArrayList<Mood> moodArrayList = new ArrayList<>();
-        ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, this); //"this" passes current instance of feedFragment
+//        ArrayList<Mood> moodArrayList = new ArrayList<>();
+        moodArrayList = new ArrayList<>();
+        filteredMoodArrayList = new ArrayList<>();
+//        ArrayAdapter<Mood> moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, this); //"this" passes current instance of feedFragment
+        moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, this); //"this" passes current instance of feedFragment
         moodListView.setAdapter(moodArrayAdapter);
 
         CollectionReference moods = db.collection("MoodDB");
@@ -172,15 +184,51 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
 
                 MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                 moodArrayAdapter.notifyDataSetChanged();
+                MoodFiltering.saveOriginal(moodArrayList);
+
+                //Implement the search bar
+                feedSearchEditText = view.findViewById(R.id.feed_search_bar);
+                //Prevent the Enter key from intputting new lines into the search bar
+                feedSearchEditText.setOnEditorActionListener((v, actionId, event) -> {
+                    Log.d("Search","enter key was pressed! nothing should happen");
+                    return true; // return w/o doing anything, so to disable the enter key
+                });
+                final TextWatcher txtWatcher = new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    }
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        if (!onUsersTab) {
+                            Log.d("Feed", "now apply search bar to moods!");
+                            //get the keyword(s) from search bar
+                            List<String> keywords = Arrays.asList(feedSearchEditText.getText().toString().split(" "));
+                            applySearchBarToMoods(keywords);
+                        }
+                        else {
+                            Log.d("Feed", "apply search bar to Users!!");
+                            //Searching for users only needs one keyword
+                            List<String> keyword = Arrays.asList(feedSearchEditText.getText().toString());
+                            Log.d("Feed", "apply search bar to Users!!"+keyword);
+                            applySearchBarToUser(keyword);
+                        }
+                    }
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                    }
+                };
+                feedSearchEditText.addTextChangedListener(txtWatcher);
         }
         });
         }
 
         //POPULATE THE list_view_users LISTVIEW UI (default hidden) - only display this listview when the Users tab is clicked
         userListView = view.findViewById(R.id.list_view_users); //Set view to ui
-        CollectionReference usersRef = db.collection("users");
-        ArrayList<UserProfile> userArrayList = new ArrayList<>();
-        ArrayAdapter<UserProfile> userArrayAdapter = new UserArrayAdapter(view.getContext(), userArrayList); //link userArrayList and adapter
+        usersRef = db.collection("users");
+        userArrayList = new ArrayList<>();
+        //originalUsersArrayList is not linked to the adapter. It just constantly keeps the orig list of users without any filters applied.
+        originalUsersArrayList = new ArrayList<>();
+        userArrayAdapter = new UserArrayAdapter(view.getContext(), userArrayList); //link userArrayList and adapter
         userListView.setAdapter(userArrayAdapter); //link the UI Listview to the array adapter
         //Query firebase to fetch all users (except the logged-in user)
         if (loggedInUser != null) { //if statement to prevent app crashing
@@ -195,9 +243,11 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                 //If a snapshot was taken
                 if (value != null) {
                     userArrayList.clear();
+                    originalUsersArrayList.clear();
                     for (QueryDocumentSnapshot snapshot : value) {
                         //Convert snapshots to UserProfile objects
                         UserProfile user = snapshot.toObject(UserProfile.class);
+                        originalUsersArrayList.add(user);
                         userArrayList.add(user);
                     }
                     //notify adapter that data has changed
@@ -274,6 +324,8 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                 //display the list of all moods (except for logged-in user's)
                 moodListView.setVisibility(View.VISIBLE);
                 userListView.setVisibility(View.GONE);
+
+                onUsersTab = false;
             }
         });
         //If the usersTab is clicked, show the users list
@@ -288,6 +340,11 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                 //display the list of all users (except for the logged-in user)
                 moodListView.setVisibility(View.GONE);
                 userListView.setVisibility(View.VISIBLE);
+
+                onUsersTab = true;
+
+                //now implement search bar on users
+
             }
         });
 
@@ -331,6 +388,52 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                 .setReorderingAllowed(true)
                 .addToBackStack("feed")
                 .commit();
+    }
+
+    public void applySearchBarToMoods(List<String> keywords) {
+//        moodListView.setAdapter(moodArrayAdapter);
+//        moodArrayAdapter.notifyDataSetChanged();
+        MoodFiltering.saveOriginal(moodArrayList);
+        MoodFiltering.addKeyword(keywords);
+        MoodFiltering.applyFilter("keyword");
+//        filteredMoodArrayList = MoodFiltering.getFilteredMoods(); //CRASHES HERE
+//        moodArrayAdapter.clear();
+//        moodArrayAdapter.addAll(moodArrayList);
+//        moodArrayAdapter.notifyDataSetChanged();
+        Log.d("Feed","1 search bar applied!!!");
+        MoodFiltering.removeAllFilters();
+        Log.d("Feed","2 search bar applied!!!");
+    }
+
+    public void applySearchBarToUser(List<String> keywords) {
+        Log.d("Feed","applySearchBarToUsers");
+
+        // ensure userArrayList is not null
+        if (userArrayList == null || userArrayAdapter == null) {
+            Log.e("Feed", "userArrayList or userArrayAdapter is null!");
+            return;
+        }
+        //1. Restore userArrayList with the original unfiltered list of users (so that the keywords aren't applied to a previously filtered list)
+        userArrayList.clear();
+        userArrayList.addAll(originalUsersArrayList);
+
+        //2. Create the filtered list
+        List<UserProfile> filteredUsers = new ArrayList<>();
+        for (UserProfile user : userArrayList) {
+            String username = user.getUsername().toLowerCase();
+            //Check if the keywords match
+            for (String keyword : keywords) {
+                if (username.contains(keyword.toLowerCase())) {
+                    filteredUsers.add(user);
+                    break;
+                }
+            }
+        }
+        //3. add the filtered to to userArrayAdapter
+        //Update the adapter to populate the listview with the filtered user
+        userArrayAdapter.clear();
+        userArrayAdapter.addAll(filteredUsers);
+        userArrayAdapter.notifyDataSetChanged();
     }
 
 }
