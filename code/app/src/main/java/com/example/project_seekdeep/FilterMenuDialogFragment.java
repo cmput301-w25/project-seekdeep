@@ -156,15 +156,10 @@ public class FilterMenuDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 EditText keywordTextView = view.findViewById(R.id.dialog_keyword_search);
-                // the code for input handling has been reused from CreateMoodEvenFragment by Sarah Chang
+                // this use of .asList is taken from https://stackoverflow.com/a/7488710
+                // Author: colinD
                 // Taken by: Jachelle Chan
-                // Taken on: March 22, 2025
-                /*
-                keyword = keywordTextView.getText().toString().trim();
-                if(keyword.split(" ").length > 1) {
-                    keywordTextView.setError("1 keyword only!");
-                    return;  // stop the execution for the rest of this click method
-                }*/
+                // Taken on: March 29, 2025
                 keywords = Arrays.asList(keywordTextView.getText().toString().split(" "));
                 applyFilters();
             }
@@ -172,15 +167,6 @@ public class FilterMenuDialogFragment extends DialogFragment {
 
         Button resetFiltersButton = view.findViewById(R.id.reset_filters_button);
         resetFiltersButton.setOnClickListener(v -> resetFilters());
-
-
-
-        //TO DO: Apply both moods and timeline filters on the current list of moods events (either in Feed, Following, or Profile)
-        //Use filtering functions, from another class?
-
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         return builder.create();
     }
 

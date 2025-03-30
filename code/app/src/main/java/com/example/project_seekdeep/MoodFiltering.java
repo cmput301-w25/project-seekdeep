@@ -88,9 +88,12 @@ public class MoodFiltering {
      * @param words: An arraylist of keywords the user is searching for
      */
     public static void addKeyword(List<String> words) {
-        //keyword = word.replaceAll("[^a-zA-Z ]", "").toLowerCase().trim();
         keywords.clear();
         for (String keyword: words) {
+            // this regex is taken from https://stackoverflow.com/a/18831709
+            // Author: Bohemian
+            // Taken by: Jachelle Chan
+            // Taken on: March 29, 2025
             keywords.add(keyword.replaceAll("[^a-zA-Z ]", "").toLowerCase().trim());
         }
     }
@@ -171,7 +174,6 @@ public class MoodFiltering {
      * @param moods: An ArrayList of Mood objects
      */
     public static void sortKeyword(ArrayList<Mood> moods) {
-        //moods.removeIf(mood -> !mood.getReason().replaceAll("[^a-zA-Z ]", "").toLowerCase().contains(keyword));
         moods.removeIf(mood -> {
             String reason = mood.getReason().replaceAll("[^a-zA-Z ]", "").toLowerCase();
             return keywords.stream().noneMatch(reason::contains);
