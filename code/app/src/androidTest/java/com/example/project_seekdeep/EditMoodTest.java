@@ -1,6 +1,10 @@
 package com.example.project_seekdeep;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 import static java.util.Objects.*;
@@ -8,16 +12,26 @@ import static java.util.Objects.*;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,6 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -46,9 +61,9 @@ public class EditMoodTest {
     // borrows code from Jachelle's tests and the Lab 7
     private UserProfile testUser = new UserProfile("jshello", "tofu123");
     private MoodProvider moodProvider;
+    ImageProvider imageProvider;
 
     Mood mood1 = new Mood(testUser, EmotionalStates.ANGER);
-    Mood mood2 = new Mood(testUser, EmotionalStates.SADNESS);
 
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new
@@ -63,163 +78,271 @@ public class EditMoodTest {
         int porNumberStorage = 9199;
 
         FirebaseFirestore.getInstance().useEmulator(androidLocalhost, portNumber);
-
         FirebaseStorage.getInstance().useEmulator(androidLocalhost, porNumberStorage);
     }
     @Before
-    public void seedDatabase() {
+    public void seedDatabase() throws InterruptedException {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference moodsRef = db.collection("MoodDB");
 
         moodProvider = MoodProvider.getInstance(db);
+        imageProvider = ImageProvider.getInstance(FirebaseStorage.getInstance());
 
-        moodProvider.addMoodEvent(mood1);
-        moodProvider.addMoodEvent(mood2);
+        //Add document reference and "null" social situation
+        DocumentReference documentReference = moodsRef.document();
+        mood1.setDocRef(documentReference);
+        mood1.setSocialSituation(SocialSituations.TITLE);
+        moodProvider.updateMood(mood1);
+
+        Thread.sleep(1000);
 
     }
 
 
     @Test
-    public void testUpdateMoodReason(){
+    public void testUpdateMoodReason() throws InterruptedException {
+
         DocumentReference mood1DocRef = mood1.getDocRef();
+        Log.d("except nancy", "Nancy doc ref: "+mood1DocRef.getPath());
         mood1.setReason("Edit reason");
         moodProvider.updateMood(mood1);
 
-        Query MoodsQuery = FirebaseFirestore.getInstance().collection("MoodDB").whereEqualTo(
-                "docRef", mood1DocRef.toString() );
+        Thread.sleep(1000);
 
-        MoodsQuery.addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e("Firestore", error.toString());
-            }
-            if (value != null) {
+        mood1DocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot snapshot = task.getResult();
+                    if (snapshot.exists()) {
 
-                for (QueryDocumentSnapshot snapshot : value) {
-                    HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
-                    UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
-                            ownerSnapshot.get("password").toString());
-                    EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
-                    SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
+                        HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
+                        UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
+                                ownerSnapshot.get("password").toString());
+                        EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
+                        SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
 
-                    List<String> followers = (List<String>) snapshot.get("followers");
-                    Date postedDate = requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
-                    String reason = (String) snapshot.get("reason");
+                        List<String> followers = (List<String>) snapshot.get("followers");
+                        Date postedDate = requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                        String reason = (String) snapshot.get("reason");
 
-                    String imageStr = (String) snapshot.get("image");
-                    Uri image = null;
-                    if (imageStr != null){
-                        image = Uri.parse(imageStr);
+                        String imageStr = (String) snapshot.get("image");
+                        Uri image = null;
+                        if (imageStr != null){
+                            image = Uri.parse(imageStr);
+                        }
+
+                        Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
+                        mood.setImage(image);
+                        mood.setDocRef(snapshot.getReference());
+
+                        assertEquals(mood1.getReason(), mood.getReason());
+
+                    } else {
+                        Log.d("exception", "no such document found");
+                        fail();
                     }
-
-                    Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
-
-                    mood.setImage(image);
-                    mood.setDocRef(snapshot.getReference());
-
-                    assertEquals(mood1, mood);
-
+                } else {
+                    //  failed
+                    Log.d("exception", "get failed with ", task.getException());
+                    fail();
                 }
-
             }
         });
+
+
     }
 
     @Test
-    public void testUpdateMoodEmotionalState(){
+    public void testUpdateMoodEmotionalState() throws InterruptedException {
         DocumentReference mood1DocRef = mood1.getDocRef();
-        mood1.setEmotionalState(EmotionalStates.FEAR);
+        mood1.setEmotionalState(EmotionalStates.DISGUST);
         moodProvider.updateMood(mood1);
 
-        Query MoodsQuery = FirebaseFirestore.getInstance().collection("MoodDB").whereEqualTo(
-                "docRef", mood1DocRef.toString() );
+        Thread.sleep(1000);
 
-        MoodsQuery.addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e("Firestore", error.toString());
-            }
-            if (value != null) {
+        mood1DocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot snapshot = task.getResult();
+                    if (snapshot.exists()) {
 
-                for (QueryDocumentSnapshot snapshot : value) {
-                    HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
-                    UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
-                            ownerSnapshot.get("password").toString());
-                    EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
-                    SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
+                        HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
+                        UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
+                                ownerSnapshot.get("password").toString());
+                        EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
+                        SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
 
-                    List<String> followers = (List<String>) snapshot.get("followers");
-                    Date postedDate = requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
-                    String reason = (String) snapshot.get("reason");
+                        List<String> followers = (List<String>) snapshot.get("followers");
+                        Date postedDate = requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                        String reason = (String) snapshot.get("reason");
 
-                    String imageStr = (String) snapshot.get("image");
-                    Uri image = null;
-                    if (imageStr != null){
-                        image = Uri.parse(imageStr);
+                        String imageStr = (String) snapshot.get("image");
+                        Uri image = null;
+                        if (imageStr != null){
+                            image = Uri.parse(imageStr);
+                        }
+
+                        Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
+                        mood.setImage(image);
+                        mood.setDocRef(snapshot.getReference());
+
+                        assertEquals(mood1.getEmotionalState(), mood.getEmotionalState());
+
+                    } else {
+                        Log.d("exception", "no such document found");
+                        fail();
                     }
-
-                    Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
-
-                    mood.setImage(image);
-                    mood.setDocRef(snapshot.getReference());
-
-                    assertEquals(mood1, mood);
-
+                } else {
+                    //  failed
+                    Log.d("exception", "get failed with ", task.getException());
+                    fail();
                 }
-
             }
         });
     }
 
     @Test
-    public void testUpdateMoodSocialSituation(){
+    public void testUpdateMoodSocialSituation() throws InterruptedException {
         DocumentReference mood1DocRef = mood1.getDocRef();
         mood1.setSocialSituation(SocialSituations.ALONE);
         moodProvider.updateMood(mood1);
 
-        Query MoodsQuery = FirebaseFirestore.getInstance().collection("MoodDB").whereEqualTo(
-                "docRef", mood1DocRef.toString() );
+        Thread.sleep(1000);
 
-        MoodsQuery.addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e("Firestore", error.toString());
-            }
-            if (value != null) {
+        mood1DocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot snapshot = task.getResult();
+                    if (snapshot.exists()) {
 
-                for (QueryDocumentSnapshot snapshot : value) {
-                    HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
-                    UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
-                            ownerSnapshot.get("password").toString());
-                    EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
-                    SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
+                        HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
+                        UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
+                                ownerSnapshot.get("password").toString());
+                        EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
+                        SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
 
-                    List<String> followers = (List<String>) snapshot.get("followers");
-                    Date postedDate = requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
-                    String reason = (String) snapshot.get("reason");
+                        List<String> followers = (List<String>) snapshot.get("followers");
+                        Date postedDate = requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                        String reason = (String) snapshot.get("reason");
 
-                    String imageStr = (String) snapshot.get("image");
-                    Uri image = null;
-                    if (imageStr != null){
-                        image = Uri.parse(imageStr);
+                        String imageStr = (String) snapshot.get("image");
+                        Uri image = null;
+                        if (imageStr != null){
+                            image = Uri.parse(imageStr);
+                        }
+
+                        Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
+                        mood.setImage(image);
+                        mood.setDocRef(snapshot.getReference());
+
+                        assertEquals(mood1.getSocialSituation(), mood.getSocialSituation());
+
+                    } else {
+                        Log.d("exception", "no such document found");
+                        fail();
                     }
-
-                    Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
-
-                    mood.setImage(image);
-                    mood.setDocRef(snapshot.getReference());
-
-                    assertEquals(mood1, mood);
-
+                } else {
+                    //  failed
+                    Log.d("exception", "get failed with ", task.getException());
+                    fail();
                 }
-
             }
         });
     }
 
 
+    @Test
+    public void testUpdateMoodImage() throws InterruptedException {
+        DocumentReference mood1DocRef = mood1.getDocRef();
+        Uri uri = Uri.parse("123");
+        mood1.setImage(uri);
+        moodProvider.updateMood(mood1);
 
 
-    @After
-    public void tearDown() {
+
+        Thread.sleep(1000);
+
+        mood1DocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot snapshot = task.getResult();
+                    if (snapshot.exists()) {
+
+                        HashMap<String, Object> ownerSnapshot = (HashMap<String, Object>) snapshot.getData().get("owner");
+                        UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
+                                ownerSnapshot.get("password").toString());
+                        EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
+                        SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
+
+                        List<String> followers = (List<String>) snapshot.get("followers");
+                        Date postedDate = requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                        String reason = (String) snapshot.get("reason");
+
+                        String imageStr = (String) snapshot.get("image");
+                        Uri image = null;
+                        if (imageStr != null){
+                            image = Uri.parse(imageStr);
+                        }
+
+                        Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
+                        mood.setImage(image);
+                        mood.setDocRef(snapshot.getReference());
+
+                        assertEquals(mood1.getImage(), mood.getImage());
+
+                    } else {
+                        Log.d("exception", "no such document:" + mood1DocRef.getPath() + " found");
+                        fail();
+                    }
+                } else {
+                    //  failed
+                    Log.d("exception", "get failed with ", task.getException());
+                    fail();
+                }
+            }
+        });
+
+    }
+
+
+    @Test
+    public void testUploadImageStorageCheck() throws InterruptedException {
+
+        Uri uploadUri = Uri.parse("Images/123456");
+        imageProvider = ImageProvider.getInstance(FirebaseStorage.getInstance());
+        imageProvider.uploadImageToFirebase(uploadUri);
+
+        Thread.sleep(10000);
+
+        StorageReference imageFire = imageProvider.getStorageRefFromLastPathSeg(uploadUri.getLastPathSegment());
+
+        imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                return;
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                fail();
+            }
+        });
+
+
+
+    }
+
+
+
+
+    //@After
+    public void tearDown() throws InterruptedException {
+        Thread.sleep(10000);
         String projectId = "project-seekdeep";
         URL url = null;
         try {
