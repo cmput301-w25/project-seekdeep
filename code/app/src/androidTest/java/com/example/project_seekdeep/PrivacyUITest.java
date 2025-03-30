@@ -25,6 +25,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
 
 import org.junit.After;
 import org.junit.Before;
@@ -337,8 +338,14 @@ public class PrivacyUITest {
         onView(withText("Create")).perform(click());
         Thread.sleep(1000);
 
-        onView(withId(R.id.feed_bottom_nav)).perform(click());
+        // Reload..
+        onView(withId(R.id.History)).perform(click());
+        Thread.sleep(1000);
 
+        // To this current user
         onView(withText("This is a test mood2!")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.feed_bottom_nav)).perform(click());
+        onView(withText("This is a test mood2!")).check(doesNotExist());
     }
 }
