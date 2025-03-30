@@ -246,9 +246,9 @@ public class EditMoodFragment extends DialogFragment {
                 mood.setSocialSituation(socialSituations);
 
                 // Upload to the MoodsCollection a simplified image Uri
-                mood.setImage(Uri.parse(imageUri.getLastPathSegment()));
                 if (imageUri != null){
                     imageProvider.uploadImageToFirebase(imageUri);
+                    mood.setImage(Uri.parse(imageUri.getLastPathSegment()));
                 }
 
 
