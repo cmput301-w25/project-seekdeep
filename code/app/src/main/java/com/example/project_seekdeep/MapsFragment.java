@@ -53,7 +53,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ListResourceBundle;
 import java.util.Objects;
 
 /**
@@ -90,7 +92,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
     }
 
     /**
-     * Inflates the layout and initializes map and location
+     * Inflates the layout and initializes map, buttons and location
      *
      * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment,
      * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
@@ -145,8 +147,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         filterMoodHistoryButton.setOnClickListener(v -> {
             if (!displayToggle.isChecked()) {
                 new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
-            }
-            else {
+            } else {
                 Toast.makeText(requireContext(), "Filters unavailable in Mood Following mode", Toast.LENGTH_SHORT).show();
             }
         });
@@ -155,8 +156,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         filterMoodFollowingButton.setOnClickListener(v -> {
             if (displayToggle.isChecked()) {
                 new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
-            }
-            else {
+            } else {
                 Toast.makeText(requireContext(), "Filters unavailable in Mood History mode", Toast.LENGTH_SHORT).show();
             }
 
@@ -186,6 +186,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
     /**
      * Call when map is ready to be used and creates and instance of google map to be used.
      * Sets up the map with mood markers and the user's location.
+     *
      * @param googleMap
      */
     @Override
@@ -196,11 +197,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         // Attempt to enable location
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             enableLocationAndFetch();
-        }
-        else {
+        } else {
             // If permission isn’t granted, request it
             requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
+        // Load the following displays as toggle switches
         mMap.clear();
         if (displayToggle.isChecked()) {
             loadFollowingLocations();
@@ -258,6 +259,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
 
     /**
      * Return the bitmap descriptor of custom marker based on mood
+     *
      * @param emotionalState: The emotional state enum
      * @return
      */
@@ -284,9 +286,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
 
     /**
      * This method apply filters on the map markers based on Mood History filters and displays the filtered markers.
-     * @param selectedMoods: The filter based on state of the mood
+     *
+     * @param selectedMoods:    The filter based on state of the mood
      * @param selectedTimeline: The filter based on timeline
-     * @param keyword: The filter based on a keyword in the mood event
+     * @param keyword:          The filter based on a keyword in the mood event
      */
     // Taken from MoodHistoryFragment.java
     @Override
@@ -296,74 +299,219 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         String userName = currentUserProfile.getUsername();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Match the database locations with current user
-        db.collection("MoodDB")
-                .whereEqualTo("owner.username", userName)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                // Create a ArrayList for mood get it's ID
-                ArrayList<Mood> moodList = new ArrayList<>();
-                for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                    EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
-                    SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
+        // Filter the Mood History
+        if (!displayToggle.isChecked()) {
+            // Match the database locations with current user
+            db.collection("MoodDB")
+                    .whereEqualTo("owner.username", userName)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        ArrayList<Mood> moodList = new ArrayList<>();
+                        for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                            EmotionalStates emotionalState = EmotionalStates.valueOf((String) snapshot.get("emotionalState"));
+                            SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
 
-                    List<String> followers = (List<String>) snapshot.get("followers");
-                    Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
-                    String reason = (String) snapshot.get("reason");
+                            List<String> followers = (List<String>) snapshot.get("followers");
+                            Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                            String reason = (String) snapshot.get("reason");
 
-                    String imageStr = (String) snapshot.get("image");
-                    Uri image = null;
-                    if (imageStr != null){
-                        image = Uri.parse(imageStr);
-                    }
-                    Mood mood = new Mood(currentUserProfile, emotionalState, socialSituation, followers, postedDate, reason);
-                    mood.setDocRef (snapshot.getReference());
-                    mood.setImage(image);
+                            String imageStr = (String) snapshot.get("image");
+                            Uri image = null;
+                            if (imageStr != null) {
+                                image = Uri.parse(imageStr);
+                            }
+                            Mood mood = new Mood(currentUserProfile, emotionalState, socialSituation, followers, postedDate, reason);
+                            mood.setDocRef(snapshot.getReference());
+                            mood.setImage(image);
 
-                    moodList.add(mood);
-                }
-                // Apply the selected filters if they aren't empty
-                MoodFiltering.removeAllFilters();
-                MoodFiltering.saveOriginal(moodList);
-                if (!selectedMoods.isEmpty()) {
-                    MoodFiltering.addStates(selectedMoods);
-                    MoodFiltering.applyFilter("states");
-                }
+                            moodList.add(mood);
+                        }
 
-                if (!selectedTimeline.isBlank()) {
-                    MoodFiltering.applyFilter(selectedTimeline);
-                }
+                        applyFilters(moodList, selectedMoods, selectedTimeline, keyword);
+                        // Create Arraylist for filtered moods
+                        ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
 
-                if (!keyword.isEmpty()) {
-                    MoodFiltering.addKeyword(keyword);
-                    MoodFiltering.applyFilter("keyword");
-                }
+                        mapFilteredMoods(filteredMoods, userName, filterMoodHistoryButton);
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(requireContext(), "Failed to load moods", Toast.LENGTH_SHORT).show();
+                    });
+        }
+        // Filter the Mood Following
+        else {
+            db.collection("followings_and_requests")
+                    .whereEqualTo("follower", userName)
+                    .whereEqualTo("status", "following")
+                    .get()
+                    .addOnSuccessListener(queryFollowingSnapshots -> {
+                        if (queryFollowingSnapshots.isEmpty()) {
+                            mMap.clear();
+                            Toast.makeText(requireContext(), "You are not following anyone", Toast.LENGTH_SHORT).show();
+                            filterMoodFollowingButton.setSelected(false);
+                            return;
+                        }
+                        List<String> allFilteredMoodIds = new ArrayList<>();
 
-                // Set the filter button as selected when filter applied
-                if (!selectedMoods.isEmpty() || !selectedTimeline.isBlank() || !keyword.isEmpty()) {
-                    if (displayToggle.isChecked()) {
-                        filterMoodFollowingButton.setSelected(true);
-                    } else {
-                        filterMoodHistoryButton.setSelected(true);
-                    }
-                }
+                        for (QueryDocumentSnapshot document : queryFollowingSnapshots) {
+                            FollowRequest follow = document.toObject(FollowRequest.class);
+                            String followee = follow.getFollowee();
+                            if (followee != null) {
+                                db.collection("MoodDB")
+                                        .whereEqualTo("owner.username", followee)
+                                        .get()
+                                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                                            ArrayList<Mood> moodList = new ArrayList<>();
+                                            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                                                EmotionalStates emotionalState = EmotionalStates.valueOf((String) snapshot.get("emotionalState"));
+                                                SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
 
-                // Create Arraylist for filtered moods
-                ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
-                // Extract mood IDs from filtered moods
-                List<String> filteredMoodIds = new ArrayList<>();
-                for (Mood mood : filteredMoods) {
-                    filteredMoodIds.add(mood.getDocRef().getId());
-                }
-                if (!filteredMoodIds.isEmpty()) {
-                    db.collection("locations")
-                            .whereEqualTo("userId", userName)
-                            .whereIn("moodID", filteredMoodIds)
-                            .get()
-                            .addOnSuccessListener(locationSnapshots -> {
+                                                List<String> followers = (List<String>) snapshot.get("followers");
+                                                Date postedDate = Objects.requireNonNull(snapshot.getTimestamp("postedDate")).toDate();
+                                                String reason = (String) snapshot.get("reason");
+
+                                                String imageStr = (String) snapshot.get("image");
+                                                Uri image = null;
+                                                if (imageStr != null) {
+                                                    image = Uri.parse(imageStr);
+                                                }
+                                                UserProfile user = new UserProfile(followee);
+                                                Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
+                                                mood.setDocRef(snapshot.getReference());
+                                                mood.setImage(image);
+
+                                                moodList.add(mood);
+                                            }
+
+                                            applyFilters(moodList, selectedMoods, selectedTimeline, keyword);
+                                            // Create Arraylist for filtered moods
+                                            ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
+                                            for (Mood mood : filteredMoods) {
+                                                allFilteredMoodIds.add(mood.getDocRef().getId());
+                                            }
+                                            mapAllFilteredMoods(allFilteredMoodIds, filterMoodFollowingButton);
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(requireContext(), "Failed to load moods", Toast.LENGTH_SHORT).show();
+                                            mapAllFilteredMoods(allFilteredMoodIds, filterMoodFollowingButton);
+
+                                        });
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(requireContext(), "Failed to load moods following", Toast.LENGTH_SHORT).show();
+                    });
+        }
+    }
+
+    private void applyFilters(ArrayList<Mood> moodList, ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
+        // Apply the selected filters if they aren't empty
+        MoodFiltering.removeAllFilters();
+        MoodFiltering.saveOriginal(moodList);
+        if (!selectedMoods.isEmpty()) {
+            MoodFiltering.addStates(selectedMoods);
+            MoodFiltering.applyFilter("states");
+        }
+
+        if (!selectedTimeline.isBlank()) {
+            MoodFiltering.applyFilter(selectedTimeline);
+        }
+
+        if (!keyword.isEmpty()) {
+            MoodFiltering.addKeyword(keyword);
+            MoodFiltering.applyFilter("keyword");
+        }
+    }
+
+    private void mapFilteredMoods(ArrayList<Mood> filteredMoods, String userName, ImageButton filterButton) {
+        // Extract mood IDs from filtered moods
+        List<String> filteredMoodIds = new ArrayList<>();
+        for (Mood mood : filteredMoods) {
+            filteredMoodIds.add(mood.getDocRef().getId());
+        }
+        if (!filteredMoodIds.isEmpty()) {
+            // Since firebase has a limit of 30 for whereIn argument, we are gonna turn it into chunks.
+            // https://stackoverflow.com/questions/61354866/is-there-a-workaround-for-the-firebase-query-in-limit-to-10
+            List<List<String>> sublist = new ArrayList<>();
+            for (int i = 0; i < filteredMoodIds.size(); i += 30) {
+                int j = Math.min(i + 30, filteredMoodIds.size());
+                sublist.add(filteredMoodIds.subList(i, j));
+            }
+
+            List<UserLocation> locationCollection = new ArrayList<>();
+            int[] completedQueries = {0};
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            for (List<String> chunk : sublist) {
+                db.collection("locations")
+                        .whereEqualTo("userId", userName)
+                        .whereIn("moodID", chunk)
+                        .get()
+                        .addOnSuccessListener(locationSnapshots -> {
                             mMap.clear();
                             for (QueryDocumentSnapshot document : locationSnapshots) {
                                 UserLocation location = document.toObject(UserLocation.class);
+                                locationCollection.add(location);
+                            }
+                            completedQueries[0]++;
+                            if (completedQueries[0] == sublist.size()) {
+                                mMap.clear();
+                                for (UserLocation location : locationCollection) {
+                                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                    EmotionalStates emotionalState = location.getEmotionalState();
+                                    String markerTitle = emotionalState.getStateName();
+                                    mMap.addMarker(new MarkerOptions()
+                                            .position(latLng)
+                                            .title(markerTitle)
+                                            .icon(getEmotionalLocation(emotionalState)));
+                                }
+                                if (locationCollection.isEmpty()) {
+                                    Toast.makeText(requireContext(), "No mood events match the filters", Toast.LENGTH_SHORT).show();
+                                }
+                                filterButton.setSelected(!filteredMoods.isEmpty());
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(requireContext(), "Failed to load filtered locations", Toast.LENGTH_SHORT).show();
+                        });
+            }
+        } else {
+            mMap.clear();
+            Toast.makeText(requireContext(), "No mood events match the filters", Toast.LENGTH_SHORT).show();
+            filterButton.setSelected(false);
+        }
+    }
+
+    private void mapAllFilteredMoods(List<String> allFilteredMoodIds, ImageButton filterButton){
+        if (allFilteredMoodIds.isEmpty()) {
+            mMap.clear();
+            Toast.makeText(requireContext(), "No mood events match the filters", Toast.LENGTH_SHORT).show();
+            filterButton.setSelected(false);
+            return;
+        }
+
+        List<List<String>> sublist = new ArrayList<>();
+        for (int i = 0; i < allFilteredMoodIds.size(); i += 30) {
+            int j = Math.min(i + 30, allFilteredMoodIds.size());
+            sublist.add(allFilteredMoodIds.subList(i, j));
+        }
+
+        List<UserLocation> locationCollection = new ArrayList<>();
+        int[] completedQueries = {0};
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        for (List<String> chunk : sublist) {
+            db.collection("locations")
+                    .whereIn("moodID", chunk)
+                    .get()
+                    .addOnSuccessListener(locationSnapshots -> {
+                        for (QueryDocumentSnapshot document : locationSnapshots) {
+                            UserLocation location = document.toObject(UserLocation.class);
+                            locationCollection.add(location);
+                        }
+                        completedQueries[0]++;
+                        if (completedQueries[0] == sublist.size()) {
+                            mMap.clear();
+                            for (UserLocation location : locationCollection) {
                                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                                 EmotionalStates emotionalState = location.getEmotionalState();
                                 String markerTitle = emotionalState.getStateName();
@@ -372,24 +520,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
                                         .title(markerTitle)
                                         .icon(getEmotionalLocation(emotionalState)));
                             }
-                            if (locationSnapshots.isEmpty()) {
-                                Toast.makeText(requireContext(), "No mood events match the filters", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(requireContext(), "Failed to load filtered locations", Toast.LENGTH_SHORT).show();
-                        });
-                } else {
-                    mMap.clear();
-                    Toast.makeText(requireContext(), "No mood events match the filters", Toast.LENGTH_SHORT).show();
-                }
-            })
-            .addOnFailureListener(e -> {
-                Toast.makeText(requireContext(), "Failed to load moods", Toast.LENGTH_SHORT).show();
-            });
-
+                            filterButton.setSelected(!locationCollection.isEmpty());
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(requireContext(), "Failed to load filtered locations", Toast.LENGTH_SHORT).show();
+                    });
+        }
     }
-
     /**
      * This method resets the filters and displays the map with all mood events.
      */
@@ -404,7 +542,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         }
 
     }
-
 
     private void loadMoodHistoryLocations(){
         // Current user's profile
@@ -454,13 +591,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
 
         db.collection("followings_and_requests")
                 .whereEqualTo("follower", userName)
+                .whereEqualTo("status", "following")
                 .get()
                 .addOnSuccessListener(queryFollowingSnapshots -> {
                     for (QueryDocumentSnapshot document : queryFollowingSnapshots) {
                         FollowRequest follow = document.toObject(FollowRequest.class);
                         String followee = follow.getFollowee();
-                        String status = follow.getStatus();
-                        if (status != null && status.equals("following") && followee != null) {
+                        if (followee != null) {
                             loadMoodLocations(followee);
                         }
                     }
