@@ -1,5 +1,6 @@
 package com.example.project_seekdeep;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -17,6 +18,7 @@ import android.util.Log;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -28,6 +30,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.auth.User;
 
+import org.hamcrest.Description;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -81,6 +84,8 @@ public class PrivacyUITest {
         Thread.sleep(5000);
         Mood mood2 = new Mood(user1, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER, null, calendar.getTime(), "I hate homework!!");
         Thread.sleep(5000);
+        Mood mood6 = new Mood(testUser, EmotionalStates.HAPPINESS, new String[]{"Done testing!","Alone"});
+
 
         String[] mood3Fields = {
                 "It works!!!",
@@ -188,7 +193,8 @@ public class PrivacyUITest {
             }
         });
 
-        moodsRef.add(mood5);
+        moodsRef.document().set(mood5);
+        moodsRef.document().set(mood6);
 
         // Force log in
         scenario.getScenario().onActivity(activity -> activity.setCurrentUser(testUser));
@@ -360,5 +366,47 @@ public class PrivacyUITest {
         onView(withId(R.id.feed_bottom_nav)).perform(click());
         Thread.sleep(1000);
         onView(withText("This is a test mood2!")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void editPublicMoodsShouldBeThenDisplayedToOtherUsers() throws InterruptedException {
+        // Navigate to profile
+        onView(withId(R.id.History)).perform(click());
+        Thread.sleep(2000);
+
+        // Taken from Jachelle in MoodHistoryFragmentUITest.java (See citation there under appShouldDisplayExistingMoods test)
+        onData(new BoundedMatcher<Object, Mood>(Mood.class) {
+            @Override
+            protected boolean matchesSafely(Mood mood) {
+                return mood.getEmotionalState().toString().equals("😄 Happiness");
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with emotion: Happiness");
+            }
+        }).inAdapterView(withId(R.id.history_listview)).onChildView(withId(R.id.edit_mood_button)).perform(click());
+        Thread.sleep(3000);
+
+        onView(withId(R.id.privacy_switch)).perform(click());
+        Thread.sleep(1000);
+
+        onView(withText("CONTINUE"))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(click());
+        Thread.sleep(1000);
+
+        ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class);
+
+        UserProfile testUser2 = new UserProfile("person", "123");
+        scenario.onActivity(activity -> {
+            activity.setCurrentUser(testUser2);
+            activity.successful_login();
+        });
+
+        onView(withId(R.id.feed_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+        onView(withText("Done testing!")).check(matches(isDisplayed()));
     }
 }

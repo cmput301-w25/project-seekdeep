@@ -197,7 +197,7 @@ public class EditMoodFragment extends DialogFragment {
                 mood.setReason(reason);
                 mood.setEmotionalState(emotionalStates);
                 mood.setSocialSituation(socialSituations);
-                mood.setPrivate(privacySwitch.isChecked());
+                mood.setPrivate(!privacySwitch.isChecked());
 
                 //todo add edit image functionality
 
