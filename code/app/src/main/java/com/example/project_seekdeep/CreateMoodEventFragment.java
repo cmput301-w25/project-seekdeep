@@ -26,6 +26,7 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -34,6 +35,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -73,6 +75,10 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     private ImageView uploadImageHere;  //this imageView is set to be clickable
     private Button createConfirmButton;
     private EditText reasonEditText;
+
+    //views for canceling the image you have
+    private FloatingActionButton cancelImageFab;
+    private CardView imageCardView;
 
     private Mood moodEvent;
     private Uri imageUri; //this is where selected image is assigned
@@ -131,6 +137,8 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                     Toast.makeText(requireContext(), "Image too large, must be under 65536 bytes", Toast.LENGTH_SHORT).show();
                 } else {
                     Glide.with(requireContext()).load(imageUriActivty).into(uploadImageHere);
+                    cancelImageFab.setVisibility(View.VISIBLE);
+                    cancelImageFab.bringToFront();
                 }
 
             }
@@ -167,6 +175,13 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
         //Initialize the image UI element
         uploadImageHere = view.findViewById(R.id.image);
+
+        //Initialize the cancel image and image wrapping elements
+        cancelImageFab = view.findViewById(R.id.image_delete);
+        cancelImageFab.setVisibility(View.VISIBLE);
+        cancelImageFab.bringToFront();
+        imageCardView = view.findViewById(R.id.card_view);
+
         //Initialize selectMood to UI element
         clickToSelectMood = view.findViewById(R.id.edit_emotion_editText);
         createConfirmButton = view.findViewById(R.id.confirm_create_button);
@@ -211,7 +226,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         reasonEditText.addTextChangedListener(txtWatcher);
 
 
-        uploadImageHere.setImageResource(R.drawable.twotone_add_photo_alternate_24);
+        uploadImageHere.setImageResource(R.drawable.outline_collections_24);
 
         //Set a listener for when the imageView is clicked on
         uploadImageHere.setOnClickListener(new View.OnClickListener() {
@@ -221,6 +236,17 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                 launcher.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                         .build());
+            }
+        });
+
+        //set an on click listener for the cancel image FAB
+        cancelImageFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadImageHere.setImageResource(R.drawable.outline_add_photo_alternate_24);
+                imageCardView.setCardElevation(6);
+                imageUri = null;
+                cancelImageFab.setVisibility(View.GONE);
             }
         });
 
@@ -328,9 +354,12 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
                 if (imageUri != null) {
                     imageProvider.uploadImageToFirebase(imageUri);
+                    // Upload to firebase a simplified image Uri
+                    moodEvent.setImage(Uri.parse(imageUri.getLastPathSegment()));
+                } else{
+                    moodEvent.setImage(imageUri);
                 }
-                // Upload to firebase a simplified image Uri
-                moodEvent.setImage(Uri.parse(imageUri.getLastPathSegment()));
+
                 //Upload the new Mood to firebase
                 moodProvider.addMoodEvent(moodEvent).addOnSuccessListener(documentReference -> {
                     String moodEventId = documentReference.getId();
