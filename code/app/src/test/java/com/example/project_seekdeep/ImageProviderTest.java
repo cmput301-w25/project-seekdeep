@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -33,11 +34,13 @@ import java.util.Objects;
 // Taken by: NANCY lin
 // Taken on: March 26, 2025
 
-@PrepareForTest({Uri.class})
+
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore("jdk.internal.reflect.*")
+@PrepareForTest({Uri.class})
 public class ImageProviderTest {
     @Mock
-    private FirebaseFirestore mockFirestore;
+    public FirebaseFirestore mockFirestore;
     @Mock
     private CollectionReference mockMoodCollection;
     @Mock
@@ -59,7 +62,7 @@ public class ImageProviderTest {
     @Mock
     private UploadTask mockUploadTask;
 
-    private Uri imageUri;
+
 
     private MoodProvider moodProvider;
 
