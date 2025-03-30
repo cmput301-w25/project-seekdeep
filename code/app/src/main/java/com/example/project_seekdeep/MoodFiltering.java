@@ -3,6 +3,8 @@ package com.example.project_seekdeep;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -116,6 +118,9 @@ public class MoodFiltering {
     public static ArrayList<Mood> getFilteredMoods() {
         ArrayList<Mood> filteredMoods = new ArrayList<>(originalMoods);
 
+        if (filters.contains("states")) {
+            sortEmotionalState(filteredMoods);  // do this first
+        }
         for (String filter : filters) {
             switch (filter) {
                 case "rChronological":
@@ -123,9 +128,6 @@ public class MoodFiltering {
                     break;
                 case "recent":
                     sortRecentWeek(filteredMoods);
-                    break;
-                case "states":
-                    sortEmotionalState(filteredMoods);
                     break;
                 case "keyword":
                     sortKeyword(filteredMoods);
