@@ -20,6 +20,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 /**
  * SignUpFragment handles creating a new account and storing the users credentials in Firebase Database.
+ * @author Saurabh
  */
 public class SignUpFragment extends Fragment {
     private FirebaseFirestore db;

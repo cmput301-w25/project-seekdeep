@@ -18,4 +18,5 @@
     <color name="surprise_orange">#E4A21F</color>
     <color name="pastel_lavender">#DCCCFF</color>
     <color name="light_green">#CAD5CA</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>
