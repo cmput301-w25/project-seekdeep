@@ -33,6 +33,9 @@ import java.util.List;
 /**
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
  * It also sets up the navigation and fragment management for the app's main UI flow.
+ * Resources Used:
+ * https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
+ * @author Kevin Tu, Saurabh Singh Baghel, modified by Deryk Fong
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -93,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (itemPressed == R.id.following_bottom_nav) {
             selectedFragment = new FollowingFragment();
         }
+        else if (itemPressed == R.id.Map) {
+            selectedFragment = new MapsFragment();
+        }
 
         // Display selected fragment to screen
         if (selectedFragment != null) {
@@ -140,11 +146,6 @@ public class MainActivity extends AppCompatActivity {
         // FROM https://firebase.google.com/docs/database/android/offline-capabilities
         // Accessed by Deryk Fong on March 20th
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        // A placeholder for future functionality
-        // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
-//      getParentFragmentManager().beginTransaction()
-//          .replace(R.id.frameLayout, feedFragment)
-//          .commit();
 
         //Once login is successful, can create initizlize the followings list
         //Use one instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
@@ -153,6 +154,4 @@ public class MainActivity extends AppCompatActivity {
         userProvider.listenForNewFollowRequests();
         userProvider.listenForAcceptedRequests();
     }
-
-
 }

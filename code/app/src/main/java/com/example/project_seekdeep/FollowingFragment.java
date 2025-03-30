@@ -2,12 +2,16 @@ package com.example.project_seekdeep;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -34,10 +38,11 @@ import java.util.Objects;
  * @author Sarah Chang
  */
 // TODO: Implement filtering (by emotion/recent/last 3/text)
-public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnUsernameClickListener{
+public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnUsernameClickListener, FilterMenuDialogFragment.OnFilterSelectedListener {
     private ListView moodListView;
 
     private ArrayList<Mood> moodArrayList;
+    private ArrayList<Mood> filteredMoodList;
     private ArrayAdapter<Mood> moodArrayAdapter;
 
     private UserProfile loggedInUser;
@@ -114,8 +119,9 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
 
 
         //set views
-        moodListView = view.findViewById(R.id.list_view_mood);
+        moodListView = view.findViewById(R.id.listview_following);
         moodArrayList = new ArrayList<>();
+        filteredMoodList = new ArrayList<>();
         moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, this); //"this" passes current instance of followingFragment
         moodListView.setAdapter(moodArrayAdapter);
 
@@ -162,6 +168,35 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                     MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                     moodArrayAdapter.notifyDataSetChanged();
                     moodListView.setAdapter(moodArrayAdapter);                moodArrayAdapter.notifyDataSetChanged();
+
+                    MoodFiltering.saveOriginal(moodArrayList);
+                    ImageButton filterButton = view.findViewById(R.id.following_filter_button);
+                    filterButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
+                        }
+                    });
+
+                    //Implement the search bar
+                    EditText searchBar = view.findViewById(R.id.search_bar);
+                    final TextWatcher txtWatcher = new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        }
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            //get the keyword from search bar
+                            String keywords = searchBar.getText().toString();
+                            applySearchBarKeyword(keywords);
+
+                        }
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+                        }
+                    };
+                    searchBar.addTextChangedListener(txtWatcher);
+
                 }
             });
         }
@@ -233,6 +268,62 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                 .setReorderingAllowed(true)
                 .addToBackStack("feed")
                 .commit();
+    }
+
+    @Override
+    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
+        Log.d("Following","onFiltersApplied here");
+
+        //Same implementation as on MoodHistoryFragment
+        MoodFiltering.removeAllFilters();
+        //Check for selected emotional filters
+        MoodFiltering.removeAllFilters();
+        if(!selectedMoods.isEmpty()) {
+            MoodFiltering.addStates(selectedMoods);
+            MoodFiltering.applyFilter("states");
+        }
+        filteredMoodList = MoodFiltering.getFilteredMoods();
+        moodArrayAdapter.clear();
+        moodArrayAdapter.addAll(filteredMoodList);
+        moodArrayAdapter.notifyDataSetChanged();
+
+        if(!selectedTimeline.isBlank()) {
+            MoodFiltering.applyFilter(selectedTimeline);
+            filteredMoodList = MoodFiltering.getFilteredMoods();
+            moodArrayAdapter.clear();
+            moodArrayAdapter.addAll(filteredMoodList);
+            moodArrayAdapter.notifyDataSetChanged();
+        }
+
+        if(!keyword.isEmpty()) {
+            MoodFiltering.addKeyword(keyword);
+            MoodFiltering.applyFilter("keyword");
+            filteredMoodList = MoodFiltering.getFilteredMoods();
+            moodArrayAdapter.clear();
+            moodArrayAdapter.addAll(filteredMoodList);
+            moodArrayAdapter.notifyDataSetChanged();
+        }
+
+        Log.d("Following","filters should be applied now");
+    }
+
+    @Override
+    public void onFiltersReset() {
+        MoodFiltering.removeAllFilters();
+        filteredMoodList = MoodFiltering.getFilteredMoods();
+        moodArrayAdapter.clear();
+        moodArrayAdapter.addAll(filteredMoodList);
+        moodArrayAdapter.notifyDataSetChanged();
+    }
+
+    public void applySearchBarKeyword(String keyword) {
+        MoodFiltering.addKeyword(keyword);
+        MoodFiltering.applyFilter("keyword");
+        filteredMoodList = MoodFiltering.getFilteredMoods();
+        moodArrayAdapter.clear();
+        moodArrayAdapter.addAll(filteredMoodList);
+        moodArrayAdapter.notifyDataSetChanged();
+        Log.d("Following","search bar applied!!!");
     }
 
 }

@@ -22,6 +22,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 /**
  * LogInFragment is the starting point of application and allows user to login to their account using Firebase
+ * @author Saurabh
  */
 public class LogInFragment extends Fragment {
     private FirebaseFirestore db;

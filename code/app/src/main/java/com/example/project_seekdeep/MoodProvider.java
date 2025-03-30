@@ -2,6 +2,7 @@ package com.example.project_seekdeep;
 
 import android.graphics.Movie;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -81,18 +82,18 @@ public class MoodProvider {
 
 
     //METHODS:
-
     /**
      * This adds a new Mood object into the MoodDB collection in the firebase database
-     * @param mood
-     *          This is the mood to be added to firebase
+     * @param mood: This is the mood to be added to firebase
+     * @return
      */
-    public void addMoodEvent(Mood mood) {
+    public Task<DocumentReference> addMoodEvent(Mood mood) {
         //Create a new document for the mood.  Keep the parameter empty in document() so that firestore generates a unique Key
         DocumentReference moodDocRef = moodCollection.document();
-
+        //Set the document to the mood's DocRef right away so there aren't any bugs
+        mood.setDocRef(moodDocRef);
         //Populate the new document with mood
-        moodDocRef.set(mood);
+        return moodDocRef.set(mood).continueWith(task -> moodDocRef);
     }
 
     /**
@@ -102,8 +103,6 @@ public class MoodProvider {
     public void updateMood(Mood mood) {
         DocumentReference documentReference = mood.getDocRef();
         documentReference.set(mood);
-
-        CollectionReference usersDB = FirebaseFirestore.getInstance().collection("users");
     }
 
     /**
@@ -118,6 +117,4 @@ public class MoodProvider {
     public static void setInstanceForTesting(FirebaseFirestore firestore) {
         moodProvider = new MoodProvider(firestore);
     }
-
-
 }

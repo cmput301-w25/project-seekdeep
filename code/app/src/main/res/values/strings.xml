@@ -9,4 +9,6 @@
     <string name="_0_string">0</string>
     <string name="followers">followers</string>
     <string name="following">following</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="my_api_key">AIzaSyB5jm2LhKqL7LJ62ncvDEnWsqUgoLQDTEU</string>
 </resources>
