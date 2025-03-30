@@ -145,6 +145,18 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
 
                         UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
                                 ownerSnapshot.get("password").toString());
+
+                        Boolean isPrivate = (Boolean) snapshot.get("private");
+
+                        // For moods that are currently existing, but does not have the "private" field.
+                        // We'll allow these to be public for the sake of demo-ing.
+                        if (isPrivate == null) {
+                            isPrivate = false;
+                        } else if (isPrivate || loggedInUser.equals(user)) {
+                            // This skips loading the mood into the feed since it is private and not owned by the currently logged in user.
+                            continue;
+                        }
+
                         EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
                         SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
 
@@ -158,7 +170,11 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                             image = Uri.parse(imageStr);
                         }
 
-                        Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
+                        String[] stringFields = {
+                                reason,
+                                socialSituation.toString()
+                        };
+                        Mood mood = new Mood(user, emotionalState, stringFields, followers, isPrivate, postedDate);
 
                         mood.setImage(image);
                         mood.setDocRef(snapshot.getReference());
