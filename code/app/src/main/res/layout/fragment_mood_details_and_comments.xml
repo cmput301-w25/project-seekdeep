@@ -80,17 +80,15 @@
                 android:layout_height="match_parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <Switch
-                    android:id="@+id/switch1"
+                <ImageView
+                    android:id="@+id/location_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:checked="false"
-                    android:clickable="false"
-                    android:drawableLeft="@drawable/location_off"
-                    android:drawablePadding="-5dp"
-                    app:layout_constraintEnd_toEndOf="@+id/mood_details_box"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_marginRight="12dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/location_off" />
 
                 <LinearLayout
                     android:id="@+id/mood_details_box"
@@ -102,7 +100,7 @@
                     android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/switch1">
+                    app:layout_constraintTop_toBottomOf="@+id/location_image">
 
                     <LinearLayout
                         android:layout_width="match_parent"

@@ -170,6 +170,9 @@ public class ViewMoodDetailsFragment extends Fragment {
 
         // Set mood details
 
+        TextView user = view.findViewById(R.id.username);
+        user.setText(clickedOnMood.getOwnerString());
+
 
         TextView reason = (TextView) view.findViewById(R.id.reason);
         reason.setText(clickedOnMood.getReason());
@@ -225,19 +228,25 @@ public class ViewMoodDetailsFragment extends Fragment {
             image.setVisibility(View.GONE);
         }
 
+        Log.d("Nancy", "get activity name|" + this.getClass().getSimpleName() );
 
-        Switch locationToggle = view.findViewById(R.id.switch1);
+
+        ImageView locationToggle = view.findViewById(R.id.location_image);
+        locationToggle.setVisibility(View.GONE);
         //THIS CONTROLS THE TOGGLES FOR GEOLOCATION AND PRIVACY:
         // Set location toggle by checking if a location exists in the locations collection
         db.collection("locations")
                 .whereEqualTo("moodID", clickedOnMood.getDocRef().getId())
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    boolean isLocation = !queryDocumentSnapshots.isEmpty();
-                    locationToggle.setChecked(isLocation);
-                    locationToggle.setCompoundDrawablesWithIntrinsicBounds(
-                            isLocation ? R.drawable.location_on : R.drawable.location_off, 0, 0, 0);
-                    locationToggle.setEnabled(false);
+                    if (!queryDocumentSnapshots.isEmpty()){
+                        locationToggle.setImageResource(R.drawable.location_on);
+                    } else{
+                        locationToggle.setImageResource(R.drawable.location_off);
+                    }
+                    locationToggle.setVisibility(View.VISIBLE);
+
+
                 });
     }
 }
