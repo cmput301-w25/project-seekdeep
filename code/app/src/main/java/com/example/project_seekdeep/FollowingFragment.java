@@ -172,17 +172,16 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
 
                     MoodFiltering.saveOriginal(moodArrayList);
                     ImageButton filterButton = view.findViewById(R.id.following_filter_button);
+                    EditText searchBar = view.findViewById(R.id.search_bar);
                     filterButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            EditText searchBar = getView().findViewById(R.id.search_bar);
                             searchBar.setText("");  // clear the search bar
                             new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
                         }
                     });
 
                     //Implement the search bar
-                    EditText searchBar = view.findViewById(R.id.search_bar);
                     //Need to disable the enter key in the searchBar so that newlines aren't added into the keywords
                     // setOnEditorActionListener listens for when an action key is pressed (ie. enter key)
                     searchBar.setOnEditorActionListener((v, actionId, event) -> {
@@ -209,6 +208,7 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                 }
             });
         }
+        EditText searchBar = view.findViewById(R.id.search_bar);
         // From lab 3, and fragment manager documentation
         // https://developer.android.com/guide/fragments/fragmentmanager
         // Ideas for the solution was adapted from the link below, surprisingly from the question itself and not an answer (lol)
@@ -217,7 +217,6 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
         moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                EditText searchBar = getView().findViewById(R.id.search_bar);
                 searchBar.setText("");  // clear the search bar
                 // Bundle up the original Mood object that was clicked on
                 Bundle moodAndUserBundle = new Bundle();
