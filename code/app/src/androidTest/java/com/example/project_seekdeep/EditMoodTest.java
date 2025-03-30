@@ -9,15 +9,22 @@ import static org.junit.Assert.fail;
 
 import static java.util.Objects.*;
 
+import android.app.Instrumentation;
+import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
+import android.os.FileUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.test.espresso.internal.inject.InstrumentationContext;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.util.IOUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,13 +46,21 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runner.manipulation.Ordering;
 
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -103,12 +118,16 @@ public class EditMoodTest {
     @Test
     public void testUpdateMoodReason() throws InterruptedException {
 
+        //edit mood
+
         DocumentReference mood1DocRef = mood1.getDocRef();
         Log.d("except nancy", "Nancy doc ref: "+mood1DocRef.getPath());
         mood1.setReason("Edit reason");
         moodProvider.updateMood(mood1);
 
         Thread.sleep(1000);
+
+        //check database for edited mood
 
         mood1DocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -156,11 +175,15 @@ public class EditMoodTest {
 
     @Test
     public void testUpdateMoodEmotionalState() throws InterruptedException {
+
+        //edit mood
         DocumentReference mood1DocRef = mood1.getDocRef();
         mood1.setEmotionalState(EmotionalStates.DISGUST);
         moodProvider.updateMood(mood1);
 
         Thread.sleep(1000);
+
+        //check database for edited mood
 
         mood1DocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -206,11 +229,14 @@ public class EditMoodTest {
 
     @Test
     public void testUpdateMoodSocialSituation() throws InterruptedException {
+        //edit mood
         DocumentReference mood1DocRef = mood1.getDocRef();
         mood1.setSocialSituation(SocialSituations.ALONE);
         moodProvider.updateMood(mood1);
 
         Thread.sleep(1000);
+
+        //check database for edited mood
 
         mood1DocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -257,14 +283,16 @@ public class EditMoodTest {
 
     @Test
     public void testUpdateMoodImage() throws InterruptedException {
+
+        //edit the mood
+
         DocumentReference mood1DocRef = mood1.getDocRef();
         Uri uri = Uri.parse("123");
         mood1.setImage(uri);
         moodProvider.updateMood(mood1);
-
-
-
         Thread.sleep(1000);
+
+        // get the mood from database and check
 
         mood1DocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -309,23 +337,34 @@ public class EditMoodTest {
 
     }
 
-
-    //Doesn't work properly rn
-    /*
     @Test
-    public void testUploadImageStorageCheck() throws InterruptedException {
+    public void testUploadImageStorageCheck() throws InterruptedException, IOException {
 
-        Uri uploadUri = Uri.parse("Images/123456");
-        imageProvider = ImageProvider.getInstance(FirebaseStorage.getInstance());
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+
+        File file1 = File.createTempFile("123", "jfif");
+        Thread.sleep(1000);
+
+        InputStream ims = context.getAssets().open("togepi.jfif");
+        Thread.sleep(1000);
+
+        FileOutputStream fos = new FileOutputStream(file1);
+        FileUtils.copy (ims, fos);
+        Thread.sleep(1000);
+
+        fos.close();
+        Thread.sleep(1000);
+
+        Uri uploadUri = Uri.fromFile(file1);
         imageProvider.uploadImageToFirebase(uploadUri);
-
-        Thread.sleep(10000);
+        Thread.sleep(1000);
 
         StorageReference imageFire = imageProvider.getStorageRefFromLastPathSeg(uploadUri.getLastPathSegment());
-
         imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
+                // idk how to teardown storage so I'll delete it from here
+                imageFire.delete();
                 return;
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -335,9 +374,9 @@ public class EditMoodTest {
             }
         });
 
+
+
     }
-    
-     */
 
 
 
