@@ -29,6 +29,7 @@ public class Mood implements Serializable {
     private String reason;
     private UserProfile owner;
     private DocumentReference docRef;
+    private Boolean isPrivate;
 
     /**
      * Empty Constructor for firebase
@@ -100,7 +101,86 @@ public class Mood implements Serializable {
                 this.socialSituation = SocialSituations.CROWD;
                 break;
         }
+    }
 
+
+    /**
+     * This is a constructor for Mood.
+     * @param owner
+     *  The user that posted the mood event (UserProfile)
+     * @param emotionalState
+     *  The emotional state of the user/mood event (EmotionalState)
+     * @param stringFields
+     *  A string array in the form [reason, social situation] (String[])
+     * @param isPrivate
+     *  The user can specify if this mood is private or public.
+     */
+    public Mood(UserProfile owner, EmotionalStates emotionalState, String[] stringFields, Boolean isPrivate) {
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+        this.postedDate = new Date();
+        // position 0 is reason, position 1 is social situation
+
+        this.reason = stringFields[0];
+        switch (stringFields[1]) {
+            case "Social Situations":
+                this.socialSituation = SocialSituations.TITLE;
+                break;
+            case "Alone":
+                this.socialSituation = SocialSituations.ALONE;
+                break;
+            case "With Another Person":
+                this.socialSituation = SocialSituations.WITH_ANOTHER;
+                break;
+            case "Two or Several People":
+                this.socialSituation = SocialSituations.SEVERAL_PEOPLE;
+                break;
+
+            case "With a Crowd":
+                this.socialSituation = SocialSituations.CROWD;
+                break;
+        }
+        this.isPrivate = isPrivate;
+    }
+
+    /**
+     * This is a constructor for Mood.
+     * @param owner
+     *  The user that posted the mood event (UserProfile)
+     * @param emotionalState
+     *  The emotional state of the user/mood event (EmotionalState)
+     * @param stringFields
+     *  A string array in the form [reason, social situation] (String[])
+     * @param isPrivate
+     *  The user can specify if this mood is private or public.
+     */
+    public Mood(UserProfile owner, EmotionalStates emotionalState, String[] stringFields, List<String> followers, Boolean isPrivate, Date date) {
+        this.owner = owner;
+        this.emotionalState = emotionalState;
+
+        // position 0 is reason, position 1 is social situation
+        this.reason = stringFields[0];
+        switch (stringFields[1]) {
+            case "Social Situations":
+                this.socialSituation = SocialSituations.TITLE;
+                break;
+            case "Alone":
+                this.socialSituation = SocialSituations.ALONE;
+                break;
+            case "With Another Person":
+                this.socialSituation = SocialSituations.WITH_ANOTHER;
+                break;
+            case "Two or Several People":
+                this.socialSituation = SocialSituations.SEVERAL_PEOPLE;
+                break;
+
+            case "With a Crowd":
+                this.socialSituation = SocialSituations.CROWD;
+                break;
+        }
+        this.followers = followers;
+        this.isPrivate = isPrivate;
+        this.postedDate = date;
     }
 
     // this is used for testing ***
@@ -277,5 +357,18 @@ public class Mood implements Serializable {
 
     public DocumentReference getDocRef(){
         return docRef;
+    }
+
+    public boolean getPrivate() {
+        // For moods that are currently existing, but does not have the "private" field.
+        // We'll allow these to be public for the sake of demo-ing.
+        if (isPrivate == null) {
+            return false;
+        }
+        return isPrivate.booleanValue();
+    }
+
+    public void setPrivate(Boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 }

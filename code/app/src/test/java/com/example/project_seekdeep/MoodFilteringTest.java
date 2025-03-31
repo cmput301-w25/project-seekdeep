@@ -658,6 +658,41 @@ public class MoodFilteringTest {
     }
 
     @Test
+    public void testSortMultipleKeywords() {
+        MoodFiltering.removeAllFilters();
+        ArrayList<Mood> moods = getMoods();
+        MoodFiltering.saveOriginal(moods);
+        List<String> keywords = new ArrayList<>();
+        keywords.add("GUYS ");
+        keywords.add("ouT");
+        MoodFiltering.addKeyword(keywords);
+        MoodFiltering.applyFilter("keyword");
+
+        ArrayList<Mood> filteredMoods = MoodFiltering.getFilteredMoods();
+        // filteredMoods should now contain [sadness and SHAME]
+        boolean containsMood1 = false;
+        boolean containsMood2 = false;
+        boolean containsMood3 = false;
+
+        // iterate through the filtered moods to check the emotional states
+        for (Mood mood : filteredMoods) {
+            if (mood.getEmotionalState().equals(EmotionalStates.ANGER)) {
+                containsMood1 = true;
+            }
+            else if (mood.getEmotionalState().equals(EmotionalStates.SHAME)) {
+                containsMood2 = true;
+            }
+            else if (mood.getEmotionalState().equals(EmotionalStates.SADNESS)) {
+                containsMood3 = true;
+            }
+        }
+        // check to see if anger is the only one
+        assertFalse("Filtered moods should NOT contain anger", containsMood1);
+        assertTrue("Filtered moods should contain sadness", containsMood3);
+        assertTrue("Filtered moods should contain shame", containsMood2);
+    }
+
+    @Test
     public void testSortLast3() {
         ArrayList<Mood> moods = getMoods();
         // add another mood so there's 4 moods instead of 3 for testUser

@@ -146,6 +146,18 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
 
                         UserProfile user = new UserProfile( ownerSnapshot.get("username").toString(),
                                 ownerSnapshot.get("password").toString());
+
+                        Boolean isPrivate = (Boolean) snapshot.get("private");
+
+                        // For moods that are currently existing, but does not have the "private" field.
+                        // We'll allow these to be public for the sake of demo-ing.
+                        if (isPrivate == null) {
+                            isPrivate = false;
+                        } else if (isPrivate || loggedInUser.equals(user)) {
+                            // This skips loading the mood into the feed since it is private and not owned by the currently logged in user.
+                            continue;
+                        }
+
                         EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
                         SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
 
@@ -159,28 +171,34 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                             image = Uri.parse(imageStr);
                         }
 
-                        Mood mood = new Mood(user, emotionalState, socialSituation, followers, postedDate, reason);
+                        String[] stringFields = {
+                                reason,
+                                socialSituation.toString()
+                        };
+                        Mood mood = new Mood(user, emotionalState, stringFields, followers, isPrivate, postedDate);
 
                         mood.setImage(image);
                         mood.setDocRef(snapshot.getReference());
 
                         moodArrayList.add(mood);
                     }
+                    MoodFiltering.removeAllFilters();  // as a preventative to having other fragment's filters
                     MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                     moodArrayAdapter.notifyDataSetChanged();
                     moodListView.setAdapter(moodArrayAdapter);                moodArrayAdapter.notifyDataSetChanged();
 
                     MoodFiltering.saveOriginal(moodArrayList);
                     ImageButton filterButton = view.findViewById(R.id.following_filter_button);
+                    EditText searchBar = view.findViewById(R.id.search_bar);
                     filterButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            searchBar.setText("");  // clear the search bar
                             new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
                         }
                     });
 
                     //Implement the search bar
-                    EditText searchBar = view.findViewById(R.id.search_bar);
                     //Need to disable the enter key in the searchBar so that newlines aren't added into the keywords
                     // setOnEditorActionListener listens for when an action key is pressed (ie. enter key)
                     searchBar.setOnEditorActionListener((v, actionId, event) -> {
@@ -207,6 +225,7 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                 }
             });
         }
+        EditText searchBar = view.findViewById(R.id.search_bar);
         // From lab 3, and fragment manager documentation
         // https://developer.android.com/guide/fragments/fragmentmanager
         // Ideas for the solution was adapted from the link below, surprisingly from the question itself and not an answer (lol)
@@ -215,6 +234,7 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
         moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                searchBar.setText("");  // clear the search bar
                 // Bundle up the original Mood object that was clicked on
                 Bundle moodAndUserBundle = new Bundle();
                 moodAndUserBundle.putSerializable("mood", moodArrayList.get(position));
@@ -244,6 +264,8 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
     @Override
     public void onUsernameClick(UserProfile clickUsername) {
         //Check if the clickedUsername is the same as the logged-in user.
+        EditText searchBar = getView().findViewById(R.id.search_bar);
+        searchBar.setText("");  // clear the search bar
         String clickedUsernameString = clickUsername.getUsername();
         String loggedInUser = (String) getArguments().getString("username");
 
@@ -317,6 +339,8 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
     @Override
     public void onFiltersReset() {
         MoodFiltering.removeAllFilters();
+        EditText searchBar = getView().findViewById(R.id.search_bar);
+        searchBar.setText("");  // clear the search bar
         filteredMoodList = MoodFiltering.getFilteredMoods();
         moodArrayAdapter.clear();
         moodArrayAdapter.addAll(filteredMoodList);
