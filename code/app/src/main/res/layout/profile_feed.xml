@@ -91,7 +91,7 @@
                 android:id="@+id/filter_button"
                 android:layout_width="30dp"
                 android:layout_height="25dp"
-                android:layout_marginStart="350dp"
+                android:layout_marginStart="300dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
                 android:background="#00FFFFFF"
