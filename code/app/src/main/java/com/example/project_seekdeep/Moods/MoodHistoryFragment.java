@@ -223,6 +223,29 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                             new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
                         }
                     });
+                    moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            // Bundle up the original Mood object that was clicked on
+                            Bundle moodAndUserBundle = new Bundle();
+                            moodAndUserBundle.putSerializable("mood", moodArrayList.get(position));
+
+                            UserProfile loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+                            moodAndUserBundle.putSerializable("userProfile", loggedInUser);
+
+                            // This is used to navigate back and forth between a mood comment section and the feed or history
+                            FragmentManager fragManager = getParentFragmentManager();
+
+                            // Create new fragment and send Mood off into new fragment
+                            ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
+                            viewMoodDetailsFragment.setArguments(moodAndUserBundle);
+                            fragManager.beginTransaction()
+                                    .replace(R.id.frameLayout, viewMoodDetailsFragment)
+                                    .setReorderingAllowed(true)
+                                    .addToBackStack("feed")
+                                    .commit();
+                        }
+                    });
                     requestButton = view.findViewById(R.id.manage_requests_button);
                     requestButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -251,7 +274,6 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                                     // Create new fragment and send Mood off into new fragment
                                     ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
                                     viewMoodDetailsFragment.setArguments(moodAndUserBundle);
-
                                     fragManager.beginTransaction()
                                             .replace(R.id.frameLayout, viewMoodDetailsFragment)
                                             .setReorderingAllowed(true)
