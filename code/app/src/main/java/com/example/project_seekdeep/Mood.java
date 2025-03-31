@@ -38,12 +38,6 @@ public class Mood implements Serializable {
     }
 
     /**
-     * Empty Constructor for firebase
-     */
-    public Mood(){
-    }
-
-    /**
      * This method is a constructor for Mood which takes a User and emotionalState.
      * This method also sets the date to the current date
      * @param emotionalState
