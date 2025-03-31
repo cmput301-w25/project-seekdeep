@@ -7,6 +7,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.w3c.dom.Text;
+
 import java.util.Calendar;
 
 /**
@@ -17,12 +19,14 @@ import java.util.Calendar;
 public class CalendarCellHolder extends RecyclerView.ViewHolder implements  View.OnClickListener {
 
     public final TextView dayOfMonth;
+    public TextView moodOfMonth;
     private final CalendarAdapter.OnItemListener onItemListener;
     public CalendarCellHolder(@NonNull View itemView, CalendarAdapter.OnItemListener onItemListener)
     {
         super(itemView);
         Log.d("NANCY", "Calendar cell holder month construct" );
         dayOfMonth = itemView.findViewById(R.id.cell_date);
+        moodOfMonth = itemView.findViewById(R.id.cell_text);
         this.onItemListener = onItemListener;
         itemView.setOnClickListener(this);
     }

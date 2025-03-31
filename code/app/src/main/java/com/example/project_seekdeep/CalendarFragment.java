@@ -112,27 +112,15 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 
         monthYearText.setText(getMonthFromCalendar(  selectedDateCalendar ));
         ArrayList<String> daysInMonth = daysInMonthArray( selectedDateCalendar);
+        ArrayList<String> moodsInMonth = createMoodsInMonthArray(daysInMonth);
 
-
-        CalendarAdapter calendarAdapter = new CalendarAdapter(daysInMonth, this);
+        CalendarAdapter calendarAdapter = new CalendarAdapter(daysInMonth, moodsInMonth, this);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
         calendarRecyclerView.setLayoutManager(layoutManager);
         calendarRecyclerView.setAdapter(calendarAdapter);
 
 
 
-        Log.d("NANCY", "recylcer view  |"+ calendarRecyclerView.toString());
-        Log.d("NANCY", "recylcer view  |"+ calendarRecyclerView.getAdapter());
-        Log.d("NANCY", "recylcer view  |"+ calendarRecyclerView.getLayoutManager().toString());
-
-        Log.d("NANCY", "arraylist" + daysInMonth);
-        Log.d("NANCY", "Calendar firstday of week" + selectedDateCalendar.getFirstDayOfWeek());
-        Log.d("NANCY", "Calendar week of month " + selectedDateCalendar.get(Calendar.WEEK_OF_MONTH));
-        Log.d("NANCY", "Calendar day of month" + selectedDateCalendar.get(Calendar.DAY_OF_MONTH));
-        Log.d("NANCY", "Calendar day of week" + selectedDateCalendar.get(Calendar.DAY_OF_WEEK));
-        Log.d("NANCY", "Calendar month " + selectedDateCalendar.get(Calendar.MONTH));
-
-        calendarAdapter.notifyDataSetChanged();
 
     }
 
@@ -197,7 +185,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         {
             if(i <= dayOfWeek || i > daysInMonth + dayOfWeek)
             {
-                daysInMonthArray.add(" ");
+                daysInMonthArray.add("");
             }
             else
             {
@@ -207,6 +195,25 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         return  daysInMonthArray;
     }
 
+    private ArrayList<String> createMoodsInMonthArray(ArrayList<String> daysInMonthArray){
+        ArrayList<String> moodsInMonth = new ArrayList<>();
+        for (int i = 0; i < 42; i++){
+            if (daysInMonthArray.get(i).isEmpty()){
+                moodsInMonth.add("");
+
+            } else{
+                /* Todo     query firebase for the mood
+                            Handle the empty days
+                          handle the ties in queries
+
+                 */
+                String emotion = EmotionalStates.ANGER.getEmoticon();
+                moodsInMonth.add(emotion);
+            }
+        }
+
+        return moodsInMonth;
+    }
 
 
     @Override

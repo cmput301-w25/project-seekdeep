@@ -14,4 +14,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/cell_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="emotionn"
+        app:layout_constraintEnd_toEndOf="@+id/cell_date"
+        app:layout_constraintStart_toStartOf="@+id/cell_date"
+        app:layout_constraintTop_toBottomOf="@+id/cell_date" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

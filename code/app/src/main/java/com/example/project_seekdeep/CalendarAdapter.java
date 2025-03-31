@@ -18,11 +18,13 @@ import java.util.ArrayList;
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarCellHolder> {
 
     private ArrayList<String> daysOfMonth;
+    private ArrayList<String> moodsInMonth;
     private OnItemListener onItemListener;
 
-    public CalendarAdapter(ArrayList<String> daysOfMonth, OnItemListener onItemListener){
+    public CalendarAdapter(ArrayList<String> daysOfMonth, ArrayList<String> moodsInMonth, OnItemListener onItemListener){
         Log.d("NANCY", "Calendar cell adapter " );
         this.daysOfMonth = daysOfMonth;
+        this.moodsInMonth = moodsInMonth;
         this.onItemListener = onItemListener;
     }
 
@@ -35,16 +37,13 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarCellHolder> {
         View view = inflater.inflate(R.layout.calendar_cell, parent, false);
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         layoutParams.height = (int) (parent.getHeight() * 0.166666666);
-
-        Log.d("NANCY", "Calendar cell adapter constructor" + view.getContentDescription()+ "|"+ view
-            + "|" + String.valueOf((int) (parent.getHeight() * 0.166666666)));
         return new CalendarCellHolder(view, onItemListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CalendarCellHolder holder, int position) {
         holder.dayOfMonth.setText(daysOfMonth.get(position));
-        Log.d("NANCY", "Calendar cell adapter on bind |" + daysOfMonth.get(position) );
+        holder.moodOfMonth.setText(moodsInMonth.get(position));
     }
 
     @Override
