@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
@@ -45,8 +46,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -72,13 +76,14 @@ import java.util.stream.Collectors;
 // https://developers.google.com/maps/documentation/android-sdk/reference/com/google/android/libraries/maps/model/BitmapDescriptorFactory#HUE_YELLOW
 // https://stackoverflow.com/questions/17839388/creating-a-scaled-bitmap-with-createscaledbitmap-in-android
 // https://stackoverflow.com/questions/47807621/draw-emoji-on-bitmap-with-drawtextonpath?utm_source=chatgpt.com
+// https://stackoverflow.com/questions/31315873/android-how-to-draw-a-circle-on-google-map
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback, FilterMenuDialogFragment.OnFilterSelectedListener {
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
     private ActivityResultLauncher<String> requestLocationPermissionLauncher;       // API to request location permission
-
+    private LocationCallback locationCallback;
     // Image buttons that are selectable
     private ImageButton filterMoodHistoryButton;
     private ImageButton filterMoodFollowingButton;
@@ -88,6 +93,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
     private ToggleButton displayToggle;
 
     private FirebaseFirestore db;
+    private Location currentLocation;
+    private Circle radiusCircle;
 
     /**
      * Empty constructor required by database
@@ -153,8 +160,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         filterMoodHistoryButton.setOnClickListener(v -> {
             if (!displayToggle.isChecked()) {
                 new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
-            } else {
-                Toast.makeText(requireContext(), "History filter unavailable in Mood Following mode", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -162,28 +167,46 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         filterMoodFollowingButton.setOnClickListener(v -> {
             if (displayToggle.isChecked()) {
                 new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
-            } else {
-                Toast.makeText(requireContext(), "Following filter unavailable in Mood History mode", Toast.LENGTH_SHORT).show();
             }
-
         });
 
         filter5KmRadiusButton.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "View is in development", Toast.LENGTH_SHORT).show();
+            if (displayToggle.isChecked()) {
+                boolean isSelected = filter5KmRadiusButton.isSelected();
+                filter5KmRadiusButton.setSelected(!isSelected);
+                if (!isSelected) {          // If the button is now selected then load the new map
+                    loadFollowingLocationsIn5kmRadius();
+                } else {                    // If the button in now not selected then load the initial following map itself
+                    if (radiusCircle != null) {
+                        radiusCircle.remove();
+                        radiusCircle = null;
+                    }
+                    loadFollowingLocations();
+                }
+            }
         });
 
         displayToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             mMap.clear();
+            if (radiusCircle != null) {
+                radiusCircle.remove();
+                radiusCircle = null;
+            }
             // Display the respective view and enable the filters
             if (displayToggle.isChecked()) {
                 loadFollowingLocations();
-                filterMoodFollowingButton.setEnabled(displayToggle.isChecked());
+                filterMoodFollowingButton.setEnabled(true);
+                filter5KmRadiusButton.setEnabled(true);
+                filterMoodHistoryButton.setEnabled(false);
             } else {
                 loadMoodHistoryLocations();
-                filterMoodHistoryButton.setEnabled(!displayToggle.isChecked());
+                filterMoodHistoryButton.setEnabled(true);
+                filterMoodFollowingButton.setEnabled(false);
+                filter5KmRadiusButton.setEnabled(false);
             }
             filterMoodHistoryButton.setSelected(false);
             filterMoodFollowingButton.setSelected(false);
+            filter5KmRadiusButton.setSelected(false);
         });
 
         return view;
@@ -224,13 +247,28 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
             return;
         }
         mMap.setMyLocationEnabled(true);
-        // Request last known location from client
+
+        // Request last known location from client and save it to callback
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                if (locationResult.getLastLocation() != null) {
+                    currentLocation = locationResult.getLastLocation();
+                    // Update the 5 km filter as user moves
+                    if (filter5KmRadiusButton.isSelected() && displayToggle.isChecked()) {
+                        loadFollowingLocationsIn5kmRadius();
+                    }
+                }
+            }
+        };
         fusedLocationProviderClient.getLastLocation()
                 .addOnSuccessListener(location -> {
                     if (location != null) {
                         // Create the latlng object and move camera to this retrieved location
                         LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+                        currentLocation = location;
+                        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
                     } else {
                         requestLocationUpdates();
                     }
@@ -252,6 +290,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 if (locationResult.getLastLocation() != null) {
+                    currentLocation = locationResult.getLastLocation();
                     LatLng myLocation = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
                     fusedLocationProviderClient.removeLocationUpdates(this);
@@ -261,6 +300,25 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
             Log.e("MapsFragment", "Failed to request location updates", e);
             Toast.makeText(requireContext(), "Unable to get location updates", Toast.LENGTH_SHORT).show();
         });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (fusedLocationProviderClient != null && locationCallback != null) {
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mMap != null && currentLocation != null) {
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        }
     }
 
     /**
@@ -330,6 +388,108 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
                     Toast.makeText(requireContext(), "Failed to load your following mood locations", Toast.LENGTH_SHORT).show();
                 });
     }
+
+    private void loadFollowingLocationsIn5kmRadius(){
+        // Current user's profile
+        UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
+        String userName = currentUserProfile.getUsername();
+        mMap.clear();
+        radiusCircle = mMap.addCircle(new CircleOptions()
+                .center(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
+                .radius(5000) // 5 km in meters
+                .strokeColor(Color.BLACK)
+                .strokeWidth(2f)
+                .fillColor(Color.argb(50,0,255,0)));
+
+        db.collection("followings_and_requests")
+                .whereEqualTo("follower", userName)
+                .whereEqualTo("status", "following")
+                .get()
+                .addOnSuccessListener(queryFollowingSnapshots -> {
+                    List<UserLocation> locationsToDisplay = new ArrayList<>();
+                    int followings = queryFollowingSnapshots.size();
+                    int[] completedQueries = {0};
+                    Log.d("MapsFragment", "Fetched " + followings + " followings");
+
+                    for (QueryDocumentSnapshot document : queryFollowingSnapshots) {
+                        FollowRequest follow = document.toObject(FollowRequest.class);
+                        String followee = follow.getFollowee();
+                        if (followee != null){
+                            // Get the most recent mood event
+                            db.collection("MoodDB")
+                                    .whereEqualTo("owner.username", followee)
+                                    .orderBy("postedDate", Query.Direction.DESCENDING)
+                                    .limit(1)
+                                    .get()
+                                    .addOnSuccessListener(queryMoodSnapshots -> {
+                                        Log.d("MapsFragment", "Mood events for " + followee + ": " + queryMoodSnapshots.size());
+                                        if (!queryMoodSnapshots.isEmpty()) {
+                                            DocumentSnapshot moodSnapshot = queryMoodSnapshots.getDocuments().get(0);
+                                            String moodId = moodSnapshot.getId();
+
+                                            db.collection("locations")
+                                                    .whereEqualTo("moodID", moodId)
+                                                    .get()
+                                                    .addOnSuccessListener(queryLocationSnapshots -> {
+                                                        Log.d("MapsFragment", "Locations for moodID " + moodId + ": " + queryLocationSnapshots.size());
+                                                        if (!queryLocationSnapshots.isEmpty()){
+                                                            UserLocation loc = queryLocationSnapshots.getDocuments().get(0).toObject(UserLocation.class);
+                                                            if (radius5km(currentLocation,loc)) {
+                                                                locationsToDisplay.add(loc);
+                                                            }
+                                                        }
+                                                        completedQueries[0]++;
+                                                        if (completedQueries[0] == followings) {
+                                                            Log.d("MapsFragment", "Displaying " + locationsToDisplay.size() + " locations");
+                                                            displayLocationsOnMap(locationsToDisplay, filter5KmRadiusButton);
+                                                        }
+
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Log.e("MapsFragment", "Location query failed: " + e.getMessage());
+                                                        completedQueries[0]++;
+                                                        if (completedQueries[0] == followings) {
+                                                            displayLocationsOnMap(locationsToDisplay, filter5KmRadiusButton);
+                                                        }
+                                                    });
+                                        }
+                                        else {
+                                            // No mood events for this followee, still count as completed
+                                            completedQueries[0]++;
+                                            if (completedQueries[0] == followings) {
+                                                displayLocationsOnMap(locationsToDisplay, filter5KmRadiusButton);
+                                            }
+                                        }
+                                    } )
+                                    .addOnFailureListener(e->{
+                                        Log.e("MapsFragment", "Mood query failed: " + e.getMessage());
+                                        completedQueries[0]++;
+                                        if (completedQueries[0] == followings) {
+                                            displayLocationsOnMap(locationsToDisplay, filter5KmRadiusButton);
+                                        }
+                                    });
+                        }
+                        else {
+                            completedQueries[0]++;
+                            if (completedQueries[0] == followings) {
+                                displayLocationsOnMap(locationsToDisplay, filter5KmRadiusButton);
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(requireContext(), "Failed to load your following mood locations", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private boolean radius5km(Location currentLocation, UserLocation usrLoc) {
+        Location moodLocation = new Location("");
+        moodLocation.setLatitude(usrLoc.getLatitude());
+        moodLocation.setLongitude(usrLoc.getLongitude());
+        float distanceInMeters = currentLocation.distanceTo(moodLocation);
+        return distanceInMeters <= 5000;
+    }
+
 
     /**
      * Return the bitmap descriptor of custom marker based on mood
@@ -510,7 +670,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
     }
 
     private void displayLocationsOnMap(List<UserLocation> locationCollection, ImageButton filterButton){
-        mMap.clear();
+        if (filterButton != filter5KmRadiusButton){
+            mMap.clear();
+        }
         for (UserLocation location : locationCollection) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             EmotionalStates emotionalState = location.getEmotionalState();
