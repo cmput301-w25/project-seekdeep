@@ -2,8 +2,8 @@
     <string name="app_name">project_seekdeep</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="public_mode">Public: Let my followers see this mood event.</string>
-    <string name="private_mode">Private: Only I can see this mood event. </string>
+    <string name="public_mode">Public</string>
+    <string name="private_mode">Private</string>
     <string name="manage_requests">Manage Requests</string>
     <string name="myusername">MyUsername</string>
     <string name="_0_string">0</string>
@@ -11,4 +11,5 @@
     <string name="following">following</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="my_api_key">AIzaSyB5jm2LhKqL7LJ62ncvDEnWsqUgoLQDTEU</string>
+    <string name="location_toggle_text">Add my location</string>
 </resources>
