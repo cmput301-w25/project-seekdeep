@@ -34,6 +34,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -65,6 +66,7 @@ public class MapsFragmentUITest {
     private final CollectionReference usersRef = db.collection("users");
     private final CollectionReference moodsRef = db.collection("MoodDB");
     private final CollectionReference locationsRef = db.collection("locations");
+    private final CollectionReference followRef = db.collection("followings_and_requests");
 
     @BeforeClass
     public static void setup() {
@@ -76,7 +78,7 @@ public class MapsFragmentUITest {
     }
 
     @Before
-    public void seedDatabase() throws InterruptedException {
+    public void seedDatabase() throws InterruptedException, IOException {
         Mood mood1 = new Mood(testUser, EmotionalStates.HAPPINESS, new String[]{"Start testing!","Alone"});
 
         // Spend some Time to sort the list
@@ -102,9 +104,21 @@ public class MapsFragmentUITest {
         locationsRef.document().set(new UserLocation(53.5259343,-113.5245227, EmotionalStates.SADNESS, "sbaghel","mood3"));
         locationsRef.document().set(new UserLocation(53.5253453,-113.5212687, EmotionalStates.ANGER,  "sbaghel","mood4"));
 
-        // Test User Log in first
+        UserProfile followedUser = new UserProfile("followedUser", "pass5678");
+        usersRef.document().set(followedUser);
+        Mood followedMood = new Mood(followedUser, EmotionalStates.SURPRISE, new String[]{"Let's follow!!", "Alone"});
+        moodsRef.document().set(followedMood);
+        locationsRef.document().set(new UserLocation(53.5260000, -113.5230000, EmotionalStates.SURPRISE, "followedUser", "followedMood"));
+        followRef.document().set(new FollowRequest("sbaghel", "followedUser", "following"));
+
+        // User Login
         scenario.getScenario().onActivity(activity -> activity.setCurrentUser(testUser));
         scenario.getScenario().onActivity(activity -> activity.successful_login());
+
+        // Location Permission
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        device.executeShellCommand("pm grant " + InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName() + " android.permission.ACCESS_FINE_LOCATION");
+        device.executeShellCommand("appops set " + InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName() + " android:mock_location allow");
     }
 
 
@@ -133,9 +147,10 @@ public class MapsFragmentUITest {
     }
 
     @Test
-    public void testMapFragmentLoads() throws InterruptedException {
+    public void testMapFragmentLoads() throws InterruptedException{
         // Give time for the login to process
         Thread.sleep(2000);
+        // Go to maps fragment
         onView(withId(R.id.Map)).perform(click());
         // Give time for the map Fragment  to show up
         Thread.sleep(2000);
@@ -143,27 +158,38 @@ public class MapsFragmentUITest {
         // Check the map view is displayed
         onView(withId(R.id.map)).check(matches(isDisplayed()));
 
-        // Simulate a mock location to ensure the blue dot appears (San Francisco coordinates)
-        Location mockLocation = new Location("mock_provider");
-        mockLocation.setLatitude(53.5259343);
-        mockLocation.setLongitude(-113.5234554);
-        mockLocation.setTime(System.currentTimeMillis());
-        mockLocation.setAccuracy(1.0f);
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        locationManager.addTestProvider("test", false, false, false, false, true, true, true, 1, 1);
+        locationManager.setTestProviderEnabled("test", true);
 
-        LocationManager locationManager = (LocationManager) InstrumentationRegistry.getInstrumentation().getTargetContext().getSystemService(Context.LOCATION_SERVICE);
-        locationManager.setTestProviderEnabled("gps", true);
-        locationManager.setTestProviderLocation("gps", mockLocation);
+        // Create a mock location to ensure the blue dot appears
+        Location mockLoc = new Location("test");
+        mockLoc.setLatitude(53.5259343);
+        mockLoc.setLongitude(-113.5234554);
+        mockLoc.setTime(System.currentTimeMillis());
+        mockLoc.setAccuracy(1.0f);
 
+        // Returns the current time elapsed since boot in nanoseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            mockLoc.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+        }
+
+        Thread.sleep(5000);
+        locationManager.setTestProviderLocation("test", mockLoc);
+
+        // Wait for location update
+        Thread.sleep(5000);
 
         onView(withId(R.id.map)).check(matches(isDisplayed()));
-
-
-
-        onView(withId(R.id.map)).check(matches(isDisplayed()));
+        onView(withContentDescription("My Location")).check(matches(isDisplayed()));
     }
 
     @Test
     public void testLocationUpdates(){
+//        // Go to maps fragment
+//        onView(withId(R.id.Map)).perform(click());
+
 
     }
 
