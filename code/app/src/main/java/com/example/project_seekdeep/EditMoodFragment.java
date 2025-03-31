@@ -244,6 +244,7 @@ public class EditMoodFragment extends DialogFragment {
                 mood.setReason(reason);
                 mood.setEmotionalState(emotionalStates);
                 mood.setSocialSituation(socialSituations);
+                mood.setPrivate(!privacySwitch.isChecked());
 
                 // Upload to the MoodsCollection a simplified image Uri
                 if (imageUri != null){

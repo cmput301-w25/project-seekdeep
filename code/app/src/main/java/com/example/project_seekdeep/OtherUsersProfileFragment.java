@@ -158,6 +158,17 @@ public class OtherUsersProfileFragment extends Fragment {
                     moodArrayList.clear();
                 }
                 for (QueryDocumentSnapshot snapshot : value) {
+                    Boolean isPrivate = (Boolean) snapshot.get("private");
+
+                    // For moods that are currently existing, but does not have the "private" field.
+                    // We'll allow these to be public for the sake of demo-ing.
+                    if (isPrivate == null) {
+                        isPrivate = false;
+                    } else if (isPrivate) {
+                        // This skips loading the mood into the feed since it is private and not owned by the currently logged in user.
+                        continue;
+                    }
+
                     //retreive emotionalState and socialSit from db (stored as strings) and conver to their Enum so can pass into ArrayAdapter
                     EmotionalStates emotionalState = EmotionalStates.valueOf((String) snapshot.get("emotionalState"));
                     SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
@@ -172,7 +183,11 @@ public class OtherUsersProfileFragment extends Fragment {
                     }
 
                     //convert to mood object
-                    Mood mood = new Mood(userBeingViewed, emotionalState, socialSituation, followers, postedDate, reason);
+                    String[] stringFields = {
+                            reason,
+                            socialSituation.toString()
+                    };
+                    Mood mood = new Mood(userBeingViewed, emotionalState, stringFields, followers, isPrivate, postedDate);
 
                     mood.setDocRef(snapshot.getReference());
                     mood.setImage(image);
