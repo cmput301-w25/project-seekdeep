@@ -37,6 +37,8 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarCellHolder> {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.calendar_cell, parent, false);
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+
+        //change row height depending on how many rows the month occupies
         if (daysOfMonth.size()< 29){
             layoutParams.height = (int) (parent.getHeight() * 0.25);
         } else if (daysOfMonth.size() < 36){
@@ -49,12 +51,15 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarCellHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull CalendarCellHolder holder, int position) {
+
+        //set date and emoticon to the cell
         holder.dayOfMonth.setText(daysOfMonth.get(position));
         holder.moodOfMonth.setText(moodsInMonth.get(position));
         //holder.cellConstraintLayout.setBackground( cellColor( moodsInMonth.get(position)));
         //holder.cardView.setBackgroundColor(cellColor( moodsInMonth.get(position)));
 
 
+        //set colors to calendar cell
         GradientDrawable box_outline = (GradientDrawable) holder.cellConstraintLayout.getBackground();
         box_outline.mutate();
         //box_outline.setColor(cellColor( moodsInMonth.get(position)));

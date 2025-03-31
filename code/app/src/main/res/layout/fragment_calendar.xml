@@ -41,8 +41,7 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:text=" back "
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/monthYearTV"
@@ -59,10 +58,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@null"
+                    android:background="@drawable/text_box"
                     android:text="next"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
