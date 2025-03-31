@@ -177,7 +177,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
      */
     // Taken from MoodHistoryFragment.java
     @Override
-    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
+    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, List<String> keyword) {
         // Current user's profile
         UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
         String userName = currentUserProfile.getUsername();

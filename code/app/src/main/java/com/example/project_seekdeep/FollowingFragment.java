@@ -27,6 +27,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -165,21 +166,29 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
 
                         moodArrayList.add(mood);
                     }
+                    MoodFiltering.removeAllFilters();  // as a preventative to having other fragment's filters
                     MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                     moodArrayAdapter.notifyDataSetChanged();
                     moodListView.setAdapter(moodArrayAdapter);                moodArrayAdapter.notifyDataSetChanged();
 
                     MoodFiltering.saveOriginal(moodArrayList);
                     ImageButton filterButton = view.findViewById(R.id.following_filter_button);
+                    EditText searchBar = view.findViewById(R.id.search_bar);
                     filterButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            searchBar.setText("");  // clear the search bar
                             new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
                         }
                     });
 
                     //Implement the search bar
-                    EditText searchBar = view.findViewById(R.id.search_bar);
+                    //Need to disable the enter key in the searchBar so that newlines aren't added into the keywords
+                    // setOnEditorActionListener listens for when an action key is pressed (ie. enter key)
+                    searchBar.setOnEditorActionListener((v, actionId, event) -> {
+                        Log.d("Search","enter key was pressed! nothing should happen");
+                        return true; // return w/o doing anything, so to disable the enter key
+                    });
                     final TextWatcher txtWatcher = new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -187,9 +196,9 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                         @Override
                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                             //get the keyword from search bar
-                            String keywords = searchBar.getText().toString();
+                            //String keywords = searchBar.getText().toString();
+                            List<String> keywords = Arrays.asList(searchBar.getText().toString().split(" "));
                             applySearchBarKeyword(keywords);
-
                         }
                         @Override
                         public void afterTextChanged(Editable editable) {
@@ -200,6 +209,7 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                 }
             });
         }
+        EditText searchBar = view.findViewById(R.id.search_bar);
         // From lab 3, and fragment manager documentation
         // https://developer.android.com/guide/fragments/fragmentmanager
         // Ideas for the solution was adapted from the link below, surprisingly from the question itself and not an answer (lol)
@@ -208,6 +218,7 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
         moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                searchBar.setText("");  // clear the search bar
                 // Bundle up the original Mood object that was clicked on
                 Bundle moodAndUserBundle = new Bundle();
                 moodAndUserBundle.putSerializable("mood", moodArrayList.get(position));
@@ -237,6 +248,8 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
     @Override
     public void onUsernameClick(UserProfile clickUsername) {
         //Check if the clickedUsername is the same as the logged-in user.
+        EditText searchBar = getView().findViewById(R.id.search_bar);
+        searchBar.setText("");  // clear the search bar
         String clickedUsernameString = clickUsername.getUsername();
         String loggedInUser = (String) getArguments().getString("username");
 
@@ -271,7 +284,7 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
     }
 
     @Override
-    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
+    public void onFiltersApplied(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, List<String> keywords) {
         Log.d("Following","onFiltersApplied here");
 
         //Same implementation as on MoodHistoryFragment
@@ -295,8 +308,8 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
             moodArrayAdapter.notifyDataSetChanged();
         }
 
-        if(!keyword.isEmpty()) {
-            MoodFiltering.addKeyword(keyword);
+        if(!keywords.isEmpty()) {
+            MoodFiltering.addKeyword(keywords);
             MoodFiltering.applyFilter("keyword");
             filteredMoodList = MoodFiltering.getFilteredMoods();
             moodArrayAdapter.clear();
@@ -310,14 +323,16 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
     @Override
     public void onFiltersReset() {
         MoodFiltering.removeAllFilters();
+        EditText searchBar = getView().findViewById(R.id.search_bar);
+        searchBar.setText("");  // clear the search bar
         filteredMoodList = MoodFiltering.getFilteredMoods();
         moodArrayAdapter.clear();
         moodArrayAdapter.addAll(filteredMoodList);
         moodArrayAdapter.notifyDataSetChanged();
     }
 
-    public void applySearchBarKeyword(String keyword) {
-        MoodFiltering.addKeyword(keyword);
+    public void applySearchBarKeyword(List<String> keywords) {
+        MoodFiltering.addKeyword(keywords);
         MoodFiltering.applyFilter("keyword");
         filteredMoodList = MoodFiltering.getFilteredMoods();
         moodArrayAdapter.clear();
