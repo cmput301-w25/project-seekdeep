@@ -127,6 +127,14 @@ public class EditMoodFragment extends DialogFragment {
             emotionSpinner.setSelection(mood.getEmotionalState().ordinal());
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
             dateView.setText(mood.getPostedDate().toString());
+            privacySwitch.setChecked(!mood.getPrivate());
+            locationToggle.setChecked(false);                   //Set location to false on default
+
+            //set privacy switch checked/unchecked depending on mood
+            int drawable = !mood.getPrivate() ? R.drawable.public_symbol : R.drawable.private_symbol;
+            privacySwitch.setCompoundDrawablesWithIntrinsicBounds(drawable,0,0,0);
+            explainPrivacy.setText(!mood.getPrivate() ? R.string.public_mode : R.string.private_mode);
+
 
             // Load the image from the mood into the dialog if it exists
             imageUri = mood.getImage();
@@ -166,16 +174,6 @@ public class EditMoodFragment extends DialogFragment {
                             .build());
                 }
             });
-
-            //set on hover? listener
-            imageView.setOnHoverListener(new View.OnHoverListener() {
-                @Override
-                public boolean onHover(View v, MotionEvent event) {
-                    View imageBackground = view.findViewById(R.id.image_constraint_layout);
-                    return false;
-                }
-            });
-
             //set an on click listener for the cancel image FAB
             cancelImageFab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -187,11 +185,6 @@ public class EditMoodFragment extends DialogFragment {
                     cancelImageFab.setVisibility(View.GONE);
                 }
             });
-
-
-            Log.d("Nancy", "imageView drawables|" + imageView.getDrawable().getConstantState());
-
-
         }
         else {
             mood = null;
@@ -228,6 +221,7 @@ public class EditMoodFragment extends DialogFragment {
                             isLocation ? R.drawable.location_on : R.drawable.location_off, 0, 0, 0);
                     locationToggle.setEnabled(false);
                 });
+
 
         //PRIVACY (default set to OFF=private, because you might upload something and regret it)
         privacySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {

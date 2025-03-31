@@ -177,7 +177,14 @@ public class MoodFiltering {
      */
     public static void sortKeyword(ArrayList<Mood> moods) {
         moods.removeIf(mood -> {
-            String reason = mood.getReason().replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase();
+            String reason;
+            //Check for null reasons (to avoid NullPointerExceptions)
+            if (mood.getReason() == null) {
+                reason = "";
+            }
+            else {
+                reason = mood.getReason().replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase();
+            }
             return keywords.stream().noneMatch(reason::contains);
         });
     }

@@ -178,7 +178,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
         //Initialize the cancel image and image wrapping elements
         cancelImageFab = view.findViewById(R.id.image_delete);
-        cancelImageFab.setVisibility(View.VISIBLE);
+        cancelImageFab.setVisibility(View.GONE);
         cancelImageFab.bringToFront();
         imageCardView = view.findViewById(R.id.card_view);
 
@@ -225,7 +225,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         };
         reasonEditText.addTextChangedListener(txtWatcher);
 
-
+        //Set a different add image icon
         uploadImageHere.setImageResource(R.drawable.outline_collections_24);
 
         //Set a listener for when the imageView is clicked on
@@ -353,13 +353,12 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
 
                 if (imageUri != null) {
-                    imageProvider.uploadImageToFirebase(imageUri);
                     // Upload to firebase a simplified image Uri
+                    imageProvider.uploadImageToFirebase(imageUri);
                     moodEvent.setImage(Uri.parse(imageUri.getLastPathSegment()));
                 } else{
                     moodEvent.setImage(imageUri);
                 }
-
                 //Upload the new Mood to firebase
                 moodProvider.addMoodEvent(moodEvent).addOnSuccessListener(documentReference -> {
                     String moodEventId = documentReference.getId();
