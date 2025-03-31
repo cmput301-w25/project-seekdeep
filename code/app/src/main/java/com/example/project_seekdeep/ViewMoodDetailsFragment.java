@@ -1,18 +1,27 @@
 package com.example.project_seekdeep;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.Toolbar;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
@@ -57,12 +67,15 @@ public class ViewMoodDetailsFragment extends Fragment {
 
     ViewMoodDetailsFragment() {
         super(R.layout.fragment_mood_details_and_comments);
+
     }
+
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
         // Set up db
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -124,6 +137,7 @@ public class ViewMoodDetailsFragment extends Fragment {
             }
         });
 
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,7 +151,9 @@ public class ViewMoodDetailsFragment extends Fragment {
         Query CommentsQuery = Comments.whereEqualTo("mood", clickedOnMood.getDocRef());
         Log.d("Mood clicked on", clickedOnMood.getDocRef().getPath());
 
+
         // Set adapter for the comments view
+        commentView.setHasFixedSize(false);
         commentView.setLayoutManager(new LinearLayoutManager(requireContext()));
         CommentAdapter commentAdapter = new CommentAdapter(comments);
         commentView.setAdapter(commentAdapter);
@@ -163,29 +179,63 @@ public class ViewMoodDetailsFragment extends Fragment {
             commentAdapter.notifyDataSetChanged();
         });
 
+
+
+
+
         // Set mood details
-        // Owner of mood currently does not store their pfp :(
-//        ImageView moodPfp = (ImageView) view.findViewById(R.id.profile_picture);
-//        moodPfp.setImageURI(clickedOnMood.getOwner());
+        TextView user = view.findViewById(R.id.username);
+        user.setText(clickedOnMood.getOwnerString());
+
+        //the outline change color
+        GradientDrawable box_outline = (GradientDrawable) view.findViewById(R.id.mood_details_box).getBackground();
+        box_outline.mutate();
+        box_outline.setStroke(5, Color.parseColor(clickedOnMood.getEmotionalState().getColour()));
+
+        //Change toolbar color
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(Color.parseColor(clickedOnMood.getEmotionalState().getColour()));
+        switch (clickedOnMood.getEmotionalState()){
+            case ANGER:
+                headerText.setTextColor(Color.parseColor("#120505"));
+                backButton.setColorFilter(Color.parseColor("#120505"));
+                break;
+            case SADNESS:
+                headerText.setTextColor(Color.parseColor("#FFFFFA"));
+                backButton.setColorFilter(Color.parseColor("#FFFFFA"));
+                break;
+
+            case SHAME:
+                headerText.setTextColor(Color.parseColor("#F9F9F0"));
+                backButton.setColorFilter(Color.parseColor("#F9F9F0"));
+                break;
+
+            case SURPRISE:
+                headerText.setTextColor(Color.parseColor("#2B2B2B"));
+                backButton.setColorFilter(Color.parseColor("#2B2B2B"));
+                break;
+        }
+
+
 
         TextView reason = (TextView) view.findViewById(R.id.reason);
         reason.setText(clickedOnMood.getReason());
-        if (clickedOnMood.getReason() == null) {
-            reason.setVisibility(View.GONE);
+        if (clickedOnMood.getReason() == null || clickedOnMood.getReason().isEmpty()) {
+            reason.setText("(Reason: N/A)");
+            reason.setTypeface(null, Typeface.ITALIC);
+            reason.setTextColor(ContextCompat.getColor(getContext(), R.color.fear_grey));
+            reason.setGravity(Gravity.CENTER_HORIZONTAL);
         }
 
         TextView emotion = (TextView) view.findViewById(R.id.emotion);
         emotion.setText(clickedOnMood.getEmotionalState().toString());
 
-        //NOTE: THIS WAS COMMENTED OUT SINCE TRIGGER HAS BEEN REMOVED FROM MOOD AND THE NEW UI
-        //TextView trigger = (TextView) view.findViewById(R.id.trigger);
-        //trigger.setText(clickedOnMood.getTrigger());
 
         TextView social = (TextView) view.findViewById(R.id.social_situation);
         social.setText(clickedOnMood.getSocialSituation().toString());
         if (clickedOnMood.getSocialSituation().toString().equals("Social Situations")){
-            social.setVisibility(View.GONE);
-            view.findViewById(R.id.social_situation_icon).setVisibility(View.GONE);
+            social.setText("(Social Situation: N/A)");
+            social.setTypeface(null, Typeface.ITALIC);
         }
 
         TextView date = (TextView) view.findViewById(R.id.date_text);
@@ -219,6 +269,28 @@ public class ViewMoodDetailsFragment extends Fragment {
         } else {
             // No image to show
             image.setImageDrawable(null);
+            image.setVisibility(View.GONE);
         }
+
+
+        ImageView locationToggle = view.findViewById(R.id.location_image);
+        locationToggle.setVisibility(View.GONE);
+        //THIS CONTROLS THE TOGGLES FOR GEOLOCATION AND PRIVACY:
+        // Set location toggle by checking if a location exists in the locations collection
+        db.collection("locations")
+                .whereEqualTo("moodID", clickedOnMood.getDocRef().getId())
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()){
+                        locationToggle.setImageResource(R.drawable.location_on);
+                    } else{
+                        locationToggle.setImageResource(R.drawable.location_off);
+                    }
+                    locationToggle.setVisibility(View.VISIBLE);
+
+                });
+
+
     }
+
 }
