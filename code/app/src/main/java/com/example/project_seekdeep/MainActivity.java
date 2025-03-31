@@ -40,9 +40,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragManager;
-    private UserProfile currentUser;
+    private com.example.project_seekdeep.UserProfile currentUser;
     private ListView moodListView;
-    private UserProvider userProvider;
+    private com.example.project_seekdeep.UserProvider userProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set default fragment to be feed upon login
         fragManager = getSupportFragmentManager();
-        fragManager.beginTransaction().replace(R.id.frameLayout, new LogInFragment()).commit();
+        fragManager.beginTransaction().replace(R.id.frameLayout, new com.example.project_seekdeep.LogInFragment()).commit();
     }
 
     // The following code for Navigation Bar was adapted from GeeksForGeeks' guide on "BottomNavigationView in Android"
@@ -82,22 +82,22 @@ public class MainActivity extends AppCompatActivity {
 
         // Check which fragment the user clicked on
         if (itemPressed == R.id.History) {
-            selectedFragment = new MoodHistoryFragment();
+            selectedFragment = new com.example.project_seekdeep.MoodHistoryFragment();
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
-            selectedFragment = new FeedFragment();
+            selectedFragment = new com.example.project_seekdeep.FeedFragment();
         } else if (itemPressed == R.id.create_mood_bottom_nav) {
-            selectedFragment = new CreateMoodEventFragment();
+            selectedFragment = new com.example.project_seekdeep.CreateMoodEventFragment();
             //Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
             Bundle bundle = new Bundle();
             bundle.putSerializable("userProfile", currentUser); //make currentUser Serializbale, with key "userProfile"
 //            bundle.putString("username", getCurrentUsername()); //username stored as string in the bundle
             selectedFragment.setArguments(bundle);  //attach bundle to the fragment
         } else if (itemPressed == R.id.following_bottom_nav) {
-            selectedFragment = new FollowingFragment();
+            selectedFragment = new com.example.project_seekdeep.FollowingFragment();
         }
         else if (itemPressed == R.id.Map) {
-            selectedFragment = new MapsFragment();
+            selectedFragment = new com.example.project_seekdeep.MapsFragment();
         }
 
         // Display selected fragment to screen
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
      * Sets the current username, which will be used by the fragments.
      * @param user : he username of the currently logged-in user.
      */
-    public void setCurrentUser(UserProfile user) {
+    public void setCurrentUser(com.example.project_seekdeep.UserProfile user) {
         this.currentUser = user;
     }
 
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
      * Retrieves the current username which can be used by any fragment to access the logged-in user's data.
      * @return : The username of the current user.
      */
-    public UserProfile getCurrentUsername() {
+    public com.example.project_seekdeep.UserProfile getCurrentUsername() {
         return currentUser;
     }
 
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void successful_login() {
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
-        FeedFragment feedFragment = new FeedFragment();
+        com.example.project_seekdeep.FeedFragment feedFragment = new com.example.project_seekdeep.FeedFragment();
         navBar.setVisibility(View.VISIBLE);
         Bundle bundle = new Bundle();
         bundle.putString("username", getCurrentUsername().getUsername());
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Once login is successful, can create initizlize the followings list
         //Use one instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
-        userProvider = UserProvider.getInstance(this, currentUser);
+        userProvider = com.example.project_seekdeep.UserProvider.getInstance(this, currentUser);
         userProvider.initializeFollowingsList();
         userProvider.listenForNewFollowRequests();
         userProvider.listenForAcceptedRequests();
