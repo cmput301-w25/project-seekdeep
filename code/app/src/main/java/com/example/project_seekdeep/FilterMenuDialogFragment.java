@@ -44,6 +44,7 @@ public class FilterMenuDialogFragment extends DialogFragment {
     private OnFilterSelectedListener listener;
     private String selectedTimeline = "";
     private List<String> keywords = new ArrayList<>();
+    private boolean keywordMapSearch = true;
 
     @Override
     public void onAttach(@NonNull android.content.Context context) {
@@ -189,12 +190,28 @@ public class FilterMenuDialogFragment extends DialogFragment {
         if(Objects.equals(getTag(), "profile")) {
             view.findViewById(R.id.last_3_chip).setVisibility(View.GONE);
         }
+        else if(Objects.equals(getTag(), "following")) {
+            if(!keywordMapSearch) {
+                // Hide keyword search only when keywordMapSearch is false
+                view.findViewById(R.id.keyword_label).setVisibility(View.GONE);
+                view.findViewById(R.id.dialog_keyword_search).setVisibility(View.GONE);
+            }
+        }
         // edit the else as you see fit
         else {
             view.findViewById(R.id.keyword_label).setVisibility(View.GONE);
             view.findViewById(R.id.dialog_keyword_search).setVisibility(View.GONE);
         }
     }
+
+    /**
+     * This method sets the keywordMapSearch as keyword filter required or not.
+     * @param show: Boolean True or False
+     */
+    public void keywordMapSearch(boolean show) {
+        this.keywordMapSearch = show;
+    }
+
 
     /**
      * This method sends the information of the filters applied to the fragment it was called from.

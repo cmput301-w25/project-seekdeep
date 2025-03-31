@@ -168,8 +168,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         // Only use following filter when showing mood following markers
         filterMoodFollowingButton.setOnClickListener(v -> {
             if (displayToggle.isChecked()) {
-                new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
+                FilterMenuDialogFragment filterDialog = new FilterMenuDialogFragment();
+                filterDialog.keywordMapSearch(true);
+                filterDialog.show(getChildFragmentManager(), "following");
             }
+
         });
 
         filter5KmRadiusButton.setOnClickListener(v -> {

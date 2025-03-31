@@ -194,7 +194,9 @@ public class FollowingFragment extends Fragment implements  MoodArrayAdapter.OnU
                         @Override
                         public void onClick(View view) {
                             searchBar.setText("");  // clear the search bar
-                            new FilterMenuDialogFragment().show(getChildFragmentManager(), "following");
+                            FilterMenuDialogFragment filterDialog = new FilterMenuDialogFragment();
+                            filterDialog.keywordMapSearch(false);
+                            filterDialog.show(getChildFragmentManager(), "following");
                         }
                     });
 
