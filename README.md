@@ -12,9 +12,7 @@
 | Sarah Chang          | skchang1 | skc-11               |
 
 ## Project Description
-
-[Brief description of the project in your own words]
-
+This project is an abomination of android studio code, calling for an unreasonable amount of late nights to deliver a completely seamless user experience centered around delivering moods. We aim to decrease META, SNAP, and XHS stock by atleast 10% by next quarter. Given new functionality, and a closer-to-home focus of emotion, We deliver on counts of interface, geolocation, and simplicity.
 ## Key Features
 
 - [Feature 1]: Brief description
