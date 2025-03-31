@@ -203,6 +203,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
                     }
 
                 //taken from Jachelle
+                MoodFiltering.removeAllFilters();  // as a preventative to having other fragment's filters
                 MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
                 moodArrayAdapter.notifyDataSetChanged();
                 //Everytime the feed is displayed/updated, must save the original in MoodFiltering incase filters get applied (ie. search bar is used)
