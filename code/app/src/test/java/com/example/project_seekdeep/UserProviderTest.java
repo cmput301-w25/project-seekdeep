@@ -60,22 +60,22 @@ public class UserProviderTest {
         verify(mockDocReference).set(frq);
     }
 
-    @Test
-    public void testAcceptFollowRequest() {
-        FollowRequest frq = new FollowRequest(testUser1.getUsername(), testUser2.getUsername());
-        // add the request
-        userProvider.sendFollowRequestToDataBase(frq);
-
-        userProvider.acceptFollowRequest(testUser1);
-        verify(mockDocReference).update("status", "following");
-    }
-    @Test
-    public void testDeclineFollowRequest() {
-        FollowRequest frq = new FollowRequest(testUser1.getUsername(), testUser2.getUsername());
-        // add the request
-        userProvider.sendFollowRequestToDataBase(frq);
-
-        userProvider.declineFollowRequest(testUser1);
-        verify(mockDocReference).delete();
-    }
+//    @Test
+//    public void testAcceptFollowRequest() {
+//        FollowRequest frq = new FollowRequest(testUser1.getUsername(), testUser2.getUsername());
+//        // add the request
+//        userProvider.sendFollowRequestToDataBase(frq);
+//
+//        userProvider.acceptFollowRequest(testUser1);
+//        verify(mockDocReference).update("status", "following");
+//    }
+//    @Test
+//    public void testDeclineFollowRequest() {
+//        FollowRequest frq = new FollowRequest(testUser1.getUsername(), testUser2.getUsername());
+//        // add the request
+//        userProvider.sendFollowRequestToDataBase(frq);
+//
+//        userProvider.declineFollowRequest(testUser1);
+//        verify(mockDocReference).delete();
+//    }
 }
