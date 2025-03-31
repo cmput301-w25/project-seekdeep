@@ -5,6 +5,7 @@ import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,7 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -33,6 +35,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -73,8 +76,13 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     private Button createConfirmButton;
     private EditText reasonEditText;
 
+    //views for canceling the image you have
+    private FloatingActionButton cancelImageFab;
+    private CardView imageCardView;
+
     private Mood moodEvent;
     private Uri imageUri; //this is where selected image is assigned
+    private ImageProvider imageProvider;
     private MoodProvider moodProvider;
     //Attributes for selecting a mood:
     TextView clickToSelectMood; //this textView is set to clickable
@@ -90,10 +98,12 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     private String socialSit;
 
 
-
-    //Constructor to create the fragment
+    /**
+     * Constructor to create the fragment
+     */
     public CreateMoodEventFragment() {
         super(R.layout.frag_create_mood_event);
+        imageProvider = ImageProvider.getInstance(FirebaseStorage.getInstance());
     }
 
     /*
@@ -127,53 +137,16 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                     Toast.makeText(requireContext(), "Image too large, must be under 65536 bytes", Toast.LENGTH_SHORT).show();
                 } else {
                     Glide.with(requireContext()).load(imageUriActivty).into(uploadImageHere);
+                    cancelImageFab.setVisibility(View.VISIBLE);
+                    cancelImageFab.bringToFront();
                 }
 
-                Log.d("NANCY", "did the glide work at least? imguri" + imageUri.toString());
-                //TO DO: Implement a method that'll upload the image to Firebase
-                //uploadImageToFirebase(imageUri);
             }
 
         }
     });
 
-    /**
-     * This uploads the image that a user selects into Firebase Storage
-     * @param selectedImage
-     */
-    private void uploadImageToFirebase(Uri selectedImage) {
-        //Initialize a MoodProvider object and pass in the firebase
 
-        Log.d("NANCY", "do we ever get here in uploadimage?");
-
-        moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
-
-        //Get a reference to the firebase storage
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        //StorageReference temp = storageRef.child(selectedImage.getEncodedPath());
-
-        StorageReference selectedImageRef = storageRef.child("Images/" + selectedImage.getLastPathSegment());
-        UploadTask uploadTask = selectedImageRef.putFile(selectedImage);
-
-        // Register observers to listen for when the download is done or if it fails
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                Log.d("nancy", "unsuccessful upload");
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
-                Log.d("nancy", "working image upload");
-            }
-        });
-
-
-    }
 
     /**
      * When this view is created, it will collect all the fields from the UI to create a new mood
@@ -202,6 +175,13 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
         //Initialize the image UI element
         uploadImageHere = view.findViewById(R.id.image);
+
+        //Initialize the cancel image and image wrapping elements
+        cancelImageFab = view.findViewById(R.id.image_delete);
+        cancelImageFab.setVisibility(View.GONE);
+        cancelImageFab.bringToFront();
+        imageCardView = view.findViewById(R.id.card_view);
+
         //Initialize selectMood to UI element
         clickToSelectMood = view.findViewById(R.id.edit_emotion_editText);
         createConfirmButton = view.findViewById(R.id.confirm_create_button);
@@ -245,6 +225,8 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         };
         reasonEditText.addTextChangedListener(txtWatcher);
 
+        //Set a different add image icon
+        uploadImageHere.setImageResource(R.drawable.outline_collections_24);
 
         //Set a listener for when the imageView is clicked on
         uploadImageHere.setOnClickListener(new View.OnClickListener() {
@@ -254,6 +236,17 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                 launcher.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                         .build());
+            }
+        });
+
+        //set an on click listener for the cancel image FAB
+        cancelImageFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadImageHere.setImageResource(R.drawable.outline_add_photo_alternate_24);
+                imageCardView.setCardElevation(6);
+                imageUri = null;
+                cancelImageFab.setVisibility(View.GONE);
             }
         });
 
@@ -350,21 +343,22 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
                      TO DO: SocialSituation might need a NULL field
                      */
-                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {reason, socialSit.toString()} );
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {reason, socialSit.toString()}, !privacySwitch.isChecked());
                 }
 
                 //Default: create Mood object with only the UserProfile and EmotionalState
                 else {
-                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {null, socialSit.toString()});
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {null, socialSit.toString()}, !privacySwitch.isChecked());
                 }
 
-                //Log.d("NANCY", imageUri.toString());
 
                 if (imageUri != null) {
-                    uploadImageToFirebase(imageUri);
+                    // Upload to firebase a simplified image Uri
+                    imageProvider.uploadImageToFirebase(imageUri);
+                    moodEvent.setImage(Uri.parse(imageUri.getLastPathSegment()));
+                } else{
+                    moodEvent.setImage(imageUri);
                 }
-                moodEvent.setImage(imageUri);
-
                 //Upload the new Mood to firebase
                 moodProvider.addMoodEvent(moodEvent).addOnSuccessListener(documentReference -> {
                     String moodEventId = documentReference.getId();

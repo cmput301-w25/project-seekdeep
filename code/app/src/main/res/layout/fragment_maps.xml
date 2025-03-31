@@ -2,9 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <!-- Used Selector from https://stackoverflow.com/questions/18074303/how-to-create-custom-shape-button-with-selector-in-android-->
+    <!-- Used Selector from https://stackoverflow.com/questions/18074303/how-to-create-custom-shape-button-with-selector-in-android -->
+    <!-- https://developer.android.com/develop/ui/views/components/togglebutton-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -12,12 +14,29 @@
         android:orientation="horizontal"
         android:padding="8dp">
 
-        <TextView
-            android:layout_width="54dp"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="Map Display: "
-            android:textSize="12sp" />
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/display_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Map Display:" />
+
+            <androidx.appcompat.widget.AppCompatToggleButton
+                android:id="@+id/display_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textOff="Mood History"
+                android:textOn="Mood Following"
+                android:textColor="@color/raisin_black"
+                android:textSize="10.5sp"
+                android:checked="false" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -28,8 +47,8 @@
 
             <ImageButton
                 android:id="@+id/filter_mood_history"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="@drawable/selector_mood_history"
                 android:src="@drawable/ic_mood_history"
                 android:scaleType="centerInside"/>
@@ -38,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mood History"
-                android:textSize="12sp"/>
+                android:textSize="10sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -50,8 +69,8 @@
 
             <ImageButton
                 android:id="@+id/filter_mood_following"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="@drawable/selector_mood_following"
                 android:src="@drawable/ic_mood_following"
                 android:scaleType="centerInside"/>
@@ -60,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mood Following"
-                android:textSize="12sp"/>
+                android:textSize="10sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -72,8 +91,8 @@
 
             <ImageButton
                 android:id="@+id/filter_5_km_radius"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="@drawable/selector_5km_radius"
                 android:src="@drawable/ic_5km_radius"
                 android:scaleType="centerInside"/>
@@ -82,7 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="5 KM Radius"
-                android:textSize="12sp"/>
+                android:textSize="10sp"/>
         </LinearLayout>
 
     </LinearLayout>

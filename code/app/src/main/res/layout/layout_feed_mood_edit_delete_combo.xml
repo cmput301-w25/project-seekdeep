@@ -25,8 +25,8 @@
 
             <ImageView
                 android:id="@+id/profile_picture"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_weight="0"
                 android:contentDescription="User icon"
                 app:srcCompat="@drawable/profile_pic" />
@@ -39,7 +39,8 @@
                 android:layout_marginStart="5dp"
                 android:layout_weight="1"
                 android:text="\@user"
-                android:textSize="10sp" />
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/date"
@@ -129,14 +130,14 @@
             android:layout_width="wrap_content"
 
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:minHeight="32sp"
             android:padding="10sp"
             android:text="Edit"
+
             android:textColor="@color/raisin_black"
 
-            android:textSize="10sp"
-
-            />
+            android:textSize="10sp" />
 
         <Button
             android:id="@+id/delete_mood_button"
@@ -144,12 +145,13 @@
             android:layout_width="wrap_content"
 
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:minHeight="32sp"
             android:padding="10sp"
+
             android:text="Delete"
 
             android:textColor="@color/raisin_black"
-
             android:textSize="10sp" />
     </LinearLayout>
 

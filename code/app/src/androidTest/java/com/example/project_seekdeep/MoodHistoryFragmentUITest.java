@@ -1056,23 +1056,6 @@ public class MoodHistoryFragmentUITest {
     }
 
     @Test
-    public void testFilterKeywordShouldErrorWhenMoreThanOneWord() throws InterruptedException {
-        // give time for the login to process
-        Thread.sleep(2000);
-        onView(withId(R.id.History)).perform(click());
-        // give time for the history/profile page to show up
-        Thread.sleep(1000);
-        // click the filter button
-        onView(withId(R.id.filter_button)).perform(click());
-        // type 2 words
-        onView(withId(R.id.dialog_keyword_search)).perform(typeText("testing code"));
-        onView(withId(R.id.apply_filters_button)).perform(click());
-        // check that the error is shown to user
-        onView(withId(R.id.dialog_keyword_search)).check(matches(hasErrorText("1 keyword only!")));
-
-    }
-
-    @Test
     public void testKeywordFilterAndEmotionalState() throws InterruptedException {
         // add another anger mood to test with
         Mood mood = new Mood(testUser, EmotionalStates.ANGER, new String[]{"What??", "With Another Person"});
@@ -1206,5 +1189,52 @@ public class MoodHistoryFragmentUITest {
                 .check(matches(withText("☹️ Sadness")));
         onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.reason))
                 .check(matches(withText("Midterms")));
+
+        // check if anger is there too
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText("\uD83D\uDE20 Anger")));
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(1).onChildView(withId(R.id.reason))
+                .check(matches(withText("Midterms are hard")));
+    }
+
+    @Test
+    public void testMultipleKeywordsFilter() throws InterruptedException {
+        // give time for the login to process
+        Thread.sleep(2000);
+        onView(withId(R.id.History)).perform(click());
+        // give time for the history/profile page to show up
+        Thread.sleep(2000);
+        // save views that should be gone
+        ArrayList<ViewInteraction> views = new ArrayList<>();
+        ViewInteraction view = onView(withText("😄 Happiness"));
+        views.add(view);
+
+        // click the filter button
+        onView(withId(R.id.filter_button)).perform(click());
+        // type keyword "Midterms"
+        onView(withId(R.id.dialog_keyword_search)).perform(typeText("MiDTErMs to"));
+        onView(withId(R.id.apply_filters_button)).perform(click());
+
+        // check if other views are gone
+        for (ViewInteraction aview : views) {
+            aview.check(doesNotExist());
+        }
+
+        // sadness confusion anger should be left in this order
+
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.emotion))
+                .check(matches(withText("☹️ Sadness")));
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(0).onChildView(withId(R.id.reason))
+                .check(matches(withText("Midterms")));
+
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(1).onChildView(withId(R.id.emotion))
+                .check(matches(withText("🤔 Confusion")));
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(1).onChildView(withId(R.id.reason))
+                .check(matches(withText("How to test?")));
+
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(2).onChildView(withId(R.id.emotion))
+                .check(matches(withText("\uD83D\uDE20 Anger")));
+        onData(anything()).inAdapterView(withId(R.id.history_listview)).atPosition(2).onChildView(withId(R.id.reason))
+                .check(matches(withText("Midterms are hard")));
     }
 }
