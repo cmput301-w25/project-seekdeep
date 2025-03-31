@@ -1,4 +1,217 @@
 package com.example.project_seekdeep;
 
-public class CalendarFragment {
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+/**
+ * Calendar Fragment
+ * This fragment is designed to display all creating a Month-view calendar
+ * each day displays the most impactful/ frequent mood used on that day
+ * Under the calendar is a tip / insight like "Your most common mood this week was happy, keep it up"
+ *
+ * Borrows Code from every other fragment in the project
+ * @author Nancy Lin
+ *
+ */
+public class CalendarFragment extends Fragment implements CalendarAdapter.OnItemListener{
+
+    private UserProfile loggedInUser;
+    private TextView monthYearText;
+    private RecyclerView calendarRecyclerView;
+    private Date selectedDate;
+    Calendar selectedDateCalendar;
+    private LocalDate selectedLocalDate;
+
+
+    /**
+     * Constructor for the Fragment that makes the view from the xml layout
+     */
+    public CalendarFragment(){
+        //Required Constructor
+    }
+
+    /**
+     * Modify onCreate
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     *
+     * Gets the logged in User from the savedInstanceState bundle
+     */
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+        }
+
+
+    }
+
+    /**
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return inflated view
+     */
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_calendar, container, false);
+    }
+
+    /**
+     * Set up the view
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+
+        //calendar follows https://www.youtube.com/watch?v=Ba0Q-cK1fJo
+        calendarRecyclerView = view.findViewById(R.id.calendar_recycler_view);
+        monthYearText = view.findViewById(R.id.monthYearTV);
+        selectedDate = new Date();
+        selectedDateCalendar = Calendar.getInstance();
+        selectedDateCalendar.setTime(selectedDate);
+
+
+
+        monthYearText.setText(getMonthFromCalendar(  selectedDateCalendar ));
+        ArrayList<String> daysInMonth = daysInMonthArray( selectedDateCalendar);
+
+        CalendarAdapter calendarAdapter = new CalendarAdapter(daysInMonth, this);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
+        calendarRecyclerView.setLayoutManager(layoutManager);
+        calendarRecyclerView.setAdapter(calendarAdapter);
+
+
+
+        Log.d("NANCY", "recylcer view  |"+ calendarRecyclerView.toString());
+        Log.d("NANCY", "recylcer view  |"+ calendarRecyclerView.getAdapter());
+        Log.d("NANCY", "recylcer view  |"+ calendarRecyclerView.getLayoutManager().toString());
+
+        Log.d("NANCY", "arraylist" + daysInMonth);
+        Log.d("NANCY", "Calendar firstday of week" + selectedDateCalendar.getFirstDayOfWeek());
+        Log.d("NANCY", "Calendar week of month " + selectedDateCalendar.get(Calendar.WEEK_OF_MONTH));
+        Log.d("NANCY", "Calendar day of month" + selectedDateCalendar.get(Calendar.DAY_OF_MONTH));
+        Log.d("NANCY", "Calendar day of week" + selectedDateCalendar.get(Calendar.DAY_OF_WEEK));
+        Log.d("NANCY", "Calendar month " + selectedDateCalendar.get(Calendar.MONTH));
+
+
+    }
+
+
+
+    public String getMonthFromCalendar(Calendar calendar){
+        String month = null;
+        switch (calendar.get(Calendar.MONTH)){
+            case 0:
+                month = "January";
+                break;
+            case 1:
+                month = "February";
+
+            case 2:
+                month = "March";
+                break;
+            case 3:
+                month = "April";
+                break;
+            case 4:
+                month = "May";
+
+            case 5:
+                month = "June";
+                break;
+            case 6:
+                month = "July";
+                break;
+            case 7:
+                month = "August";
+
+            case 8:
+                month = "September";
+                break;
+            case 9:
+                month = "October";
+                break;
+            case 10:
+                month = "November";
+
+            case 11:
+                month = "December";
+                break;
+
+        }
+
+        return month;
+    }
+
+    private ArrayList<String> daysInMonthArray(Calendar calendar) {
+        ArrayList<String> daysInMonthArray = new ArrayList<>();
+
+        int daysInMonth = calendar.getMaximum(Calendar.DAY_OF_MONTH);
+
+        Calendar calendar2 = calendar;
+        calendar2.add(Calendar.DATE, Calendar.DAY_OF_MONTH-1);
+
+        int dayOfWeek = calendar2.get(Calendar.DAY_OF_WEEK);
+
+        for(int i = 1; i <= 42; i++)
+        {
+            if(i <= dayOfWeek || i > daysInMonth + dayOfWeek)
+            {
+                daysInMonthArray.add("");
+            }
+            else
+            {
+                daysInMonthArray.add(String.valueOf(i - dayOfWeek));
+            }
+        }
+        return  daysInMonthArray;
+    }
+
+
+
+    @Override
+    public void onItemClick(int position, String dayText) {
+        if(!dayText.equals("")) {
+            String message = "Selected Date " + dayText + " " + selectedDateCalendar.get(Calendar.MONTH);
+
+        }
+    }
 }

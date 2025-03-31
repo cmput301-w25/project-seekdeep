@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -74,6 +75,9 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
     private CollectionReference users;
 
 
+    /**
+     * Constructor for the Fragment that makes the view from the xml layout
+     */
     public MoodHistoryFragment() {
         super(R.layout.profile_feed);
     }
@@ -148,6 +152,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         CollectionReference users = db.collection("UserDB");
         CollectionReference moods = db.collection("MoodDB");
 
+        // Logout functionality
         TextView logoutText = view.findViewById(R.id.logout_text);
         logoutText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,6 +171,29 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
                         .replace(R.id.frameLayout, new LogInFragment()).commit();
             }
         });
+
+        //Calendar link
+        Button calendarButton = view.findViewById(R.id.calendar_button);
+        calendarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                FragmentManager fragManager = getParentFragmentManager();
+
+                //Create view fragment, send the current logged-in user
+                CalendarFragment calendarFragment = new CalendarFragment();
+                Bundle calendarArgs = new Bundle();
+                calendarArgs.putSerializable("userProfile", loggedInUser);
+                calendarFragment.setArguments(calendarArgs);
+
+                fragManager.beginTransaction()
+                        .replace(R.id.frameLayout, calendarFragment)
+                        .setReorderingAllowed(true)
+                        .addToBackStack("history")
+                        .commit();
+            }
+        });
+
 
         //2. query collection to get all mood from user
         //https://firebase.google.com/docs/firestore/query-data/queries#java_2
