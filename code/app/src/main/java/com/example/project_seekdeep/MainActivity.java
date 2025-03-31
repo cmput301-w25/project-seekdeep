@@ -26,6 +26,7 @@ import com.example.project_seekdeep.FollowingFragment;
 import com.example.project_seekdeep.MapsFragment;
 import com.example.project_seekdeep.UserProfile;
 import com.example.project_seekdeep.UserProvider;
+import com.example.project_seekdeep.NotificationHandler;
 /**
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
  * It also sets up the navigation and fragment management for the app's main UI flow.
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Once login is successful, can create initizlize the followings list
         //Use one instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
-        NotificationHandler notifs = new NotificationHandler(this, currentUser, FirebaseFirestore.getInstance());
+        NotificationHandler notifs = new com.example.project_seekdeep.NotificationHandler(this, currentUser, FirebaseFirestore.getInstance());
         notifs.initializeFollowingsList();
         notifs.listenForNewFollowRequests();
         notifs.listenForAcceptedRequests();
