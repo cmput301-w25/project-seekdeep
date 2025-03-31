@@ -45,7 +45,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="20dp"
+                android:gravity="center"
                 android:orientation="horizontal">
 
                 <EditText
@@ -63,6 +63,7 @@
                     android:layout_marginStart="100dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
                     android:layout_weight="0"
                     android:background="@color/transparent"
                     app:srcCompat="@drawable/filter_icon" />

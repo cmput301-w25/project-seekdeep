@@ -123,11 +123,11 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
         // if image DNE, then hide the image view?
         if (currentMood.getImage() == null){
-            view.findViewById(R.id.image).setVisibility(View.GONE);
+            image.setVisibility(View.GONE);
             image.setImageDrawable(null);
         } else{
             ; //ToDo for images
-            view.findViewById(R.id.image).setVisibility(View.VISIBLE);
+            image.setVisibility(View.VISIBLE);
             StorageReference imageFire = imageProvider.getStorageRefFromLastPathSeg(
                     currentMood.getImage().getLastPathSegment());
 

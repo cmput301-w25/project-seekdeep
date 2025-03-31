@@ -13,7 +13,7 @@ import com.google.firebase.firestore.DocumentReference;
  *      status: either "pending" or "following"
  *      </pre>
  * @see OtherUsersProfileFragment The only fragment that creates FollowRequest objects
- * @author Sarah Chang
+ * @author Sarah Chang, Deryk Fong
  */
 public class FollowRequest {
     private DocumentReference docRef;
@@ -36,6 +36,21 @@ public class FollowRequest {
         this.follower = follower;
         this.followee = followee;
         this.status = "pending";
+    }
+
+    /**
+     * Secondary constructor for FollowRequest, sets status to "pending" if status is not "following"
+     * @param follower
+     * @param followee
+     * @param status
+     */
+    public FollowRequest(String follower, String followee, String status) {
+        this.follower = follower;
+        this.followee = followee;
+        // status failsafe constructor if more statuses are added
+        this.status = status.equals("pending") || status.equals("following")
+        ? status
+        : "pending";
     }
     public DocumentReference getDocRef() {
         return docRef;
@@ -66,5 +81,4 @@ public class FollowRequest {
     public void setStatusToFollowing() {
         this.status = "following";
     }
-
 }
