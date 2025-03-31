@@ -22,11 +22,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 /**
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
  * It also sets up the navigation and fragment management for the app's main UI flow.
+ * Resources Used:
+ * https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
+ * @author Kevin Tu, Saurabh Singh Baghel, modified by Deryk Fong
  */
 
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragManager;
     private UserProfile currentUser;
+    private ListView moodListView;
+    private UserProvider userProvider;
+    private Fragment selectedFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
      * object and store it in selectedFragment as shown for the "History" fragment.
      */
     private final NavigationBarView.OnItemSelectedListener navListener = item -> {
-        Fragment selectedFragment = null;
         int itemPressed = item.getItemId();
 
         // Check which fragment the user clicked on
@@ -84,12 +89,6 @@ public class MainActivity extends AppCompatActivity {
             selectedFragment.setArguments(bundle);  //attach bundle to the fragment
         } else if (itemPressed == R.id.following_bottom_nav) {
             selectedFragment = new FollowingFragment();
-        }
-        else if (itemPressed == R.id.Map) {
-            selectedFragment = new MapsFragment();
-        }
-        else if (itemPressed == R.id.Map) {
-            selectedFragment = new MapsFragment();
         }
         else if (itemPressed == R.id.Map) {
             selectedFragment = new MapsFragment();
@@ -141,11 +140,6 @@ public class MainActivity extends AppCompatActivity {
         // FROM https://firebase.google.com/docs/database/android/offline-capabilities
         // Accessed by Deryk Fong on March 20th
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        // A placeholder for future functionality
-        // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
-//      getParentFragmentManager().beginTransaction()
-//          .replace(R.id.frameLayout, feedFragment)
-//          .commit();
 
         //Once login is successful, can create initizlize the followings list
         //Use one instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
@@ -155,5 +149,5 @@ public class MainActivity extends AppCompatActivity {
         notifs.listenForAcceptedRequests();
     }
 
-
+    public Fragment getSelectedFragment() { return selectedFragment; }
 }
