@@ -2,11 +2,9 @@ package com.example.project_seekdeep;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,11 +12,19 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.project_seekdeep.Followings.FollowingFragment;
+import com.example.project_seekdeep.Helpers.NotificationHandler;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.Helpers.UserProvider;
+import com.example.project_seekdeep.LoginAndSignup.LogInFragment;
+import com.example.project_seekdeep.Moods.MoodHistoryFragment;
+import com.example.project_seekdeep.Navigation.CreateMoodEventFragment;
+import com.example.project_seekdeep.Navigation.FeedFragment;
+import com.example.project_seekdeep.Navigation.MapsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 
 /**
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
@@ -87,8 +93,9 @@ public class MainActivity extends AppCompatActivity {
             //Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
             Bundle bundle = new Bundle();
             bundle.putSerializable("userProfile", currentUser); //make currentUser Serializbale, with key "userProfile"
-//            bundle.putString("username", getCurrentUsername()); //username stored as string in the bundle
             selectedFragment.setArguments(bundle);  //attach bundle to the fragment
+            //go to Create Mood page with a BackStack
+            fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).addToBackStack(null).commit();
         } else if (itemPressed == R.id.following_bottom_nav) {
             selectedFragment = new FollowingFragment();
         }
@@ -101,10 +108,10 @@ public class MainActivity extends AppCompatActivity {
             //add logged in user's UserProfile to bundle to pass to mood history
             Bundle bundle = new Bundle();
             bundle.putString("username", getCurrentUsername().getUsername());
-            bundle.putSerializable("userProfile", currentUser);
+            UserProfile user = getCurrentUsername();
+            bundle.putSerializable("userProfile", user);
             selectedFragment.setArguments(bundle);
             fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
-
         }
         return true;
     };
