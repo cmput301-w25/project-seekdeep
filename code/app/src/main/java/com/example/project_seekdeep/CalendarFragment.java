@@ -113,6 +113,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         monthYearText.setText(getMonthFromCalendar(  selectedDateCalendar ));
         ArrayList<String> daysInMonth = daysInMonthArray( selectedDateCalendar);
 
+
         CalendarAdapter calendarAdapter = new CalendarAdapter(daysInMonth, this);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
         calendarRecyclerView.setLayoutManager(layoutManager);
@@ -131,6 +132,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         Log.d("NANCY", "Calendar day of week" + selectedDateCalendar.get(Calendar.DAY_OF_WEEK));
         Log.d("NANCY", "Calendar month " + selectedDateCalendar.get(Calendar.MONTH));
 
+        calendarAdapter.notifyDataSetChanged();
 
     }
 
@@ -195,7 +197,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         {
             if(i <= dayOfWeek || i > daysInMonth + dayOfWeek)
             {
-                daysInMonthArray.add("");
+                daysInMonthArray.add(" ");
             }
             else
             {

@@ -1,10 +1,13 @@
 package com.example.project_seekdeep;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.Calendar;
 
 /**
  * Original code from https://www.youtube.com/watch?v=Ba0Q-cK1fJo,
@@ -18,6 +21,7 @@ public class CalendarCellHolder extends RecyclerView.ViewHolder implements  View
     public CalendarCellHolder(@NonNull View itemView, CalendarAdapter.OnItemListener onItemListener)
     {
         super(itemView);
+        Log.d("NANCY", "Calendar cell holder month construct" );
         dayOfMonth = itemView.findViewById(R.id.cell_date);
         this.onItemListener = onItemListener;
         itemView.setOnClickListener(this);

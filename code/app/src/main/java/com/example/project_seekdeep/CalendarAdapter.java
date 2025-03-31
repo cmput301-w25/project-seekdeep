@@ -1,5 +1,6 @@
 package com.example.project_seekdeep;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarCellHolder> {
     private OnItemListener onItemListener;
 
     public CalendarAdapter(ArrayList<String> daysOfMonth, OnItemListener onItemListener){
+        Log.d("NANCY", "Calendar cell adapter " );
         this.daysOfMonth = daysOfMonth;
         this.onItemListener = onItemListener;
     }
@@ -28,16 +30,21 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarCellHolder> {
     @Override
     public CalendarCellHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
+
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.calendar_cell, parent, false);
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         layoutParams.height = (int) (parent.getHeight() * 0.166666666);
+
+        Log.d("NANCY", "Calendar cell adapter constructor" + view.getContentDescription()+ "|"+ view
+            + "|" + String.valueOf((int) (parent.getHeight() * 0.166666666)));
         return new CalendarCellHolder(view, onItemListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CalendarCellHolder holder, int position) {
         holder.dayOfMonth.setText(daysOfMonth.get(position));
+        Log.d("NANCY", "Calendar cell adapter on bind |" + daysOfMonth.get(position) );
     }
 
     @Override
