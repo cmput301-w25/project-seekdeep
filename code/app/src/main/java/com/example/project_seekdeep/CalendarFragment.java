@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -102,28 +103,57 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 
 
         //calendar follows https://www.youtube.com/watch?v=Ba0Q-cK1fJo
+        //init the views
         calendarRecyclerView = view.findViewById(R.id.calendar_recycler_view);
         monthYearText = view.findViewById(R.id.monthYearTV);
+
+        //get the date
         selectedDate = new Date();
         selectedDateCalendar = Calendar.getInstance();
         selectedDateCalendar.setTime(selectedDate);
 
 
+        //get array to construct recycler
+        CalendarAdapter.OnItemListener listener = this;
 
-        monthYearText.setText(getMonthFromCalendar(  selectedDateCalendar ));
-        ArrayList<String> daysInMonth = daysInMonthArray( selectedDateCalendar);
-        ArrayList<String> moodsInMonth = createMoodsInMonthArray(daysInMonth);
+        //construct recycler view
+        buildCalendar(this);
 
-        CalendarAdapter calendarAdapter = new CalendarAdapter(daysInMonth, moodsInMonth, this);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
-        calendarRecyclerView.setLayoutManager(layoutManager);
-        calendarRecyclerView.setAdapter(calendarAdapter);
+        //add on click listener for buttons
+        Button nextButton = view.findViewById(R.id.forwards_button_calendar);
+        Button backButton = view.findViewById(R.id.back_button_calendar);
 
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedDateCalendar.add(Calendar.MONTH, 1);
+                buildCalendar(listener);
+            }
+        });
+
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedDateCalendar.add(Calendar.MONTH, -1);
+                buildCalendar(listener);
+            }
+        });
 
 
 
     }
 
+    public void buildCalendar(CalendarAdapter.OnItemListener onItemListener){
+        monthYearText.setText(getMonthFromCalendar(  selectedDateCalendar ));
+        Log.d("NANCY", "calendar time |" + selectedDateCalendar.getTime());
+        ArrayList<String> daysInMonth = daysInMonthArray( selectedDateCalendar);
+        ArrayList<String> moodsInMonth = createMoodsInMonthArray(daysInMonth);
+        CalendarAdapter calendarAdapter = new CalendarAdapter(daysInMonth, moodsInMonth, onItemListener);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
+        calendarRecyclerView.setLayoutManager(layoutManager);
+        calendarRecyclerView.setAdapter(calendarAdapter);
+    }
 
 
     public String getMonthFromCalendar(Calendar calendar){
@@ -134,6 +164,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 break;
             case 1:
                 month = "February";
+                break;
 
             case 2:
                 month = "March";
@@ -141,8 +172,10 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             case 3:
                 month = "April";
                 break;
+
             case 4:
                 month = "May";
+                break;
 
             case 5:
                 month = "June";
@@ -152,6 +185,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 break;
             case 7:
                 month = "August";
+                break;
 
             case 8:
                 month = "September";
@@ -161,6 +195,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 break;
             case 10:
                 month = "November";
+                break;
 
             case 11:
                 month = "December";
@@ -176,7 +211,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 
         int daysInMonth = calendar.getMaximum(Calendar.DAY_OF_MONTH);
 
-        Calendar calendar2 = calendar;
+        Calendar calendar2 = (Calendar) calendar.clone();
         calendar2.add(Calendar.DATE, Calendar.DAY_OF_MONTH-1);
 
         int dayOfWeek = calendar2.get(Calendar.DAY_OF_WEEK);
@@ -219,8 +254,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     @Override
     public void onItemClick(int position, String dayText) {
         if(!dayText.equals("")) {
+            //you can probably change this later
             String message = "Selected Date " + dayText + " " + selectedDateCalendar.get(Calendar.MONTH);
-
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
         }
     }
 }
