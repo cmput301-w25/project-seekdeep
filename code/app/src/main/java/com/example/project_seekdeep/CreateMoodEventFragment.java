@@ -325,10 +325,12 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
 
                 if (imageUri != null) {
+                    // Upload to firebase a simplified image Uri
                     imageProvider.uploadImageToFirebase(imageUri);
+                    moodEvent.setImage(Uri.parse(imageUri.getLastPathSegment()));
+                } else{
+                    moodEvent.setImage(imageUri);
                 }
-                // Upload to firebase a simplified image Uri
-                moodEvent.setImage(Uri.parse(imageUri.getLastPathSegment()));
                 //Upload the new Mood to firebase
                 moodProvider.addMoodEvent(moodEvent).addOnSuccessListener(documentReference -> {
                     String moodEventId = documentReference.getId();

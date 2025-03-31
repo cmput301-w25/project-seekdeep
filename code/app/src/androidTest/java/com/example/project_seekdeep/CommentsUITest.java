@@ -49,6 +49,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -245,5 +246,14 @@ public class CommentsUITest {
         Thread.sleep(1000);
         onView(withText("This is another test comment!!!")).check(matches(isDisplayed()));
         Thread.sleep(1000);
+    }
+
+    public void followingProfileCommentsShouldBeDisplayed() throws InterruptedException {
+        // Navigate to feed
+        onView(withId(R.id.following_bottom_nav)).perform(click());
+        Thread.sleep(1000);
+
+        onView(withText("check2")).perform(click());
+
     }
 }
