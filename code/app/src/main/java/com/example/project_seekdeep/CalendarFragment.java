@@ -242,13 +242,58 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                           handle the ties in queries
 
                  */
+
                 String emotion = EmotionalStates.ANGER.getEmoticon();
+                switch (daysInMonthArray.get(i)) {
+                    //anger
+                    case "1":
+                        emotion = EmotionalStates.ANGER.getEmoticon();
+                        break;
+
+                    //confusion
+                    case "2":
+                        emotion = EmotionalStates.CONFUSION.getEmoticon();
+                        break;
+
+                    //disgust
+                    case "3":
+                        emotion = EmotionalStates.DISGUST.getEmoticon();
+                        break;
+
+                    //fear
+                    case "4":
+                        emotion = EmotionalStates.FEAR.getEmoticon();
+                        break;
+
+                    //happiness
+                    case "5":
+                        emotion = EmotionalStates.HAPPINESS.getEmoticon();
+                        break;
+
+                    //sadness
+                    case "☹6":
+                        emotion = EmotionalStates.SADNESS.getEmoticon();
+                        break;
+
+                    //shame
+                    case "7":
+                        emotion = EmotionalStates.SHAME.getEmoticon();
+                        break;
+
+                    //surprise
+                    case "8":
+                        emotion = EmotionalStates.SURPRISE.getEmoticon();
+                        break;
+                }
+
                 moodsInMonth.add(emotion);
             }
         }
 
         return moodsInMonth;
     }
+
+
 
 
     @Override

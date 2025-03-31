@@ -20,6 +20,7 @@ public class CalendarCellHolder extends RecyclerView.ViewHolder implements  View
 
     public final TextView dayOfMonth;
     public TextView moodOfMonth;
+    public View cellConstraintLayout;
     private final CalendarAdapter.OnItemListener onItemListener;
     public CalendarCellHolder(@NonNull View itemView, CalendarAdapter.OnItemListener onItemListener)
     {
@@ -27,6 +28,7 @@ public class CalendarCellHolder extends RecyclerView.ViewHolder implements  View
         Log.d("NANCY", "Calendar cell holder month construct" );
         dayOfMonth = itemView.findViewById(R.id.cell_date);
         moodOfMonth = itemView.findViewById(R.id.cell_text);
+        cellConstraintLayout = itemView.findViewById(R.id.cell_constraint_layout);
         this.onItemListener = onItemListener;
         itemView.setOnClickListener(this);
     }
