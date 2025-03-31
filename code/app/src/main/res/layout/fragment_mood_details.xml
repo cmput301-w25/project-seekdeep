@@ -84,7 +84,7 @@
                 android:padding="10dp" />
 
             <ImageView
-                android:id="@+id/image"
+                android:id="@+id/mood_image"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_weight="1"
@@ -96,21 +96,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/trigger_icon"
-                android:layout_width="15sp"
-                android:layout_height="15sp"
-                android:layout_weight="0"
-                app:srcCompat="@android:drawable/ic_popup_reminder" />
-
-            <EditText
-                android:id="@+id/edit_trigger"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:hint="trigger"
-                android:textSize="10sp" />
 
             <ImageView
                 android:id="@+id/social_situation_icon"

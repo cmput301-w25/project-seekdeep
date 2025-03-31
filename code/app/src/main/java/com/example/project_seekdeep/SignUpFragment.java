@@ -1,5 +1,6 @@
 package com.example.project_seekdeep;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 /**
  * SignUpFragment handles creating a new account and storing the users credentials in Firebase Database.
+ * @author Saurabh
  */
 public class SignUpFragment extends Fragment {
     private FirebaseFirestore db;
@@ -28,6 +30,7 @@ public class SignUpFragment extends Fragment {
     private CollectionReference usersRef;
     private TextView goToLogIn;
     private TextView passwordTrigger;
+    private MediaPlayer soundEffect;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -67,6 +70,9 @@ public class SignUpFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+
+        soundEffect = MediaPlayer.create(getContext(), R.raw.xiaohongshu);
+
         // Click listener for sign up button
         signupButton.setOnClickListener(v -> signUpUser());
         return view;
@@ -112,7 +118,7 @@ public class SignUpFragment extends Fragment {
 
                                 // Call the successful_login() method to show BottomNavigationView and navigate to FeedFragment
                                 ((MainActivity) requireActivity()).successful_login();
-
+                                soundEffect.start();
                             })
                             .addOnFailureListener(e -> {
                                 Toast.makeText(getContext(), "Error Occurred: ", Toast.LENGTH_LONG).show();

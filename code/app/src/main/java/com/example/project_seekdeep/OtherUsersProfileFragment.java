@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -112,14 +113,14 @@ public class OtherUsersProfileFragment extends Fragment {
 
         //Instantiate userProvide (to use its firebase methods)
         //userProvider = new UserProvider(requireContext(), loggedInUser);
-        userProvider = UserProvider.getInstance(requireContext(), loggedInUser); //use the same instance of userProvider that mainactivity uses
+        userProvider = UserProvider.getInstance(loggedInUser, db); //use the same instance of userProvider that mainactivity uses
 
         //Setup the username
         usernameTextView = view.findViewById(R.id.username_profile);
         //Set up the username on the profile page
         String username = userBeingViewed.getUsername();
         usernameTextView = view.findViewById(R.id.username_profile);
-        usernameTextView.setText("@" + username);
+        usernameTextView.setText(username);
 
         //debugging: prevent further execution if userBeingViewed was not passed into this fragment
         if (userBeingViewed == null) {
@@ -158,6 +159,17 @@ public class OtherUsersProfileFragment extends Fragment {
                     moodArrayList.clear();
                 }
                 for (QueryDocumentSnapshot snapshot : value) {
+                    Boolean isPrivate = (Boolean) snapshot.get("private");
+
+                    // For moods that are currently existing, but does not have the "private" field.
+                    // We'll allow these to be public for the sake of demo-ing.
+                    if (isPrivate == null) {
+                        isPrivate = false;
+                    } else if (isPrivate) {
+                        // This skips loading the mood into the feed since it is private and not owned by the currently logged in user.
+                        continue;
+                    }
+
                     //retreive emotionalState and socialSit from db (stored as strings) and conver to their Enum so can pass into ArrayAdapter
                     EmotionalStates emotionalState = EmotionalStates.valueOf((String) snapshot.get("emotionalState"));
                     SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
@@ -172,7 +184,11 @@ public class OtherUsersProfileFragment extends Fragment {
                     }
 
                     //convert to mood object
-                    Mood mood = new Mood(userBeingViewed, emotionalState, socialSituation, followers, postedDate, reason);
+                    String[] stringFields = {
+                            reason,
+                            socialSituation.toString()
+                    };
+                    Mood mood = new Mood(userBeingViewed, emotionalState, stringFields, followers, isPrivate, postedDate);
 
                     mood.setDocRef(snapshot.getReference());
                     mood.setImage(image);
@@ -232,6 +248,29 @@ public class OtherUsersProfileFragment extends Fragment {
             }
         });
 
+        moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Bundle up the original Mood object that was clicked on
+                Bundle moodAndUserBundle = new Bundle();
+                moodAndUserBundle.putSerializable("mood", moodArrayList.get(position));
+
+                moodAndUserBundle.putSerializable("userProfile", loggedInUser);
+
+                // This is used to navigate back and forth between a mood comment section and the feed or history
+                FragmentManager fragManager = getParentFragmentManager();
+
+                // Create new fragment and send Mood off into new fragment
+                ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
+                viewMoodDetailsFragment.setArguments(moodAndUserBundle);
+
+                fragManager.beginTransaction()
+                        .replace(R.id.frameLayout, viewMoodDetailsFragment)
+                        .setReorderingAllowed(true)
+                        .addToBackStack("feed")
+                        .commit();
+            }
+        });
     }
 
 

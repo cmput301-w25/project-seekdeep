@@ -60,25 +60,11 @@ public class OtherUsersProfileFragmentTest {
         CollectionReference usersRef = db.collection("UserDB");
         CollectionReference moodsRef = db.collection("MoodDB");
 
-        Mood mood1 = new Mood(testUser2, EmotionalStates.HAPPINESS, SocialSituations.ALONE);
-        // give time so we can sort the list
-        Thread.sleep(5000);
-        Mood mood2 = new Mood(testUser2, EmotionalStates.CONFUSION, SocialSituations.WITH_ANOTHER);
-        Thread.sleep(5000);
-        Mood mood3 = new Mood(testUser2, EmotionalStates.SADNESS, SocialSituations.CROWD);
-        // make mood with a date outside of recent week
-        Thread.sleep(2000);
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, -10);
-        Mood mood4 = new Mood(testUser2, EmotionalStates.ANGER, SocialSituations.ALONE, calendar.getTime());
+        Mood mood1 = new Mood(testUser2, EmotionalStates.SADNESS, SocialSituations.CROWD);
 
         usersRef.document().set(testUser2);
 
         moodsRef.document().set(mood1);
-        moodsRef.document().set(mood2);
-        moodsRef.document().set(mood3);
-        moodsRef.document().set(mood4);
-
 
         // log in first
         scenario.getScenario().onActivity(activity -> activity.setCurrentUser(testUser1));
@@ -110,32 +96,17 @@ public class OtherUsersProfileFragmentTest {
     }
 
     @Test
-    public void testClickOnAnothersUsernameToGoToProfile() throws InterruptedException {
+    public void testClickOnAnotherUsernameToGoToProfile() throws InterruptedException {
         //Give time to log into User1's account
         Thread.sleep(2000);
 
-        //On Feed fragment, these moods from User2 should be displayed
-//        onView(withText("\uD83D\uDE04 Happiness")).check(matches(isDisplayed()));
-//        onView(withText("\uD83E\uDD14 Confusion")).check(matches(isDisplayed()));
-//        onView(withText("☹️ Sadness")).check(matches(isDisplayed()));
-//        onView(withText("\uD83D\uDE20 Anger")).check(matches(isDisplayed()));
-
-        //Click on the User2's username
-        onData(new BoundedMatcher<Object, Mood>(Mood.class) {
-            @Override
-            protected boolean matchesSafely(Mood mood) {
-                return mood.getEmotionalState().toString().equals("☹️ Sadness");
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("with emotion: Sadness");
-            }
-        }).inAdapterView(withId(R.id.list_view_mood)).onChildView(withId(R.id.username)).perform(click());
+        //Click on the username on the mood event
+        onView(withText("@User2")).perform(click());
         Thread.sleep(2000);
 
         //Check that the clicked-on user's profile is displayed
-        onView(withText("User2")).check(matches(isDisplayed()));
+        onView(withId(R.id.username_profile)).check(matches(withText("User2")));
+
     }
 
 

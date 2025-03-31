@@ -1,12 +1,12 @@
 package com.example.project_seekdeep;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.Nullable;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -17,22 +17,15 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
  * It also sets up the navigation and fragment management for the app's main UI flow.
+ * Resources Used:
+ * https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
+ * @author Kevin Tu, Saurabh Singh Baghel, modified by Deryk Fong
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private UserProfile currentUser;
     private ListView moodListView;
     private UserProvider userProvider;
+    private Fragment selectedFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +42,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
 
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
         navBar.setOnItemSelectedListener(navListener);
+
 
         // Initially hide the navigation bar until a successful log-in
         navBar.setVisibility(View.GONE);
@@ -74,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
      * object and store it in selectedFragment as shown for the "History" fragment.
      */
     private final NavigationBarView.OnItemSelectedListener navListener = item -> {
-        Fragment selectedFragment = null;
         int itemPressed = item.getItemId();
 
         // Check which fragment the user clicked on
@@ -83,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
             selectedFragment = new FeedFragment();
+            //add logged in user's UserProfile to bundle to pass to feed
+            Bundle bundle = new Bundle();
+            bundle.putString("username", getCurrentUsername().getUsername());
+            bundle.putSerializable("userProfile", currentUser);
+            selectedFragment.setArguments(bundle);
         } else if (itemPressed == R.id.create_mood_bottom_nav) {
             selectedFragment = new CreateMoodEventFragment();
             //Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
@@ -93,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (itemPressed == R.id.following_bottom_nav) {
             selectedFragment = new FollowingFragment();
         }
+        else if (itemPressed == R.id.Map) {
+            selectedFragment = new MapsFragment();
+        }
 
         // Display selected fragment to screen
         if (selectedFragment != null) {
@@ -102,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
             bundle.putSerializable("userProfile", currentUser);
             selectedFragment.setArguments(bundle);
             fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
+
         }
         return true;
     };
@@ -131,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         FeedFragment feedFragment = new FeedFragment();
         navBar.setVisibility(View.VISIBLE);
         Bundle bundle = new Bundle();
-        bundle.putString("username", getCurrentUsername().getUsername());
+        bundle.putString("username", currentUser.getUsername());
         bundle.putSerializable("userProfile", currentUser);
         feedFragment.setArguments(bundle);
         fragManager.beginTransaction().replace(R.id.frameLayout, feedFragment).commit();
@@ -140,19 +143,14 @@ public class MainActivity extends AppCompatActivity {
         // FROM https://firebase.google.com/docs/database/android/offline-capabilities
         // Accessed by Deryk Fong on March 20th
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        // A placeholder for future functionality
-        // This method is implemented from: https://stackoverflow.com/questions/22197452/how-to-add-fragments-to-back-stack-in-android
-//      getParentFragmentManager().beginTransaction()
-//          .replace(R.id.frameLayout, feedFragment)
-//          .commit();
 
         //Once login is successful, can create initizlize the followings list
         //Use one instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
-        userProvider = UserProvider.getInstance(this, currentUser);
-        userProvider.initializeFollowingsList();
-        userProvider.listenForNewFollowRequests();
-        userProvider.listenForAcceptedRequests();
+        NotificationHandler notifs = new NotificationHandler(this, currentUser, FirebaseFirestore.getInstance());
+        notifs.initializeFollowingsList();
+        notifs.listenForNewFollowRequests();
+        notifs.listenForAcceptedRequests();
     }
 
-
+    public Fragment getSelectedFragment() { return selectedFragment; }
 }

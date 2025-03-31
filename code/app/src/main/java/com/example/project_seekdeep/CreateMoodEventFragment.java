@@ -1,8 +1,6 @@
 package com.example.project_seekdeep;
 
-import static android.app.Activity.RESULT_OK;
-
-import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,9 +8,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,35 +19,34 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
+import android.Manifest;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.firebase.storage.internal.StorageReferenceUri;
 
 import java.io.FileNotFoundException;
-import java.util.Objects;
-import java.util.UUID;
 
 /**
  * This Fragment class is designed to display a Mood Event Card, and let users Create a mood.
  * When the user clicks to select an emotion, a SelectMoodDialogFragment will pop up.
- * @author Sarah Chang, Nancy Lin
+ * @author Sarah Chang, Nancy Lin, modified by Saurabh S. Baghel
  */
 
 /*
@@ -74,7 +69,6 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     //ATTRIBUTES:
     private TextView cancelButton;
     private TextView char_count;
-    private Switch locationToggle;
     private Switch privacySwitch;
     private TextView explainPrivacy;
     private Spinner socialSitSpinner;
@@ -82,11 +76,21 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     private Button createConfirmButton;
     private EditText reasonEditText;
 
+    //views for canceling the image you have
+    private FloatingActionButton cancelImageFab;
+    private CardView imageCardView;
+
     private Mood moodEvent;
     private Uri imageUri; //this is where selected image is assigned
+    private ImageProvider imageProvider;
     private MoodProvider moodProvider;
     //Attributes for selecting a mood:
     TextView clickToSelectMood; //this textView is set to clickable
+
+    //Attributes for saving the current location while creatng mood
+    private Switch locationToggle;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private ActivityResultLauncher<String> requestLocationPermissionLauncher;
 
     //Attributes for the User
     private UserProfile userProfile;
@@ -94,10 +98,12 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     private String socialSit;
 
 
-
-    //Constructor to create the fragment
+    /**
+     * Constructor to create the fragment
+     */
     public CreateMoodEventFragment() {
         super(R.layout.frag_create_mood_event);
+        imageProvider = ImageProvider.getInstance(FirebaseStorage.getInstance());
     }
 
     /*
@@ -131,53 +137,16 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                     Toast.makeText(requireContext(), "Image too large, must be under 65536 bytes", Toast.LENGTH_SHORT).show();
                 } else {
                     Glide.with(requireContext()).load(imageUriActivty).into(uploadImageHere);
+                    cancelImageFab.setVisibility(View.VISIBLE);
+                    cancelImageFab.bringToFront();
                 }
 
-                Log.d("NANCY", "did the glide work at least? imguri" + imageUri.toString());
-                //TO DO: Implement a method that'll upload the image to Firebase
-                //uploadImageToFirebase(imageUri);
             }
 
         }
     });
 
-    /**
-     * This uploads the image that a user selects into Firebase Storage
-     * @param selectedImage
-     */
-    private void uploadImageToFirebase(Uri selectedImage) {
-        //Initialize a MoodProvider object and pass in the firebase
 
-        Log.d("NANCY", "do we ever get here in uploadimage?");
-
-        moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
-
-        //Get a reference to the firebase storage
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        //StorageReference temp = storageRef.child(selectedImage.getEncodedPath());
-
-        StorageReference selectedImageRef = storageRef.child("Images/" + selectedImage.getLastPathSegment());
-        UploadTask uploadTask = selectedImageRef.putFile(selectedImage);
-
-        // Register observers to listen for when the download is done or if it fails
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                Log.d("nancy", "unsuccessful upload");
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
-                Log.d("nancy", "working image upload");
-            }
-        });
-
-
-    }
 
     /**
      * When this view is created, it will collect all the fields from the UI to create a new mood
@@ -194,8 +163,6 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         //initialize char_count
         char_count = view.findViewById(R.id.char_count);
 
-        //Set the initial state of location toggle:
-        locationToggle = view.findViewById(R.id.switch1);
         privacySwitch = view.findViewById(R.id.privacy_switch);
         explainPrivacy = view.findViewById(R.id.explain_privacy);
 
@@ -208,6 +175,13 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
         //Initialize the image UI element
         uploadImageHere = view.findViewById(R.id.image);
+
+        //Initialize the cancel image and image wrapping elements
+        cancelImageFab = view.findViewById(R.id.image_delete);
+        cancelImageFab.setVisibility(View.GONE);
+        cancelImageFab.bringToFront();
+        imageCardView = view.findViewById(R.id.card_view);
+
         //Initialize selectMood to UI element
         clickToSelectMood = view.findViewById(R.id.edit_emotion_editText);
         createConfirmButton = view.findViewById(R.id.confirm_create_button);
@@ -215,9 +189,12 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         socialSitSpinner = view.findViewById(R.id.social_situation_spinner);
         socialSitSpinner.setAdapter(new ArrayAdapter<SocialSituations>(getContext(), android.R.layout.simple_spinner_item, SocialSituations.values()));
 
-        //intialize the SocialSituations socialSit
+        //Initialize the SocialSituations socialSit
         socialSit = SocialSituations.TITLE.toString();
 
+        // Initialize location UI switch
+        locationToggle = view.findViewById(R.id.switch1);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
         //Retrieve UserProfile from the bundle (to use inside this fragment)
         if (getArguments() != null) {
@@ -248,6 +225,8 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         };
         reasonEditText.addTextChangedListener(txtWatcher);
 
+        //Set a different add image icon
+        uploadImageHere.setImageResource(R.drawable.outline_collections_24);
 
         //Set a listener for when the imageView is clicked on
         uploadImageHere.setOnClickListener(new View.OnClickListener() {
@@ -257,6 +236,17 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                 launcher.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                         .build());
+            }
+        });
+
+        //set an on click listener for the cancel image FAB
+        cancelImageFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadImageHere.setImageResource(R.drawable.outline_add_photo_alternate_24);
+                imageCardView.setCardElevation(6);
+                imageUri = null;
+                cancelImageFab.setVisibility(View.GONE);
             }
         });
 
@@ -287,12 +277,6 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
              }
          });
 
-        //LOCATION switch (default set to 'off')
-        locationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int drawable = isChecked ? R.drawable.location_on : R.drawable.location_off;
-            locationToggle.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
-        });
-
         //PRIVACY (default set to OFF=private, because you might upload something and regret it)
         privacySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             int drawable = isChecked ? R.drawable.public_symbol : R.drawable.private_symbol;
@@ -301,6 +285,38 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
             explainPrivacy.setText(isChecked ? R.string.public_mode : R.string.private_mode);
         });
 
+//        // https://developer.android.com/training/data-storage/shared-preferences#java
+//        // Restore current switch state from SharedPreferences so that it is consistent with MapsFragment
+//        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("LocationPref", Context.MODE_PRIVATE);
+        locationToggle.setChecked(false);           // Initially set it as off, cause if user wants to save location then only save location
+        locationToggle.setCompoundDrawablesWithIntrinsicBounds(R.drawable.location_off, 0, 0, 0);
+
+        // Handle location permission request
+        requestLocationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        Toast.makeText(requireContext(), "Location permission granted", Toast.LENGTH_SHORT).show();
+                        locationToggle.setChecked(true);
+                    } else {
+                        Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
+                        locationToggle.setChecked(false);
+                    }
+                }
+        );
+
+        // Set the listener for the location toggle switch
+        locationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // Update drawable
+            int drawable = isChecked ? R.drawable.location_on : R.drawable.location_off;
+            locationToggle.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
+            if (isChecked) {
+                // If toggle is enabled, and permission not granted then ask for permission
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+                }
+            }
+        });
 
         //Set a listener for the "Create" button. This will create a new Mood object
         createConfirmButton.setOnClickListener(new View.OnClickListener() {
@@ -327,22 +343,33 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
                      TO DO: SocialSituation might need a NULL field
                      */
-                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {reason, socialSit.toString()} );
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {reason, socialSit.toString()}, !privacySwitch.isChecked());
                 }
 
                 //Default: create Mood object with only the UserProfile and EmotionalState
                 else {
-                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {null, socialSit.toString()});
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {null, socialSit.toString()}, !privacySwitch.isChecked());
                 }
 
-                //Log.d("NANCY", imageUri.toString());
 
                 if (imageUri != null) {
-                    uploadImageToFirebase(imageUri);
+                    // Upload to firebase a simplified image Uri
+                    imageProvider.uploadImageToFirebase(imageUri);
+                    moodEvent.setImage(Uri.parse(imageUri.getLastPathSegment()));
+                } else{
+                    moodEvent.setImage(imageUri);
                 }
-                moodEvent.setImage(imageUri);
                 //Upload the new Mood to firebase
-                moodProvider.addMoodEvent(moodEvent);
+                moodProvider.addMoodEvent(moodEvent).addOnSuccessListener(documentReference -> {
+                    String moodEventId = documentReference.getId();
+                    moodEvent.setDocRef(documentReference);
+                    if (locationToggle.isChecked() &&
+                            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        saveLocationToFirestore(moodEventId);          // Pass the ID to saveLocationToFirestore
+                        Toast.makeText(requireContext(), "Location saved", Toast.LENGTH_SHORT).show();
+                    }
+
+                });
 
                 Toast.makeText(requireContext(), "Your mood has been uploaded!", Toast.LENGTH_SHORT).show();
 
@@ -381,5 +408,36 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
         this.selectedEmotion = selectedMood;
         //Update UI element to display the selected emotion
         clickToSelectMood.setText(selectedMood.toString());
+    }
+
+    /**
+     * Function saves the user's current location to Firestore Database in the locations collection
+     * The location is associated with the specific mood event and uses FusedLocationProviderClient to fetch the current oocation
+     */
+    private void saveLocationToFirestore(String moodEventID) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            // Get the current location
+            fusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            // Create the location attributes
+                            double latitude = location.getLatitude();
+                            double longitude = location.getLongitude();
+                            EmotionalStates emotionalState = moodEvent.getEmotionalState();
+                            UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
+                            String userName = currentUserProfile.getUsername();
+                            UserLocation userLocation = new UserLocation(latitude, longitude, emotionalState, userName, moodEventID);
+                            // Save location to Firestore under "location" collection
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            db.collection("locations").add(userLocation);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(requireContext(), "Error to fetch location", Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(requireContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -1,12 +1,14 @@
 package com.example.project_seekdeep;
 
+import androidx.annotation.Nullable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This is a class to hold user information (pulled from 4-us-030101 on 3/7/25 ~10pm).
- * @author Saurabh Baghel
+ * @author Saurabh Singh Baghel
  */
 public class UserProfile implements Serializable {
     private String username;
@@ -29,6 +31,22 @@ public class UserProfile implements Serializable {
         this.username = username;
         this.password = password;
         this.followings = new ArrayList<>();
+    }
+
+    /**
+     * Override the equals method to compare loggedInUser vs another user. This is cleaner than comparing
+     * usernames directly.
+     * @param obj
+     * The other user to compare this to
+     * @return
+     * True if they have the same username, False otherwise
+     */
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof UserProfile) {
+            return this.username.equals(((UserProfile)obj).getUsername());
+        }
+        return false;
     }
 
     /**
