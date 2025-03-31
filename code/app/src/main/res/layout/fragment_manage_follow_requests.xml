@@ -10,6 +10,7 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="96dp"
         android:background="@color/light_green"
         android:minHeight="?attr/actionBarSize"
@@ -20,6 +21,7 @@
 
     <TextView
         android:id="@+id/follow_requests"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Follow Requests"
@@ -34,8 +36,8 @@
         android:id="@+id/requests_list_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@+id/top_bar"
-        app:layout_constraintStart_toStartOf="@+id/top_bar"
-        app:layout_constraintTop_toBottomOf="@+id/top_bar" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

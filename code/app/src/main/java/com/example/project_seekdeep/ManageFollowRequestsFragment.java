@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 /**
  * This is a fragment which shows managed follow requests
+ * @see FollowRequestArrayAdapter
  * @author Deryk Fong
  */
 
@@ -32,6 +33,7 @@ public class ManageFollowRequestsFragment extends DialogFragment {
         UserProfile currentUser = (UserProfile) getArguments().getSerializable("userProfile");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Follow Requests");
         View view = getLayoutInflater().inflate(R.layout.fragment_manage_follow_requests,null);
         ArrayList<FollowRequest> requests = new ArrayList<>();
         CollectionReference followRequestsRef = db.collection("followings_and_requests");
