@@ -158,7 +158,9 @@ public class ViewMoodDetailsFragment extends Fragment {
         Query CommentsQuery = Comments.whereEqualTo("mood", clickedOnMood.getDocRef());
         Log.d("Mood clicked on", clickedOnMood.getDocRef().getPath());
 
+
         // Set adapter for the comments view
+        commentView.setHasFixedSize(false);
         commentView.setLayoutManager(new LinearLayoutManager(requireContext()));
         CommentAdapter commentAdapter = new CommentAdapter(comments);
         commentView.setAdapter(commentAdapter);
@@ -184,8 +186,14 @@ public class ViewMoodDetailsFragment extends Fragment {
             commentAdapter.notifyDataSetChanged();
         });
 
-        // Set mood details
 
+        //Set top navigation Bar color
+
+
+
+
+
+        // Set mood details
         TextView user = view.findViewById(R.id.username);
         user.setText(clickedOnMood.getOwnerString());
 
@@ -259,7 +267,6 @@ public class ViewMoodDetailsFragment extends Fragment {
                         locationToggle.setImageResource(R.drawable.location_off);
                     }
                     locationToggle.setVisibility(View.VISIBLE);
-
 
                 });
 
