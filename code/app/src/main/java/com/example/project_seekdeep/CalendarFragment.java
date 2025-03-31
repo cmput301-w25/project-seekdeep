@@ -209,7 +209,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     private ArrayList<String> daysInMonthArray(Calendar calendar) {
         ArrayList<String> daysInMonthArray = new ArrayList<>();
 
-        int daysInMonth = calendar.getMaximum(Calendar.DAY_OF_MONTH);
+        int daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
         Calendar calendar2 = (Calendar) calendar.clone();
         calendar2.add(Calendar.DATE, Calendar.DAY_OF_MONTH-1);
@@ -242,6 +242,17 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                           handle the ties in queries
 
                  */
+
+                //Find  Date based on moodsInMonth
+
+                Calendar whatDay = (Calendar) selectedDateCalendar.clone();
+                whatDay.add(Calendar.DATE, -1*selectedDateCalendar.get(Calendar.DATE));
+                String dateNumberString = daysInMonthArray.get(i);
+                //date of the cell
+                whatDay.add(Calendar.DATE, Integer.parseInt(dateNumberString));
+                Date cellDate = whatDay.getTime();
+
+
 
                 String emotion = EmotionalStates.ANGER.getEmoticon();
                 switch (daysInMonthArray.get(i)) {
@@ -286,7 +297,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                         break;
                 }
 
-                moodsInMonth.add(emotion);
+                moodsInMonth.add(emotion + cellDate);
             }
         }
 

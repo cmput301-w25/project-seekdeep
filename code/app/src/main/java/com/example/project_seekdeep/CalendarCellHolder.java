@@ -25,7 +25,6 @@ public class CalendarCellHolder extends RecyclerView.ViewHolder implements  View
     public CalendarCellHolder(@NonNull View itemView, CalendarAdapter.OnItemListener onItemListener)
     {
         super(itemView);
-        Log.d("NANCY", "Calendar cell holder month construct" );
         dayOfMonth = itemView.findViewById(R.id.cell_date);
         moodOfMonth = itemView.findViewById(R.id.cell_text);
         cellConstraintLayout = itemView.findViewById(R.id.cell_constraint_layout);
