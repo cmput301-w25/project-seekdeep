@@ -55,6 +55,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Objects;
 
+// https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#getInstance(android.app.Instrumentation)
+// https://stackoverflow.com/questions/26449391/setelapsedrealtimenanos-call-in-android-mock-location-provider-app
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class MapsFragmentUITest {
@@ -158,6 +160,7 @@ public class MapsFragmentUITest {
         // Check the map view is displayed
         onView(withId(R.id.map)).check(matches(isDisplayed()));
 
+        // Set mockLocation
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         locationManager.addTestProvider("test", false, false, false, false, true, true, true, 1, 1);
@@ -174,23 +177,65 @@ public class MapsFragmentUITest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             mockLoc.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
         }
-
         Thread.sleep(5000);
         locationManager.setTestProviderLocation("test", mockLoc);
 
         // Wait for location update
         Thread.sleep(5000);
 
+        // Check the map view is displayed
         onView(withId(R.id.map)).check(matches(isDisplayed()));
+        // Verify markers are displayed
         onView(withContentDescription("My Location")).check(matches(isDisplayed()));
     }
 
     @Test
-    public void testLocationUpdates(){
-//        // Go to maps fragment
-//        onView(withId(R.id.Map)).perform(click());
+    public void testLocationUpdates() throws InterruptedException {
+        // Go to maps fragment
+        onView(withId(R.id.Map)).perform(click());
+        // Give time for the map Fragment  to show up
+        Thread.sleep(2000);
+        // Check the map view is displayed
+        onView(withId(R.id.map)).check(matches(isDisplayed()));
+        // Set mock location
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        locationManager.addTestProvider("test", false, false, false, false, true, true, true, 1, 1);
+        locationManager.setTestProviderEnabled("test", true);
 
+        // Create a mock location to ensure the blue dot appears
+        Location mockLoc = new Location("test");
+        mockLoc.setLatitude(53.5259343);
+        mockLoc.setLongitude(-113.5234554);
+        mockLoc.setTime(System.currentTimeMillis());
+        mockLoc.setAccuracy(1.0f);
 
+        // Returns the current time elapsed since boot in nanoseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            mockLoc.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+        }
+        // Set mock test provider
+        locationManager.setTestProviderLocation("test", mockLoc);
+        // Wait for location update
+        Thread.sleep(5000);
+
+        // Update to new location
+        Location updatedLoc = new Location("test");
+        updatedLoc.setLatitude(53.5379343);
+        updatedLoc.setLongitude(-113.5234554);
+        updatedLoc.setTime(System.currentTimeMillis());
+        updatedLoc.setAccuracy(1.0f);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            updatedLoc.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+        }
+        // Set mock test provider
+        locationManager.setTestProviderLocation("test", updatedLoc);
+        Thread.sleep(3000);
+
+        // Check the map view is displayed
+        onView(withId(R.id.map)).check(matches(isDisplayed()));
+        // Verify markers are displayed
+        onView(withContentDescription("My Location")).check(matches(isDisplayed()));
     }
 
     @Test
