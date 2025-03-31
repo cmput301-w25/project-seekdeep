@@ -2,11 +2,9 @@ package com.example.project_seekdeep;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -102,10 +100,10 @@ public class MainActivity extends AppCompatActivity {
             //add logged in user's UserProfile to bundle to pass to mood history
             Bundle bundle = new Bundle();
             bundle.putString("username", getCurrentUsername().getUsername());
-            bundle.putSerializable("userProfile", currentUser);
+            UserProfile user = getCurrentUsername();
+            bundle.putSerializable("userProfile", user);
             selectedFragment.setArguments(bundle);
             fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
-
         }
         return true;
     };
