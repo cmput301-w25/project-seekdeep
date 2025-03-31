@@ -1,25 +1,16 @@
 package com.example.project_seekdeep;
 
-
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
+import static org.hamcrest.Matchers.not;
 
-import static org.hamcrest.CoreMatchers.anything;
-
-import android.app.Instrumentation;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
@@ -27,9 +18,6 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -39,7 +27,6 @@ import androidx.test.uiautomator.UiDevice;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.hamcrest.Description;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -239,30 +226,66 @@ public class MapsFragmentUITest {
     }
 
     @Test
-    public void testMoodHistoryDisplays(){
+    public void testFilter5KmRadiusFollowingCircleDisplay() throws InterruptedException {
+        // Go to maps fragment
+        onView(withId(R.id.Map)).perform(click());
+        Thread.sleep(2000);
+
+        // Switch to Following mode
+        onView(withId(R.id.display_toggle)).perform(click());
+        Thread.sleep(2000);
+
+        // Set mock location
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        locationManager.addTestProvider("test", false, false, false, false, true, true, true, 1, 1);
+        locationManager.setTestProviderEnabled("test", true);
+
+        // Create a mock location to ensure the blue dot appears
+        Location mockLoc = new Location("test");
+        mockLoc.setLatitude(53.526000);
+        mockLoc.setLongitude(-113.523000);
+        mockLoc.setTime(System.currentTimeMillis());
+        mockLoc.setAccuracy(1.0f);
+
+        // Returns the current time elapsed since boot in nanoseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            mockLoc.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+        }
+        // Set mock test provider
+        locationManager.setTestProviderLocation("test", mockLoc);
+        // Wait for location update
+        Thread.sleep(5000);
+
+        // Apply 5 km filter
+        onView(withId(R.id.filter_5_km_radius)).perform(click());
+        Thread.sleep(3000);
+
+        // Verify circle by checking button state and map visibility
+        onView(withId(R.id.filter_5_km_radius)).check(matches(isSelected()));
+        onView(withId(R.id.filter_mood_following)).check(matches(not(isEnabled())));
+        onView(withId(R.id.filter_mood_history)).check(matches(not(isEnabled())));
+        onView(withId(R.id.map)).check(matches(isDisplayed()));
     }
 
-    @Test
-    public void testMoodFollowingDisplays(){
+    //
+//    @Test
+//    public void testMoodHistoryDisplays(){
+//    }
+//
+//    @Test
+//    public void testMoodFollowingDisplays(){
+//
+//    }
 
-    }
+//    @Test
+//    public void testFilterMoodHistoryButtonClick() {
+//
+//    }
+//
+//    @Test
+//    public void testFilterMoodFollowingButtonClick() {
+//    }
 
-    @Test
-    public void testFilterMoodHistoryButtonClick() {
-
-    }
-
-    @Test
-    public void testFilterMoodFollowingButtonClick() {
-    }
-
-    @Test
-    public void testFilter5KmRadiusFollowing() {
-    }
-
-    @Test
-    public void testInfoViewMarkers(){
-
-    }
 
 }
