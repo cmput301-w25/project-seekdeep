@@ -38,6 +38,7 @@ import java.util.Objects;
 
 /**
  * This fragment class is designed to display all the moods (except for the logged-in user's moods) in the database.
+ * It also displays a Users tab, where you can search for other users
  * @author Kevin Tu, Nancy Lin
  */
 public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernameClickListener {
@@ -376,7 +377,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
     }
     /**
      * This opens the profile of another user. Happens when a user clicks on someone else's username.
-     * @param user
+     * @param user the user that was clicked on
      */
     public void openUserProfile(UserProfile user) {
         //Create a new bundle, and put the user being viewed in it
