@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static org.hamcrest.CoreMatchers.not;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -88,5 +89,14 @@ public class MainActivityTest {
         onView(withId(R.id.Map)).perform(click());
         scenario.getScenario().onActivity(activity -> assertTrue(activity.getSelectedFragment() instanceof MapsFragment));
 
+    }
+
+    @Test
+    public void testGetCurrentUsername() {
+        scenario.getScenario().onActivity(activity -> activity.setCurrentUser(testUser));
+        scenario.getScenario().onActivity(activity -> {
+            UserProfile newUser = activity.getCurrentUsername();
+            assertEquals("Current user should match set user", testUser, newUser);
+        });
     }
 }
