@@ -80,11 +80,6 @@ public class ViewMoodDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        MainActivity mainActivity = (MainActivity) getActivity();
-        assert mainActivity != null;
-
-        BottomNavigationView navBar = mainActivity.findViewById(R.id.bottomNavigationView);
-        navBar.setVisibility(View.GONE);
 
         // Set up db
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -150,7 +145,6 @@ public class ViewMoodDetailsFragment extends Fragment {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navBar.setVisibility(View.VISIBLE);
                 FragmentManager fragmentManager = getParentFragmentManager();
                 fragmentManager.popBackStack();
             }
@@ -188,9 +182,6 @@ public class ViewMoodDetailsFragment extends Fragment {
             Collections.sort(comments);
             commentAdapter.notifyDataSetChanged();
         });
-
-
-        //Set top navigation Bar color
 
 
 

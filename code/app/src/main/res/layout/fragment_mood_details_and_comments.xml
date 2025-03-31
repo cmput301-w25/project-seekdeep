@@ -207,7 +207,7 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:windowSoftInputMode="adjustPan"
+
             android:padding="4dp"
             android:id="@+id/add_comment_layout"
             android:layout_width="match_parent"
