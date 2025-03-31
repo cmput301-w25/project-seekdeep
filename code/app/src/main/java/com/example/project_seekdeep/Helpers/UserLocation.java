@@ -1,4 +1,4 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Helpers;
 
 /**
  * Represents a user's location associated with a specific mood event.

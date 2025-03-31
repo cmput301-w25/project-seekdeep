@@ -1,17 +1,18 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Moods;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
+import com.example.project_seekdeep.Helpers.EmotionalStates;
+import com.example.project_seekdeep.R;
 
 /**
  * This displays the mood wheel as a fragment.

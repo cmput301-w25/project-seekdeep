@@ -1,4 +1,4 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Navigation;
 
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -20,6 +20,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.project_seekdeep.Followings.OtherUsersProfileFragment;
+import com.example.project_seekdeep.Followings.UserArrayAdapter;
+import com.example.project_seekdeep.Helpers.EmotionalStates;
+import com.example.project_seekdeep.Helpers.SocialSituations;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.Moods.Mood;
+import com.example.project_seekdeep.Moods.MoodArrayAdapter;
+import com.example.project_seekdeep.Moods.MoodFiltering;
+import com.example.project_seekdeep.Moods.ViewMoodDetailsFragment;
+import com.example.project_seekdeep.R;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -27,7 +37,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;

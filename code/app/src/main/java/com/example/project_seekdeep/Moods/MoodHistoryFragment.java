@@ -1,7 +1,6 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Moods;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -24,6 +23,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
+import com.example.project_seekdeep.Followings.ManageFollowRequestsFragment;
+import com.example.project_seekdeep.Helpers.EmotionalStates;
+import com.example.project_seekdeep.Helpers.FilterMenuDialogFragment;
+import com.example.project_seekdeep.Helpers.SocialSituations;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.LoginAndSignup.LogInFragment;
+import com.example.project_seekdeep.MainActivity;
+import com.example.project_seekdeep.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,30 +38,14 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
-import java.util.ArrayList;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-
-import java.util.Objects;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**

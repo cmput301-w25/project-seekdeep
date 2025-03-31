@@ -2,11 +2,9 @@ package com.example.project_seekdeep;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,19 +12,20 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.project_seekdeep.Followings.FollowingFragment;
+import com.example.project_seekdeep.Helpers.NotificationHandler;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.Helpers.UserProvider;
+import com.example.project_seekdeep.LoginAndSignup.LogInFragment;
+import com.example.project_seekdeep.Moods.MoodHistoryFragment;
+import com.example.project_seekdeep.Navigation.CreateMoodEventFragment;
+import com.example.project_seekdeep.Navigation.FeedFragment;
+import com.example.project_seekdeep.Navigation.MapsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import com.example.project_seekdeep.MoodHistoryFragment;
-import com.example.project_seekdeep.FeedFragment;
-import com.example.project_seekdeep.CreateMoodEventFragment;
-import com.example.project_seekdeep.FollowingFragment;
-import com.example.project_seekdeep.MapsFragment;
-import com.example.project_seekdeep.UserProfile;
-import com.example.project_seekdeep.UserProvider;
-import com.example.project_seekdeep.NotificationHandler;
 /**
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
  * It also sets up the navigation and fragment management for the app's main UI flow.
@@ -37,7 +36,7 @@ import com.example.project_seekdeep.NotificationHandler;
 
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragManager;
-    private com.example.project_seekdeep.UserProfile currentUser;
+    private UserProfile currentUser;
     private ListView moodListView;
     private UserProvider userProvider;
     private Fragment selectedFragment = null;
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set default fragment to be feed upon login
         fragManager = getSupportFragmentManager();
-        fragManager.beginTransaction().replace(R.id.frameLayout, new com.example.project_seekdeep.LogInFragment()).commit();
+        fragManager.beginTransaction().replace(R.id.frameLayout, new LogInFragment()).commit();
     }
 
     // The following code for Navigation Bar was adapted from GeeksForGeeks' guide on "BottomNavigationView in Android"
@@ -153,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Once login is successful, can create initizlize the followings list
         //Use one instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
-        NotificationHandler notifs = new com.example.project_seekdeep.NotificationHandler(this, currentUser, FirebaseFirestore.getInstance());
+        NotificationHandler notifs = new NotificationHandler(this, currentUser, FirebaseFirestore.getInstance());
         notifs.initializeFollowingsList();
         notifs.listenForNewFollowRequests();
         notifs.listenForAcceptedRequests();

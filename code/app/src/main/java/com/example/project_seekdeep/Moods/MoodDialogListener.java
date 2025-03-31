@@ -1,4 +1,4 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Moods;
 
 /**
  * Interface used to implement updating a mood

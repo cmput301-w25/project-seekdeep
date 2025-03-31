@@ -1,15 +1,11 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Comments;
 
-
-import android.net.Uri;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
-import java.util.Date;
-
-import org.w3c.dom.Document;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * This is a wrapper class used to represent comments that are made inside of a mood event.

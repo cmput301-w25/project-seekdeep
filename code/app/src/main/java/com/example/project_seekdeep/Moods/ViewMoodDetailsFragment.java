@@ -1,4 +1,4 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Moods;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
@@ -10,17 +10,14 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.widget.Toolbar;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -28,9 +25,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.project_seekdeep.Comments.CommentAdapter;
+import com.example.project_seekdeep.Comments.Comment;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
@@ -65,7 +65,7 @@ public class ViewMoodDetailsFragment extends Fragment {
     // Taken by: Kevin Tu on 2025-03-23
     private long lastClickedTime = 0;
 
-    ViewMoodDetailsFragment() {
+    public ViewMoodDetailsFragment() {
         super(R.layout.fragment_mood_details_and_comments);
 
     }

@@ -1,4 +1,4 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Followings;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +19,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.project_seekdeep.Helpers.EmotionalStates;
+import com.example.project_seekdeep.Helpers.FilterMenuDialogFragment;
+import com.example.project_seekdeep.Helpers.SocialSituations;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.Moods.Mood;
+import com.example.project_seekdeep.Moods.MoodArrayAdapter;
+import com.example.project_seekdeep.Moods.MoodFiltering;
+import com.example.project_seekdeep.Moods.ViewMoodDetailsFragment;
+import com.example.project_seekdeep.R;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;

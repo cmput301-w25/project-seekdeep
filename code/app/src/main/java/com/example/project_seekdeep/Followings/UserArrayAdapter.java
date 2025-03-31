@@ -1,7 +1,6 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Followings;
 
 import android.content.Context;
-import android.graphics.Movie;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.R;
 
 import java.util.ArrayList;
 

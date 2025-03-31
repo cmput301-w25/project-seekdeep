@@ -1,7 +1,6 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Helpers;
 
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 

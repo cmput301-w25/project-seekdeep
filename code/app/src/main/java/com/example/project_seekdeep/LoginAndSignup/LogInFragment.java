@@ -1,8 +1,7 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.LoginAndSignup;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +13,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.MainActivity;
+import com.example.project_seekdeep.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;

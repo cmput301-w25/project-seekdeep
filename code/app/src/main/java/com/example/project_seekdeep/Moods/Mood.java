@@ -1,13 +1,14 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Moods;
 
 
 import android.net.Uri;
 
-
+import com.example.project_seekdeep.Helpers.EmotionalStates;
+import com.example.project_seekdeep.Helpers.SocialSituations;
+import com.example.project_seekdeep.Helpers.UserProfile;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

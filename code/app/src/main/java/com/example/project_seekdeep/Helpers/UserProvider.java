@@ -1,27 +1,15 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Helpers;
 
-import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-
-import com.google.firebase.firestore.CollectionReference;
+import com.example.project_seekdeep.Followings.FollowRequest;
+import com.example.project_seekdeep.Followings.OtherUsersProfileFragment;
+import com.example.project_seekdeep.MainActivity;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.auth.User;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p> This class is in charge of handling the following's list of the logged-in user through firestore. </p>

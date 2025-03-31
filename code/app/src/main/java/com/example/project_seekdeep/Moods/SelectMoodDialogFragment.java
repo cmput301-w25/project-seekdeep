@@ -1,4 +1,4 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Moods;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,6 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
+import com.example.project_seekdeep.Helpers.EmotionalStates;
+import com.example.project_seekdeep.R;
 
 /**
  * This class extends DialogFragment, and will display the mood wheel when a user wants to create or edit a mood event.

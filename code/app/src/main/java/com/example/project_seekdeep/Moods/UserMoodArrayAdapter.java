@@ -1,20 +1,26 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Moods;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
+import com.example.project_seekdeep.Helpers.ImageProvider;
+import com.example.project_seekdeep.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -24,39 +30,30 @@ import java.util.ArrayList;
 
 /**
  * This class is a custom array adapter for the Mood class.
+ * Copy of MoodArrayAdapter but modified for User's moods (add edit /delete functionality)
  * @author Jachelle Chan and Nancy Lin
  */
-public class MoodArrayAdapter extends ArrayAdapter<Mood> {
+public class UserMoodArrayAdapter extends ArrayAdapter<Mood> {
 
+    //private Context context;
     private ImageProvider imageProvider;
-    private OnUsernameClickListener listener;
+
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
 
     /**
-     * This interface will be implemented by FeedFragment when the user clicks on a mood event's username
+     * Constructor for UserMoodArrayAdapter
+     * @param context
+     * @param moods
+     *      arraylist of Mood s to display
      */
-    public interface OnUsernameClickListener {
-        void onUsernameClick(UserProfile user);
-    }
-
-
-    /**
-     * Mandatory constructor class for MoodArrayAdapter
-     *
-     * @param context   , type Context
-     * @param moods     , type ArrayList<Mood>
-     */
-    public MoodArrayAdapter(Context context, ArrayList<Mood> moods, OnUsernameClickListener listener) {
+    public UserMoodArrayAdapter(Context context, ArrayList<Mood> moods) {
         super(context, 0, moods);
-
-        //Initialize an instance of movieProvide (so can add new mood to firestore)
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        imageProvider = ImageProvider.getInstance(storage);
-
-        this.listener = listener;
+        imageProvider = ImageProvider.getInstance(FirebaseStorage.getInstance());
     }
 
     /**
-     * Create and get the view for each item in a listView for moods
+     * Creates and gets the view of each mood event in a user's mood listview
      *
      *
      * @param position The position of the item within the adapter's data set of the item whose view
@@ -75,7 +72,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view;
         if (convertView == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.layout_feed_mood, parent, false);
+            view = LayoutInflater.from(getContext()).inflate(R.layout.layout_feed_mood_edit_delete_combo, parent, false);
         }
         else {
             view = convertView;
@@ -87,7 +84,6 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         TextView reason = view.findViewById(R.id.reason);
         TextView emotion = view.findViewById(R.id.emotion);
         TextView user = view.findViewById(R.id.username);
-
         TextView socialSit = view.findViewById(R.id.social_situation);
         TextView date = view.findViewById(R.id.date);
         ImageView image = view.findViewById(R.id.image);
@@ -97,13 +93,13 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         reason.setText(currentMood.getReason());
         emotion.setText(currentMood.getEmotionalState().toString());
         user.setText("@"+currentMood.getOwnerString());
-
-        socialSit.setText("(" + currentMood.getSocialSituation().toString() + ")");
+        socialSit.setText("("+currentMood.getSocialSituation().toString()+")");
         date.setText(currentMood.getPostedDate().toString());
 
 
         // i don't know how to do the image and pfp one - jachelle
 
+        // todo Set up image for mood events
 
 
         // if no reason, hide it
@@ -123,10 +119,9 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
         // if image DNE, then hide the image view?
         if (currentMood.getImage() == null){
-            image.setVisibility(View.GONE);
             image.setImageDrawable(null);
+            view.findViewById(R.id.image).setVisibility(View.GONE); //removes the ImageView UI
         } else{
-            ; //ToDo for images
             image.setVisibility(View.VISIBLE);
             StorageReference imageFire = imageProvider.getStorageRefFromLastPathSeg(
                     currentMood.getImage().getLastPathSegment());
@@ -134,7 +129,6 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
             imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    // Got the download URL for 'users/me/profile.png'
                     Glide.with(getContext())
                             .load(uri)
                             .into(image);
@@ -165,23 +159,38 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
         box_outline.setStroke(5, Color.parseColor(currentMood.getEmotionalState().getColour()));
 
 
-        /**
-         * This listens for when a user clicks on a mood event's username, which will trigger the listener implemented by FeedFragment.
-         */
-        //When the username clicks the listener, it calls the onUsernameClick method defined in FeedFragment.
-        user.setOnClickListener(view1 -> {
-            if (listener != null) {
-                listener.onUsernameClick(currentMood.getOwner());
+        // Create delete button
+        Button editMoodButton = view.findViewById(R.id.edit_mood_button);
+        editMoodButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditMoodFragment editMoodFragment = EditMoodFragment.newInstance(currentMood);
+
+                FragmentActivity activity =  (FragmentActivity) getContext();
+                FragmentManager fm = activity.getSupportFragmentManager();
+
+                editMoodFragment.show(fm, "Mood Details");
+
             }
         });
-        /**
-         * This listens for when a user clicks on a mood event's profile pic, which will trigger the listener implemented by FeedFragment.
-         */
-        pfp.setOnClickListener(view1 -> {
-            if (listener != null) {
-                listener.onUsernameClick(currentMood.getOwner());
+
+        // create delete button
+        Button deleteMoodButton = view.findViewById(R.id.delete_mood_button);
+        deleteMoodButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("NANCY", "Delete button");
+
+                DeleteMoodFragment deleteMoodFragment = DeleteMoodFragment.newInstance(currentMood);
+
+                FragmentActivity activity = (FragmentActivity) getContext();
+                FragmentManager fm = activity.getSupportFragmentManager();
+
+                deleteMoodFragment.show(fm, "Delete Mood");
+
             }
         });
+
 
         return view;
     }

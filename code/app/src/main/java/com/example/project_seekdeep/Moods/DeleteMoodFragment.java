@@ -1,8 +1,7 @@
-package com.example.project_seekdeep;
+package com.example.project_seekdeep.Moods;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
