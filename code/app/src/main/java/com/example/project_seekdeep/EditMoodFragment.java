@@ -3,7 +3,9 @@ package com.example.project_seekdeep;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,13 +18,24 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.FileNotFoundException;
 import java.util.Dictionary;
 
 /**
@@ -36,7 +49,9 @@ public class EditMoodFragment extends DialogFragment {
     private Spinner emotionSpinner;
     private Spinner socialSituationSpinner;
     private ImageView imageView;
+    private Uri imageUri;
     private MoodProvider moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
+    private ImageProvider imageProvider = ImageProvider.getInstance(FirebaseStorage.getInstance());
     private TextView char_count;
     private Switch locationToggle;
     private Switch privacySwitch;
@@ -85,7 +100,6 @@ public class EditMoodFragment extends DialogFragment {
         explainPrivacy = view.findViewById(R.id.explain_privacy);
 
         emotionSpinner.setAdapter(new ArrayAdapter<EmotionalStates>(getContext(), android.R.layout.simple_spinner_item, EmotionalStates.values()));
-
         socialSituationSpinner.setAdapter(new ArrayAdapter<SocialSituations>(getContext(), android.R.layout.simple_spinner_item, SocialSituations.values()));
 
         String tag = getTag();
@@ -95,11 +109,41 @@ public class EditMoodFragment extends DialogFragment {
         if (tag != null && tag.equals("Mood Details") && bundle != null){
             mood = (Mood) bundle.getSerializable("Mood");
             editReason.setText(mood.getReason());
-
             emotionSpinner.setSelection(mood.getEmotionalState().ordinal());
             socialSituationSpinner.setSelection(mood.getSocialSituation().ordinal());
 
-            //todo add edit image functionality
+
+            // Load the image from the mood into the dialog if it exists
+            imageUri = mood.getImage();
+            if (imageUri != null){
+                StorageReference imageFire = imageProvider.getStorageRefFromLastPathSeg(
+                        imageUri.getLastPathSegment());
+
+                imageFire.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Glide.with(getContext())
+                                .load(uri)
+                                .into(imageView);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+            }
+            //set an on click listener for the image
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //launch the gallery
+                    launcher.launch(new PickVisualMediaRequest.Builder()
+                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                            .build());
+                }
+            });
+
         }
         else {
             mood = null;
@@ -145,6 +189,8 @@ public class EditMoodFragment extends DialogFragment {
         });
 
 
+
+        // Build the Dialog Fragment
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         AlertDialog dialog = builder
                 .setView(view)
@@ -157,6 +203,8 @@ public class EditMoodFragment extends DialogFragment {
         dialog.setOnShowListener( d -> {
             Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             positiveButton.setOnClickListener(v -> {
+
+
                 String reason = editReason.getText().toString().trim();
 
                 //Validate length of reason to <= 200 chars
@@ -166,7 +214,6 @@ public class EditMoodFragment extends DialogFragment {
                         return;
                     }
                 }
-
                 
                 String[] emoStateBreak = emotionSpinner.getSelectedItem().toString().split(" ");
                 EmotionalStates emotionalStates = EmotionalStates.valueOf(
@@ -197,15 +244,18 @@ public class EditMoodFragment extends DialogFragment {
                 mood.setReason(reason);
                 mood.setEmotionalState(emotionalStates);
                 mood.setSocialSituation(socialSituations);
+                mood.setPrivate(!privacySwitch.isChecked());
 
-                //todo add edit image functionality
+                // Upload to the MoodsCollection a simplified image Uri
+                if (imageUri != null){
+                    imageProvider.uploadImageToFirebase(imageUri);
+                    mood.setImage(Uri.parse(imageUri.getLastPathSegment()));
+                }
+
 
                 moodProvider.updateMood(mood);
-
                 dialog.dismiss();
 
-
-                // the only required thing is emotional state i believe
             });
         });
         return dialog;
@@ -219,5 +269,39 @@ public class EditMoodFragment extends DialogFragment {
         String charCountText = char_count.getText().toString();
         return Integer.parseInt(charCountText) <= 200;
     }
+
+
+    /**
+     * launcher to select images
+     * Loads the image into the mood event card (UI component)
+     * Taken from Sarah's CreateMoodEventFragment
+     */
+    ActivityResultLauncher<PickVisualMediaRequest> launcher = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), new ActivityResultCallback<Uri>() {
+        @Override
+        public void onActivityResult(Uri imageUriActivty) {
+            if (imageUriActivty == null) {
+                Toast.makeText(requireContext(), "No image Selected", Toast.LENGTH_SHORT).show();
+            } else {
+                //assign imageUri the Uri to save to the edited Mood
+                imageUri = imageUriActivty;
+                AssetFileDescriptor fileDescriptor = null;
+
+                try {
+                    fileDescriptor = getContext().getContentResolver().openAssetFileDescriptor(imageUri, "r");
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+
+                long fileSize = fileDescriptor.getLength();
+                if (fileSize > 65536) {
+                    Toast.makeText(requireContext(), "Image too large, must be under 65536 bytes", Toast.LENGTH_SHORT).show();
+                } else {
+                    Glide.with(requireContext()).load(imageUriActivty).into(imageView);
+                }
+
+            }
+
+        }
+    });
 
 }

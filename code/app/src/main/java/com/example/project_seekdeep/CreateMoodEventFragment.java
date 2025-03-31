@@ -5,6 +5,7 @@ import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -75,6 +76,7 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
     private Mood moodEvent;
     private Uri imageUri; //this is where selected image is assigned
+    private ImageProvider imageProvider;
     private MoodProvider moodProvider;
     //Attributes for selecting a mood:
     TextView clickToSelectMood; //this textView is set to clickable
@@ -90,10 +92,12 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
     private String socialSit;
 
 
-
-    //Constructor to create the fragment
+    /**
+     * Constructor to create the fragment
+     */
     public CreateMoodEventFragment() {
         super(R.layout.frag_create_mood_event);
+        imageProvider = ImageProvider.getInstance(FirebaseStorage.getInstance());
     }
 
     /*
@@ -129,51 +133,12 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                     Glide.with(requireContext()).load(imageUriActivty).into(uploadImageHere);
                 }
 
-                Log.d("NANCY", "did the glide work at least? imguri" + imageUri.toString());
-                //TO DO: Implement a method that'll upload the image to Firebase
-                //uploadImageToFirebase(imageUri);
             }
 
         }
     });
 
-    /**
-     * This uploads the image that a user selects into Firebase Storage
-     * @param selectedImage
-     */
-    private void uploadImageToFirebase(Uri selectedImage) {
-        //Initialize a MoodProvider object and pass in the firebase
 
-        Log.d("NANCY", "do we ever get here in uploadimage?");
-
-        moodProvider = MoodProvider.getInstance(FirebaseFirestore.getInstance());
-
-        //Get a reference to the firebase storage
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        //StorageReference temp = storageRef.child(selectedImage.getEncodedPath());
-
-        StorageReference selectedImageRef = storageRef.child("Images/" + selectedImage.getLastPathSegment());
-        UploadTask uploadTask = selectedImageRef.putFile(selectedImage);
-
-        // Register observers to listen for when the download is done or if it fails
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                Log.d("nancy", "unsuccessful upload");
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
-                Log.d("nancy", "working image upload");
-            }
-        });
-
-
-    }
 
     /**
      * When this view is created, it will collect all the fields from the UI to create a new mood
@@ -350,21 +315,20 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
 
                      TO DO: SocialSituation might need a NULL field
                      */
-                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {reason, socialSit.toString()} );
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {reason, socialSit.toString()}, !privacySwitch.isChecked());
                 }
 
                 //Default: create Mood object with only the UserProfile and EmotionalState
                 else {
-                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {null, socialSit.toString()});
+                    moodEvent = new Mood(userProfile, selectedEmotion, new String[] {null, socialSit.toString()}, !privacySwitch.isChecked());
                 }
 
-                //Log.d("NANCY", imageUri.toString());
 
                 if (imageUri != null) {
-                    uploadImageToFirebase(imageUri);
+                    imageProvider.uploadImageToFirebase(imageUri);
                 }
-                moodEvent.setImage(imageUri);
-
+                // Upload to firebase a simplified image Uri
+                moodEvent.setImage(Uri.parse(imageUri.getLastPathSegment()));
                 //Upload the new Mood to firebase
                 moodProvider.addMoodEvent(moodEvent).addOnSuccessListener(documentReference -> {
                     String moodEventId = documentReference.getId();
