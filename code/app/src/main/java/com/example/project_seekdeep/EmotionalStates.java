@@ -83,4 +83,8 @@ public enum EmotionalStates {
     public String getStateName() {
         return this.name();
     }
+
+    public static EmotionalStates fromStateName(String stateName) {
+        return EmotionalStates.valueOf(stateName);
+    }
 }

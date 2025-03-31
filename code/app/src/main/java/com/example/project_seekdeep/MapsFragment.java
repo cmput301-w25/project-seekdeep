@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 import android.widget.ToggleButton;
@@ -49,6 +50,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -77,8 +79,9 @@ import java.util.stream.Collectors;
 // https://stackoverflow.com/questions/17839388/creating-a-scaled-bitmap-with-createscaledbitmap-in-android
 // https://stackoverflow.com/questions/47807621/draw-emoji-on-bitmap-with-drawtextonpath?utm_source=chatgpt.com
 // https://stackoverflow.com/questions/31315873/android-how-to-draw-a-circle-on-google-map
+// https://developers.google.com/maps/documentation/android-sdk/infowindows?_gl=1*1chw39e*_up*MQ..*_ga*MTA5NzM3NzMzMy4xNzQzMTE4Mjk3*_ga_NRWSTWS78N*MTc0MzExODI5Ny4xLjEuMTc0MzExODMwMS4wLjAuMA..#maps_android_info_windows_add-java
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback, FilterMenuDialogFragment.OnFilterSelectedListener {
+public class MapsFragment extends Fragment implements OnMapReadyCallback, FilterMenuDialogFragment.OnFilterSelectedListener, GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowClickListener {
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
@@ -95,6 +98,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
     private FirebaseFirestore db;
     private Location currentLocation;
     private Circle radiusCircle;
+    private View infoWindowView;
 
     /**
      * Empty constructor required by database
@@ -223,6 +227,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
+        // Initialize the info window view using the fragment's inflater
+        infoWindowView = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+
+        // Set the custom info window adapter and click listener
+        mMap.setInfoWindowAdapter(this);
+        mMap.setOnInfoWindowClickListener(this);
+
         // Attempt to enable location
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             enableLocationAndFetch();
@@ -321,6 +332,46 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         }
     }
 
+    // Implement InfoWindowAdapter methods
+    @Override
+    public View getInfoWindow(Marker marker) {
+        if (!isAdded() || infoWindowView == null) return null; // Safety check
+
+        TextView titleTextView = infoWindowView.findViewById(R.id.info_window_title);
+        TextView snippetTextView = infoWindowView.findViewById(R.id.info_window_snippet);
+
+        // Set the title and customize its color
+        String title = marker.getTitle();
+        titleTextView.setText(title);
+
+        EmotionalStates state = EmotionalStates.fromStateName(title);
+        if (state != null) {
+            titleTextView.setTextColor(Color.parseColor(state.getColour()));
+        } else {
+            titleTextView.setTextColor(Color.BLACK);
+        }
+
+        // Set the snippet (if available)
+        if (marker.getSnippet() != null) {
+            snippetTextView.setText(marker.getSnippet());
+            snippetTextView.setVisibility(View.VISIBLE);
+        } else {
+            snippetTextView.setVisibility(View.GONE);
+        }
+
+        return infoWindowView;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        return null; // Use getInfoWindow for full control
+    }
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        if (isAdded()) {
+            Toast.makeText(requireContext(), "Info window clicked: " + marker.getTitle(), Toast.LENGTH_SHORT).show();
+        }
+    }
     /**
      * Loads the mood based location markers of user that are emojis of the specified mood.
      */
@@ -328,7 +379,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         // Current user's profile
         UserProfile currentUserProfile = ((MainActivity) requireActivity()).getCurrentUsername();
         String userName = currentUserProfile.getUsername();
-        loadMoodLocations(userName);
+        loadMoodLocations(userName, null);
     }
 
     /**
@@ -336,7 +387,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
      * displayed on the map.
      * @param user
      */
-    private void loadMoodLocations(String user) {
+    private void loadMoodLocations(String user, String display) {
         // Current user's profile
         String userName = user;
         // Match the database locations with current user
@@ -353,10 +404,21 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
                         if (latitude != null && longitude != null && emotionalState != null) {
                             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                             String markerTitle = emotionalState.getStateName();
-                            mMap.addMarker(new MarkerOptions()
-                                    .position(latLng)
-                                    .title(markerTitle)
-                                    .icon(getEmotionalLocation(emotionalState)));
+                            String snippet = "Username: " + location.getUserId();
+                            if (display == "following"){
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(latLng)
+                                        .title(markerTitle)
+                                        .snippet(snippet)
+                                        .icon(getEmotionalLocation(emotionalState)));
+                            }
+                            else{
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(latLng)
+                                        .title(markerTitle)
+                                        .icon(getEmotionalLocation(emotionalState)));
+                            }
+
                         }
                     }
                 })
@@ -381,7 +443,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
                     for (QueryDocumentSnapshot document : queryFollowingSnapshots) {
                         FollowRequest follow = document.toObject(FollowRequest.class);
                         String followee = follow.getFollowee();
-                        loadMoodLocations(followee);
+                        loadMoodLocations(followee, "following");
                     }
                 })
                 .addOnFailureListener(e -> {
