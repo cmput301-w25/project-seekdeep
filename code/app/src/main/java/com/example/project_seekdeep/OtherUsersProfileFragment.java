@@ -96,6 +96,13 @@ public class OtherUsersProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //Get instance of db and the moods collection
+        db = FirebaseFirestore.getInstance();
+        moods = db.collection("MoodDB");
+
+        //Instantiate userProvide (to use its firebase methods)
+        //userProvider = new UserProvider(requireContext(), loggedInUser);
+        userProvider = UserProvider.getInstance(loggedInUser, db); //use the same instance of userProvider that mainactivity uses
 
         //Display a loading symbol since the Follow/Pending/Following button delays when being initialized in initializeButtonStatus
         loadingCircle = view.findViewById(R.id.loading_spinner);
@@ -110,10 +117,6 @@ public class OtherUsersProfileFragment extends Fragment {
         if ("johnCena".equals(userBeingViewed.getUsername())) {
             view.findViewById(R.id.profile_header).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.john));
         }
-
-        //Instantiate userProvide (to use its firebase methods)
-        //userProvider = new UserProvider(requireContext(), loggedInUser);
-        userProvider = UserProvider.getInstance(loggedInUser, db); //use the same instance of userProvider that mainactivity uses
 
         //Setup the username
         usernameTextView = view.findViewById(R.id.username_profile);
@@ -137,10 +140,6 @@ public class OtherUsersProfileFragment extends Fragment {
         moodArrayAdapter = new MoodArrayAdapter(view.getContext(), moodArrayList, null);
         //Set the adapter to the UI Listview
         moodListView.setAdapter(moodArrayAdapter);
-
-        //Get instance of db and the moods collection
-        db = FirebaseFirestore.getInstance();
-        moods = db.collection("MoodDB");
 
         //Query the collection to get all moods for the userBeingView
         HashMap<String, Object> userMap = new HashMap<String, Object> ();
