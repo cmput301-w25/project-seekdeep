@@ -1,16 +1,16 @@
 package com.example.project_seekdeep;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
-import android.os.Process;
+import com.example.project_seekdeep.Followings.FollowRequest;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.Helpers.UserProvider;
+import com.example.project_seekdeep.Moods.MoodProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 
 import org.junit.Before;
 import org.junit.Test;
