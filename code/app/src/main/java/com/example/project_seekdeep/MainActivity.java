@@ -93,8 +93,9 @@ public class MainActivity extends AppCompatActivity {
             //Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
             Bundle bundle = new Bundle();
             bundle.putSerializable("userProfile", currentUser); //make currentUser Serializbale, with key "userProfile"
-//            bundle.putString("username", getCurrentUsername()); //username stored as string in the bundle
             selectedFragment.setArguments(bundle);  //attach bundle to the fragment
+            //go to Create Mood page with a BackStack
+            fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).addToBackStack(null).commit();
         } else if (itemPressed == R.id.following_bottom_nav) {
             selectedFragment = new FollowingFragment();
         }
@@ -107,10 +108,10 @@ public class MainActivity extends AppCompatActivity {
             //add logged in user's UserProfile to bundle to pass to mood history
             Bundle bundle = new Bundle();
             bundle.putString("username", getCurrentUsername().getUsername());
-            bundle.putSerializable("userProfile", currentUser);
+            UserProfile user = getCurrentUsername();
+            bundle.putSerializable("userProfile", user);
             selectedFragment.setArguments(bundle);
             fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
-
         }
         return true;
     };
