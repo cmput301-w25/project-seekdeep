@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private UserProfile currentUser;
     private ListView moodListView;
     private UserProvider userProvider;
+    private Fragment selectedFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
      * object and store it in selectedFragment as shown for the "History" fragment.
      */
     private final NavigationBarView.OnItemSelectedListener navListener = item -> {
-        Fragment selectedFragment = null;
         int itemPressed = item.getItemId();
 
         // Check which fragment the user clicked on
@@ -157,4 +157,6 @@ public class MainActivity extends AppCompatActivity {
         userProvider.listenForNewFollowRequests();
         userProvider.listenForAcceptedRequests();
     }
+
+    public Fragment getSelectedFragment() { return selectedFragment; }
 }
