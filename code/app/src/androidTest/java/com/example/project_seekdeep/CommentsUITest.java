@@ -247,7 +247,6 @@ public class CommentsUITest {
         onView(withText("This is another test comment!!!")).check(matches(isDisplayed()));
         Thread.sleep(1000);
     }
-
     public void followingProfileCommentsShouldBeDisplayed() throws InterruptedException {
         // Navigate to feed
         onView(withId(R.id.following_bottom_nav)).perform(click());

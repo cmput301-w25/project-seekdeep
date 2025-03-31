@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -58,7 +59,7 @@ import java.util.stream.Collectors;
 
 /**
  * This fragment class is designed to display a list of posted moods by a given user.
- * @author Kevin Tu, Nancy Lin, modified by Jachelle Chan
+ * @author Kevin Tu, Nancy Lin, modified by Jachelle Chan, Saurabh
  */
 
 public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFragment.OnFilterSelectedListener{
@@ -72,6 +73,7 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
     private FirebaseFirestore db;
     private CollectionReference moods;
     private CollectionReference users;
+    private Button requestButton;
 
 
     public MoodHistoryFragment() {
@@ -142,7 +144,6 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
             });
         }
 
-
         // Instantiate database for usage
         db = FirebaseFirestore.getInstance();
         CollectionReference users = db.collection("UserDB");
@@ -180,18 +181,18 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
 
 
         loggedInUserMoodsQuery.addSnapshotListener((value, error) -> {
-           if (error != null) {
-               Log.e("Firestore", error.toString());
-           }
-           if (value != null) {
+            if (error != null) {
+                Log.e("Firestore", error.toString());
+            }
+            if (value != null) {
 
-               if (!(moodArrayList == null)){
-                   moodArrayList.clear();
-                   Log.d("NANCY", "Clear arraylist");
-               }
+                if (!(moodArrayList == null)) {
+                    moodArrayList.clear();
+                    Log.d("NANCY", "Clear arraylist");
+                }
 
-               for (QueryDocumentSnapshot snapshot : value) {
-                    EmotionalStates emotionalState = EmotionalStates.valueOf((String)snapshot.get("emotionalState"));
+                for (QueryDocumentSnapshot snapshot : value) {
+                    EmotionalStates emotionalState = EmotionalStates.valueOf((String) snapshot.get("emotionalState"));
                     SocialSituations socialSituation = SocialSituations.valueOf((String) snapshot.get("socialSituation"));
 
                     List<String> followers = (List<String>) snapshot.get("followers");
@@ -200,68 +201,78 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
 
                     String imageStr = (String) snapshot.get("image");
                     Uri image = null;
-                    if (imageStr != null){
-                       image = Uri.parse(imageStr);
+                    if (imageStr != null) {
+                        image = Uri.parse(imageStr);
                     }
 
 
                     Mood mood = new Mood(loggedInUser, emotionalState, socialSituation, followers, postedDate, reason);
-                    mood.setDocRef (snapshot.getReference());
+                    mood.setDocRef(snapshot.getReference());
                     mood.setImage(image);
 
                     moodArrayList.add(mood);
-               }
+                }
 
-               if (!(moodArrayList == null)){
-                   MoodFiltering.removeAllFilters();  // as a preventative to having other fragment's filters
-                   MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
-                   moodArrayAdapter.notifyDataSetChanged();
-                   moodListView.setAdapter(moodArrayAdapter);
+                if (!(moodArrayList == null)) {
+                    MoodFiltering.removeAllFilters();  // as a preventative to having other fragment's filters
+                    MoodFiltering.sortReverseChronological(moodArrayList);  // this will sort the array in place
+                    moodArrayAdapter.notifyDataSetChanged();
+                    moodListView.setAdapter(moodArrayAdapter);
 
-                   // save original for filters that might remove items from array
-                   MoodFiltering.saveOriginal(moodArrayList);
-                   // reverse chronological doesn't need to do this because it's not a filter
-                   // and the user just wants to view it in reverse chronological
+                    // save original for filters that might remove items from array
+                    MoodFiltering.saveOriginal(moodArrayList);
+                    // reverse chronological doesn't need to do this because it's not a filter
+                    // and the user just wants to view it in reverse chronological
 
-                   // click filter button to add and remove the filter. this will change when UI for the filter dialog fragment is added
-                   ImageButton filterButton = view.findViewById(R.id.filter_button);
-                   filterButton.setOnClickListener(new View.OnClickListener() {
-                       @Override
-                       public void onClick(View view) {
-                           new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
-                       }
-                   });
-                   // Taken from Kevin's implementation of comments and viewing moods
-                   // Taken by: Jachelle Chan on March 30, 2025
-                   moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                       @Override
-                       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                           // Bundle up the original Mood object that was clicked on
-                           Bundle moodAndUserBundle = new Bundle();
-                           moodAndUserBundle.putSerializable("mood", moodArrayList.get(position));
+                    // click filter button to add and remove the filter. this will change when UI for the filter dialog fragment is added
+                    ImageButton filterButton = view.findViewById(R.id.filter_button);
+                    filterButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            new FilterMenuDialogFragment().show(getChildFragmentManager(), "profile");
+                        }
+                    });
+                    requestButton = view.findViewById(R.id.manage_requests_button);
+                    requestButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ManageFollowRequestsFragment fragment = new ManageFollowRequestsFragment();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("username", loggedInUser.getUsername());
+                            bundle.putSerializable("userProfile", loggedInUser);
+                            fragment.setArguments(bundle);
+                            fragment.show(getChildFragmentManager(), "requests");
+                            // Taken from Kevin's implementation of comments and viewing moods
+                            // Taken by: Jachelle Chan on March 30, 2025
+                            moodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    // Bundle up the original Mood object that was clicked on
+                                    Bundle moodAndUserBundle = new Bundle();
+                                    moodAndUserBundle.putSerializable("mood", moodArrayList.get(position));
 
-                           UserProfile loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
-                           moodAndUserBundle.putSerializable("userProfile", loggedInUser);
+                                    UserProfile loggedInUser = (UserProfile) getArguments().getSerializable("userProfile");
+                                    moodAndUserBundle.putSerializable("userProfile", loggedInUser);
 
-                           // This is used to navigate back and forth between a mood comment section and the feed or history
-                           FragmentManager fragManager = getParentFragmentManager();
+                                    // This is used to navigate back and forth between a mood comment section and the feed or history
+                                    FragmentManager fragManager = getParentFragmentManager();
 
-                           // Create new fragment and send Mood off into new fragment
-                           ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
-                           viewMoodDetailsFragment.setArguments(moodAndUserBundle);
+                                    // Create new fragment and send Mood off into new fragment
+                                    ViewMoodDetailsFragment viewMoodDetailsFragment = new ViewMoodDetailsFragment();
+                                    viewMoodDetailsFragment.setArguments(moodAndUserBundle);
 
-                           fragManager.beginTransaction()
-                                   .replace(R.id.frameLayout, viewMoodDetailsFragment)
-                                   .setReorderingAllowed(true)
-                                   .addToBackStack("feed")
-                                   .commit();
-                       }
-                   });
-               }
-
-           }
+                                    fragManager.beginTransaction()
+                                            .replace(R.id.frameLayout, viewMoodDetailsFragment)
+                                            .setReorderingAllowed(true)
+                                            .addToBackStack("feed")
+                                            .commit();
+                                }
+                            });
+                        }
+                    });
+                }
+            }
         });
-
     }
 
     /**
@@ -310,5 +321,31 @@ public class MoodHistoryFragment extends Fragment implements FilterMenuDialogFra
         moodArrayAdapter.clear();
         moodArrayAdapter.addAll(filteredMoodList);
         moodArrayAdapter.notifyDataSetChanged();
+
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("MoodFilter",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("selected_moods", "");
+        editor.putString("selected_timeline", "");
+        editor.putString("keyword", "");
+        editor.putString("filtered_mood_ids", "");
+        editor.apply();
+    }
+
+    private void saveFilterState(ArrayList<EmotionalStates> selectedMoods, String selectedTimeline, String keyword) {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("MoodFilter",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        String moodsString = selectedMoods.stream()
+                .map(Enum::name)
+                .collect(Collectors.joining(","));
+        editor.putString("selected_moods", moodsString);
+        editor.putString("selected_timeline", selectedTimeline);
+        editor.putString("keyword", keyword);
+
+        String moodIdsString = filteredMoodList.stream()
+                .map(mood -> mood.getDocRef().getId())
+                .collect(Collectors.joining(","));
+        editor.putString("filtered_mood_ids", moodIdsString);
+        editor.apply();
     }
 }

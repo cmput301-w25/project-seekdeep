@@ -1,13 +1,12 @@
 package com.example.project_seekdeep;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.Nullable;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -18,17 +17,7 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -88,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
             selectedFragment = new FeedFragment();
+            //add logged in user's UserProfile to bundle to pass to feed
+            Bundle bundle = new Bundle();
+            bundle.putString("username", getCurrentUsername().getUsername());
+            bundle.putSerializable("userProfile", currentUser);
+            selectedFragment.setArguments(bundle);
         } else if (itemPressed == R.id.create_mood_bottom_nav) {
             selectedFragment = new CreateMoodEventFragment();
             //Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
@@ -140,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         FeedFragment feedFragment = new FeedFragment();
         navBar.setVisibility(View.VISIBLE);
         Bundle bundle = new Bundle();
-        bundle.putString("username", getCurrentUsername().getUsername());
+        bundle.putString("username", currentUser.getUsername());
         bundle.putSerializable("userProfile", currentUser);
         feedFragment.setArguments(bundle);
         fragManager.beginTransaction().replace(R.id.frameLayout, feedFragment).commit();
@@ -152,10 +146,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Once login is successful, can create initizlize the followings list
         //Use one instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
-        userProvider = UserProvider.getInstance(this, currentUser);
-        userProvider.initializeFollowingsList();
-        userProvider.listenForNewFollowRequests();
-        userProvider.listenForAcceptedRequests();
+        NotificationHandler notifs = new NotificationHandler(this, currentUser, FirebaseFirestore.getInstance());
+        notifs.initializeFollowingsList();
+        notifs.listenForNewFollowRequests();
+        notifs.listenForAcceptedRequests();
     }
 
     public Fragment getSelectedFragment() { return selectedFragment; }

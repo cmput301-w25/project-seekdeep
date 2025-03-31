@@ -699,7 +699,6 @@ public class MoodFilteringTest {
         Calendar calendar = Calendar.getInstance();
         Mood amood = new Mood(testUser, EmotionalStates.HAPPINESS, calendar.getTime(), "3");
         moods.add(amood);
-
         calendar.add(Calendar.DAY_OF_YEAR, -2);
         // add a mood for testUser2
         UserProfile testUser2 = new UserProfile("tofu", "tofu123");

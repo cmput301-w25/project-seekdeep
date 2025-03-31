@@ -135,7 +135,6 @@ public class EditMoodFragment extends DialogFragment {
             privacySwitch.setCompoundDrawablesWithIntrinsicBounds(drawable,0,0,0);
             explainPrivacy.setText(!mood.getPrivate() ? R.string.public_mode : R.string.private_mode);
 
-
             // Load the image from the mood into the dialog if it exists
             imageUri = mood.getImage();
             if (imageUri != null){
