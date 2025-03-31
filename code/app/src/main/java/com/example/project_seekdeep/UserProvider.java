@@ -154,7 +154,10 @@ public class UserProvider {
                     }
 
                     //Update following list in the UserProfile class
-                    currentUser.addFollowing(userBeingViewed.getUsername());
+                    //now userBeingViewed is following loggedInUser
+                    //currentUser.addFollowing(userBeingViewed.getUsername());
+                    userBeingViewed.addFollowing(currentUser.getUsername());
+                    //userBeingViewed's following list in firebase will get updated by listenForAcceptedRequests in NotificationHandler
 
                 })
                 .addOnFailureListener(e -> Log.w("Firestore", "Error finding follow document", e));
@@ -168,6 +171,7 @@ public class UserProvider {
         db.collection("followings_and_requests")
                 .whereEqualTo("follower", userBeingViewed.getUsername())
                 .whereEqualTo("followee", currentUser.getUsername())
+                .whereEqualTo("status", "pending")
                 .get()
                 .addOnSuccessListener(queryDocSnapshot -> {
                     for (QueryDocumentSnapshot doc : queryDocSnapshot) {
@@ -176,10 +180,10 @@ public class UserProvider {
                                 .addOnFailureListener(e -> Log.w("Firestore", "Error declining user", e));
                     }
                     //Update following list in the UserProfile class
-                    currentUser.removeFollowing(userBeingViewed.getUsername());
+                    //currentUser.removeFollowing(userBeingViewed.getUsername()); //**dont need this, pending requests are never in Following
 
                     //Update the followings list in firestore
-                    removeFromFollowingsListInFirestore(userBeingViewed);
+                    //removeFromFollowingsListInFirestore(userBeingViewed); //**dont need this, pending requests are never in Following
                 })
                 .addOnFailureListener(e -> Log.w("Firestore", "Error finding follow document", e));
     }

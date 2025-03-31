@@ -80,7 +80,55 @@ public class OtherUsersProfileFragment extends Fragment {
 
     //Constructor
     public OtherUsersProfileFragment() {
-        super(R.layout.other_users_profile_page);
+       //Require empty public constrictor
+        //ERROR fixed: can't call super here or else loggedInUser and userBeingViewed are null (bundle not unpackaged)
+    }
+
+    /**
+     * Modify On create. As soon as this fragment is created, unbundle and initialize loggedIsUser and userBeingViewed.
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //Retrieve current logged-in user and userBeingViewed from bundle
+        if (getArguments() != null) {
+            loggedInUser = (UserProfile) getArguments().getSerializable("loggedInUser");
+            userBeingViewed = (UserProfile) getArguments().getSerializable("userBeingViewed");
+            Log.d("OtherUsers", loggedInUser.getUsername()+"is ON VIEW CREATED OF OTHERUSERS FRAGMENT viewing: "+userBeingViewed.getUsername());
+        }
+        else {
+            Log.e("OtherUsers", "getArguments() is NULL in onCreate");
+        }
+    }
+
+    /**
+     * Upon creating this fragment, it will create a basic view, as well as
+     * assign value to the firebase/ database references
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        //initialize variables
+        db = FirebaseFirestore.getInstance();
+        moods = db.collection("MoodDB");
+
+        // Inflate the layout for this fragment
+        View inflatedView = inflater.inflate(R.layout.other_users_profile_page, container, false);
+        return inflatedView;
     }
 
     /**
@@ -109,11 +157,12 @@ public class OtherUsersProfileFragment extends Fragment {
         loadingCircle.bringToFront(); //needed to add this so that it isn't hidden being the mood list
         loadingCircle.setVisibility(View.VISIBLE);
 
-        //Retrieve current logged-in user and userBeingViewed from bundle
-        if (getArguments() != null) {
-            loggedInUser = (UserProfile) getArguments().getSerializable("loggedInUser");
-            userBeingViewed = (UserProfile) getArguments().getSerializable("userBeingViewed");
-        }
+        //Retrieve current logged-in user and userBeingViewed from bundle (moved to OnCreate method)
+//        if (getArguments() != null) {
+//            loggedInUser = (UserProfile) getArguments().getSerializable("loggedInUser");
+//            userBeingViewed = (UserProfile) getArguments().getSerializable("userBeingViewed");
+//            Log.d("OtherUsers", "ON VIEW CREATED OF FEED FRAGMENT"+loggedInUser.getUsername());
+//        }
         if ("johnCena".equals(userBeingViewed.getUsername())) {
             view.findViewById(R.id.profile_header).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.john));
         }
