@@ -34,6 +34,16 @@ public class UserProfile implements Serializable {
     }
 
     /**
+     * Constructor to be used in mapsFragment
+     * @param username
+     */
+    public UserProfile(String username) {
+        this.username = username;
+        this.password = null;
+        this.followings = new ArrayList<>();
+    }
+
+    /**
      * Override the equals method to compare loggedInUser vs another user. This is cleaner than comparing
      * usernames directly.
      * @param obj
