@@ -9,6 +9,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -26,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
@@ -62,12 +64,24 @@ public class ViewMoodDetailsFragment extends Fragment {
 
     ViewMoodDetailsFragment() {
         super(R.layout.fragment_mood_details_and_comments);
+
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        assert mainActivity != null;
+
+        BottomNavigationView navBar = mainActivity.findViewById(R.id.bottomNavigationView);
+        navBar.setVisibility(View.GONE);
 
         // Set up db
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -129,9 +143,11 @@ public class ViewMoodDetailsFragment extends Fragment {
             }
         });
 
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                navBar.setVisibility(View.VISIBLE);
                 FragmentManager fragmentManager = getParentFragmentManager();
                 fragmentManager.popBackStack();
             }
@@ -228,8 +244,6 @@ public class ViewMoodDetailsFragment extends Fragment {
             image.setVisibility(View.GONE);
         }
 
-        Log.d("Nancy", "get activity name|" + this.getClass().getSimpleName() );
-
 
         ImageView locationToggle = view.findViewById(R.id.location_image);
         locationToggle.setVisibility(View.GONE);
@@ -248,5 +262,15 @@ public class ViewMoodDetailsFragment extends Fragment {
 
 
                 });
+
+
+
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

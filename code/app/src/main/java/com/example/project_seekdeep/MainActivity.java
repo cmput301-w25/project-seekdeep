@@ -3,6 +3,7 @@ package com.example.project_seekdeep;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
@@ -117,6 +118,8 @@ public class MainActivity extends AppCompatActivity {
             bundle.putSerializable("userProfile", currentUser);
             selectedFragment.setArguments(bundle);
             fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+
         }
         return true;
     };
