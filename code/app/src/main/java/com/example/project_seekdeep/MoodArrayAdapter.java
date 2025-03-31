@@ -90,7 +90,7 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
         TextView socialSit = view.findViewById(R.id.social_situation);
         TextView date = view.findViewById(R.id.date);
-        ImageView image = view.findViewById(R.id.mood_image);
+        ImageView image = view.findViewById(R.id.image);
         ImageView pfp = view.findViewById(R.id.profile_picture);
 
         // set the text for the mood event (layout_mood.xml)
@@ -123,11 +123,11 @@ public class MoodArrayAdapter extends ArrayAdapter<Mood> {
 
         // if image DNE, then hide the image view?
         if (currentMood.getImage() == null){
-            view.findViewById(R.id.image).setVisibility(View.GONE);
+            image.setVisibility(View.GONE);
             image.setImageDrawable(null);
         } else{
             ; //ToDo for images
-            view.findViewById(R.id.image).setVisibility(View.VISIBLE);
+            image.setVisibility(View.VISIBLE);
             StorageReference imageFire = imageProvider.getStorageRefFromLastPathSeg(
                     currentMood.getImage().getLastPathSegment());
 
