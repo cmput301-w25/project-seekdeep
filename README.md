@@ -17,7 +17,10 @@ This project is an abomination of android studio code, calling for an unreasonab
 
 - **Moods**: Moods are the defining feature of our app. This is the core tenet which users share between each other, aiming to normalize sharing emotions between people.
 - **Calendar**: Our app features a calendar which shows a mood impact of each mood per day, for the month.
-- [Feature 3]: Brief description
+- **User Search**: Users can search for friends, influencers, and other people using our intuitive search functions
+- **Networking**: Using follow requests, locationality, and profiles, users of our app can form strong networks with other users.
+- **Map**: Our app has a map which shows users other moods that have happened around them.
+- **Profile**: Each user profile functions as the gateway into our experience and features a unqiue and expressive username and login credentials.
 
 ## Setup Instructions
 
