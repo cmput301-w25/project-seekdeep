@@ -1,6 +1,7 @@
 package com.example.project_seekdeep;
 
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +24,6 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarCellHolder> {
     private OnItemListener onItemListener;
 
     public CalendarAdapter(ArrayList<String> daysOfMonth, ArrayList<String> moodsInMonth, OnItemListener onItemListener){
-        Log.d("NANCY", "Calendar cell adapter " );
         this.daysOfMonth = daysOfMonth;
         this.moodsInMonth = moodsInMonth;
         this.onItemListener = onItemListener;
@@ -37,7 +37,13 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarCellHolder> {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.calendar_cell, parent, false);
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        layoutParams.height = (int) (parent.getHeight() * 0.166666666);
+        if (daysOfMonth.size()< 29){
+            layoutParams.height = (int) (parent.getHeight() * 0.25);
+        } else if (daysOfMonth.size() < 36){
+            layoutParams.height = (int) (parent.getHeight() * 0.2);
+        } else {
+            layoutParams.height = (int) (parent.getHeight() * 0.166666666);
+        }
         return new CalendarCellHolder(view, onItemListener);
     }
 
@@ -45,7 +51,16 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarCellHolder> {
     public void onBindViewHolder(@NonNull CalendarCellHolder holder, int position) {
         holder.dayOfMonth.setText(daysOfMonth.get(position));
         holder.moodOfMonth.setText(moodsInMonth.get(position));
-        holder.cellConstraintLayout.setBackgroundColor( cellColor( moodsInMonth.get(position)));
+        //holder.cellConstraintLayout.setBackground( cellColor( moodsInMonth.get(position)));
+        //holder.cardView.setBackgroundColor(cellColor( moodsInMonth.get(position)));
+
+
+        GradientDrawable box_outline = (GradientDrawable) holder.cellConstraintLayout.getBackground();
+        box_outline.mutate();
+        //box_outline.setColor(cellColor( moodsInMonth.get(position)));
+        box_outline.setStroke(5, cellColor( moodsInMonth.get(position)));
+
+
     }
 
     @Override
@@ -99,6 +114,10 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarCellHolder> {
             case "\uD83D\uDE2F":
                 color = Color.parseColor("#f4daa5");
                 break;
+
+            default:
+                color = Color.parseColor("#FFFFFF");
+
 
         }
         return color;

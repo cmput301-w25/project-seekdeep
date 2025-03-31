@@ -3,26 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cell_constraint_layout"
+    android:background="@drawable/rounded_no_margin"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/cell_date"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:foregroundGravity="center"
-        android:text="31"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/cell_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="emotionn"
-        app:layout_constraintEnd_toEndOf="@+id/cell_date"
-        app:layout_constraintStart_toStartOf="@+id/cell_date"
-        app:layout_constraintTop_toBottomOf="@+id/cell_date" />
+        <TextView
+            android:id="@+id/cell_date"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:foregroundGravity="center"
+            android:text="31"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/cell_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:text="emotionn"
+            app:layout_constraintEnd_toEndOf="@+id/cell_date"
+            app:layout_constraintStart_toStartOf="@+id/cell_date"
+            app:layout_constraintTop_toBottomOf="@+id/cell_date" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

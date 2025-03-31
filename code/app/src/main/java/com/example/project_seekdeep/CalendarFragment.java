@@ -176,7 +176,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             case 4:
                 month = "May";
                 break;
-
             case 5:
                 month = "June";
                 break;
@@ -209,30 +208,41 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     private ArrayList<String> daysInMonthArray(Calendar calendar) {
         ArrayList<String> daysInMonthArray = new ArrayList<>();
 
+        Calendar calendar2 = (Calendar) calendar.clone();
         int daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        Calendar calendar2 = (Calendar) calendar.clone();
-        calendar2.add(Calendar.DATE, Calendar.DAY_OF_MONTH-1);
+        calendar2.add(Calendar.DATE, -1*( calendar2.get( Calendar.DAY_OF_MONTH)-1));
 
-        int dayOfWeek = calendar2.get(Calendar.DAY_OF_WEEK);
+        Log.d("NANCY", "daysinmonth array calendar 2" + calendar2.getTime() + "|" + calendar2.get(Calendar.DAY_OF_WEEK));
 
-        for(int i = 1; i <= 42; i++)
-        {
+        int dayOfWeek = calendar2.get(Calendar.DAY_OF_WEEK) -1;
+
+        for(int i = 1; i <= 42; i++) {
             if(i <= dayOfWeek || i > daysInMonth + dayOfWeek)
             {
-                daysInMonthArray.add("");
+                //if the cell # is over 36 and there's no days, don't add anything
+                if (i < 36) {
+                    daysInMonthArray.add("");
+                }
             }
             else
             {
                 daysInMonthArray.add(String.valueOf(i - dayOfWeek));
             }
         }
+
+        //if the first row is blank, delete it
+        if (daysInMonthArray.get(6).equals("")){
+            daysInMonthArray.subList(0, 7).clear();
+        }
+
         return  daysInMonthArray;
     }
 
     private ArrayList<String> createMoodsInMonthArray(ArrayList<String> daysInMonthArray){
         ArrayList<String> moodsInMonth = new ArrayList<>();
-        for (int i = 0; i < 42; i++){
+        int j = daysInMonthArray.size();
+        for (int i = 0; i < j; i++){
             if (daysInMonthArray.get(i).isEmpty()){
                 moodsInMonth.add("");
 
@@ -251,6 +261,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 //date of the cell
                 whatDay.add(Calendar.DATE, Integer.parseInt(dateNumberString));
                 Date cellDate = whatDay.getTime();
+
+
+
 
 
 
@@ -282,7 +295,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                         break;
 
                     //sadness
-                    case "☹6":
+                    case "6":
                         emotion = EmotionalStates.SADNESS.getEmoticon();
                         break;
 
@@ -297,7 +310,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                         break;
                 }
 
-                moodsInMonth.add(emotion + cellDate);
+                moodsInMonth.add(emotion+ cellDate);
             }
         }
 
