@@ -70,10 +70,6 @@ public class ViewMoodDetailsFragment extends Fragment {
 
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -295,13 +291,6 @@ public class ViewMoodDetailsFragment extends Fragment {
                 });
 
 
-
-
-
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 }
