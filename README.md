@@ -21,9 +21,11 @@ This project is an abomination of android studio code, calling for an unreasonab
 
 ## Setup Instructions
 
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
+1. Have a device with Android 11+, lower versions are untested.
+2. On your device, go to [Releases](https://github.com/cmput301-w25/project-seekdeep/releases), and select the latest release.
+3. Download the apk file.
+4. Open the apk file with the program installer of your choice.
+5. Run the app from your launcher.
 
 ## Documentation
 
