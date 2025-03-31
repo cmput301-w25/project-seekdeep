@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.firebase.firestore.CollectionReference;
@@ -18,6 +17,11 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+
+/**
+ * This is a fragment which shows managed follow requests
+ * @author Deryk Fong
+ */
 
 public class ManageFollowRequestsFragment extends DialogFragment {
 

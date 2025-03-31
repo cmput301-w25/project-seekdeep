@@ -28,7 +28,6 @@ import java.util.Map;
  * <pre>
  * <ul>
  *     Classes that will use UserProvider (sharing the same instance of it):
- *      <li>MainActivity: to initialize a user's following's list after login, and listen for new follow requests to the user. </li>
  *      <li>OtherUsersProfileFragment: to send follow requests, and unfollow users. </li>
  *      <li>ManageRequestsFragment: to accept and decline follow requests from other users: </li>
  *          <ul>
@@ -41,7 +40,7 @@ import java.util.Map;
  * @see FollowRequest
  * @see OtherUsersProfileFragment
  * @see UserProfile
- * @author Sarah Chang
+ * @author Sarah Chang, Deryk Fong
  */
 public class UserProvider {
     private static UserProvider instance;

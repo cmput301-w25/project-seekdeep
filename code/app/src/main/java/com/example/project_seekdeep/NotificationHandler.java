@@ -19,12 +19,23 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class handles notifications on the main activity
+ * @author Deryk Fong, Code taken from Sarah Chang
+ */
+
 public class NotificationHandler {
     private UserProfile currentUser;
     private final FirebaseFirestore db;
     private Context context;
     private boolean initializingFollowings;
 
+    /**
+     * Constructor for NotificationHandler
+     * @param mainActivityContext
+     * @param currentUser
+     * @param db
+     */
     public NotificationHandler(Context mainActivityContext, UserProfile currentUser, FirebaseFirestore db) {
         this.db = db;
         this.currentUser = currentUser;
