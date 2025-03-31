@@ -4,15 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
+
+import com.example.project_seekdeep.Helpers.EmotionalStates;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.Moods.Mood;
+import com.example.project_seekdeep.Moods.MoodFiltering;
 
 import org.junit.Test;
 
-import java.util.Calendar;
-
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MoodFilteringTest {

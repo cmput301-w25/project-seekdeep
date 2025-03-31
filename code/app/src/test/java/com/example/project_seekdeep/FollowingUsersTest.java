@@ -3,12 +3,12 @@ package com.example.project_seekdeep;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import com.example.project_seekdeep.Helpers.UserProfile;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 

@@ -9,7 +9,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import static org.hamcrest.CoreMatchers.anything;
 
 import android.util.Log;
@@ -19,6 +18,10 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.example.project_seekdeep.Helpers.EmotionalStates;
+import com.example.project_seekdeep.Helpers.SocialSituations;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.Moods.Mood;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -35,7 +38,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Objects;
 
 @RunWith(AndroidJUnit4.class)

@@ -5,6 +5,10 @@ import android.util.Log;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import com.example.project_seekdeep.Helpers.EmotionalStates;
+import com.example.project_seekdeep.Helpers.SocialSituations;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.Moods.Mood;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
