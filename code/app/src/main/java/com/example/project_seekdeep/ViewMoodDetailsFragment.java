@@ -3,6 +3,7 @@ package com.example.project_seekdeep;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -15,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -196,6 +199,36 @@ public class ViewMoodDetailsFragment extends Fragment {
         // Set mood details
         TextView user = view.findViewById(R.id.username);
         user.setText(clickedOnMood.getOwnerString());
+
+        //the outline change color
+        GradientDrawable box_outline = (GradientDrawable) view.findViewById(R.id.mood_details_box).getBackground();
+        box_outline.mutate();
+        box_outline.setStroke(5, Color.parseColor(clickedOnMood.getEmotionalState().getColour()));
+
+        //Change toolbar color
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(Color.parseColor(clickedOnMood.getEmotionalState().getColour()));
+        switch (clickedOnMood.getEmotionalState()){
+            case ANGER:
+                headerText.setTextColor(Color.parseColor("#120505"));
+                backButton.setColorFilter(Color.parseColor("#120505"));
+                break;
+            case SADNESS:
+                headerText.setTextColor(Color.parseColor("#FFFFFA"));
+                backButton.setColorFilter(Color.parseColor("#FFFFFA"));
+                break;
+
+            case SHAME:
+                headerText.setTextColor(Color.parseColor("#F9F9F0"));
+                backButton.setColorFilter(Color.parseColor("#F9F9F0"));
+                break;
+
+            case SURPRISE:
+                headerText.setTextColor(Color.parseColor("#2B2B2B"));
+                backButton.setColorFilter(Color.parseColor("#2B2B2B"));
+                break;
+        }
+
 
 
         TextView reason = (TextView) view.findViewById(R.id.reason);

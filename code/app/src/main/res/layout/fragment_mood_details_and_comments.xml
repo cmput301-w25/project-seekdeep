@@ -40,7 +40,9 @@
             android:background="#D7D4FD"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible"></androidx.appcompat.widget.Toolbar>
+            tools:visibility="visible">
+
+        </androidx.appcompat.widget.Toolbar>
 
         <ImageButton
             android:id="@+id/back_button"
