@@ -84,6 +84,11 @@ public enum EmotionalStates {
         return this.name();
     }
 
+    /**
+     * This method returns the EmotionalState instance of the string title for marker in mapsFragment
+     * @param stateName: The emotional state enum
+     * @return Returns the Emotional State
+     */
     public static EmotionalStates fromStateName(String stateName) {
         return EmotionalStates.valueOf(stateName);
     }
