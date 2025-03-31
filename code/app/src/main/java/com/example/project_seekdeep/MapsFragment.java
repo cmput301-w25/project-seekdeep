@@ -153,6 +153,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
         filter5KmRadiusButton = view.findViewById(R.id.filter_5_km_radius);
         displayToggle = view.findViewById(R.id.display_toggle);
 
+        // Set Initial states of filters
+        filterMoodHistoryButton.setEnabled(!displayToggle.isChecked());
+        filterMoodFollowingButton.setEnabled(displayToggle.isChecked());
+        filter5KmRadiusButton.setEnabled(displayToggle.isChecked());
+
         // Only use mood filter when showing mood history markers
         filterMoodHistoryButton.setOnClickListener(v -> {
             if (!displayToggle.isChecked()) {
@@ -173,12 +178,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
                 filter5KmRadiusButton.setSelected(!isSelected);
                 if (!isSelected) {          // If the button is now selected then load the new map with 5km filter
                     loadFollowingLocationsIn5kmRadius();
+                    filterMoodFollowingButton.setSelected(false);
+                    filterMoodFollowingButton.setEnabled(false);
                 } else {                    // If the button in now not selected then load the initial following map itself
                     if (radiusCircle != null) {
                         radiusCircle.remove();
                         radiusCircle = null;
                     }
                     loadFollowingLocations();
+                    filterMoodFollowingButton.setEnabled(true);
                 }
             }
         });
@@ -747,13 +755,23 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
             }
         }
         filterButton.setSelected(!locationCollection.isEmpty());
-
+        if (locationCollection.isEmpty()) {
+            Toast.makeText(requireContext(), "No Mood Events exist for such filter! Reset and Try Again.", Toast.LENGTH_SHORT).show();
+            if (filterButton == filter5KmRadiusButton){
+                filterButton.setSelected(locationCollection.isEmpty());
+            }
+        }
     }
     /**
      * This method resets the filters, displays the map with all mood events and deselects the filter.
      */
     @Override
     public void onFiltersReset() {
+        // Remove the circle for 5 KM
+        if (radiusCircle != null) {
+            radiusCircle.remove();
+            radiusCircle = null;
+        }
         if (displayToggle.isChecked()) {
             filterMoodFollowingButton.setSelected(false);
             loadFollowingLocations();
