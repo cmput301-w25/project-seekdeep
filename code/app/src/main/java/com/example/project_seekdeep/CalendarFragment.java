@@ -308,9 +308,12 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                     case "8":
                         emotion = EmotionalStates.SURPRISE.getEmoticon();
                         break;
+                    case "9":
+                        emotion = "";
+                        break;
                 }
 
-                moodsInMonth.add(emotion+ cellDate);
+                moodsInMonth.add(emotion);
             }
         }
 
