@@ -737,10 +737,22 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Filter
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             EmotionalStates emotionalState = location.getEmotionalState();
             String markerTitle = emotionalState.getStateName();
-            mMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title(markerTitle)
-                    .icon(getEmotionalLocation(emotionalState)));
+            String snippet = "Username: " + location.getUserId();
+            // Add snippet if markers for following display
+            if (filterButton == filterMoodFollowingButton || filterButton == filter5KmRadiusButton){
+                mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title(markerTitle)
+                        .snippet(snippet)
+                        .icon(getEmotionalLocation(emotionalState)));
+            }
+            // Markers for the mood history display
+            else{
+                mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title(markerTitle)
+                        .icon(getEmotionalLocation(emotionalState)));
+            }
         }
         filterButton.setSelected(!locationCollection.isEmpty());
 
