@@ -379,14 +379,6 @@ public class CreateMoodEventFragment extends Fragment implements SelectMoodDialo
                 Toast.makeText(requireContext(), "Your mood has been uploaded!", Toast.LENGTH_SHORT).show();
                 //Return to whatever screen the user was previously on
                 //UI issues: when it returns, the navbar is still highlighting Create Mood
-                requireActivity().getSupportFragmentManager().popBackStack();
-            }
-        });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Just return to whatever screen the user was previously on
-                requireActivity().getSupportFragmentManager().popBackStack();
             }
         });
     }
