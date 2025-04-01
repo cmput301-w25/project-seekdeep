@@ -59,8 +59,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
     private UserProfile loggedInUser;
 
     private FirebaseFirestore db;
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
+
     CollectionReference MoodDB;
     private TextView moodsTab;
     private TextView usersTab;
@@ -108,7 +107,7 @@ public class FeedFragment extends Fragment implements MoodArrayAdapter.OnUsernam
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return inflatedView which is the view of the fragment
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
