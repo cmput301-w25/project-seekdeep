@@ -38,6 +38,6 @@ public class CalendarCellHolder extends RecyclerView.ViewHolder implements  View
     @Override
     public void onClick(View view)
     {
-        onItemListener.onItemClick(getAdapterPosition(), (String) dayOfMonth.getText());
+        onItemListener.onItemClick( moodOfMonth.getText() );
     }
 }

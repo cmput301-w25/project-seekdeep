@@ -61,12 +61,13 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     private Date selectedDate;
     Calendar selectedDateCalendar;
     private LocalDate selectedLocalDate;
+
+    private TextView sticky;
     CalendarAdapter calendarAdapter;
     RecyclerView.LayoutManager layoutManager;
 
     ArrayList<String> moodsInMonth;
 
-    private OnGetQueryDataListener queryDataListener;
 
     public Boolean smallThreadFinished = false;
 
@@ -132,6 +133,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         //init the views
         calendarRecyclerView = view.findViewById(R.id.calendar_recycler_view);
         monthYearText = view.findViewById(R.id.monthYearTV);
+        sticky = view.findViewById(R.id.sticky);
 
         //get the date
         selectedDate = new Date();
@@ -197,7 +199,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         moodsInMonth = new ArrayList<String>();
 
         Map<Integer, ArrayList<Mood>> calendarMoodHash = new HashMap<>();
-        Hashtable<Integer,Mood> moodHashtable = new Hashtable<Integer, Mood>();
         ArrayList<Mood> queryMoods = new ArrayList<Mood>();
         moods.whereEqualTo("owner.username", loggedInUser.getUsername())
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -302,95 +303,31 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
                         calendarRecyclerView.setLayoutManager(layoutManager);
                         calendarRecyclerView.setAdapter(calendarAdapter);
+
+
+                        //set tip based on today
+                        Calendar todayCalendar = Calendar.getInstance();
+                        todayCalendar.setTime(new Date());
+                        int dayFromYearToday = todayCalendar.get(Calendar.DAY_OF_YEAR);
+                        ArrayList<Mood> moods5 = calendarMoodHash.get(dayFromYearToday);
+                        if(moods5 != null) {
+                            int maxValue = Integer.MIN_VALUE;
+                            for (Integer integer: largestEmotion(moods5)){
+                                if (integer>maxValue)
+                                    maxValue=integer;
+                            }
+                            int loca = 0;
+                            loca = largestEmotion(moods5).indexOf(maxValue);
+                            String emo = locaToEmotion(loca);
+
+                            sticky.setText(tip(emo));
+                        }
                     }
                 });
 
 
     }
 
-
-
-    public void createMoodsInMonthArray(ArrayList<String> daysInMonth){
-        moodsInMonth = new ArrayList<>();
-        CollectionReference moods = FirebaseFirestore.getInstance().collection("MoodDB");
-
-        int j = daysInMonth.size();
-        for (int i = 0; i < j; i++){
-            if (daysInMonth.get(i).isEmpty()){
-                moodsInMonth.add("");
-
-            } else{
-                /* Todo     query firebase for the mood
-                            Handle the empty days
-                          handle the ties in queries
-
-                 */
-                //Find  Date based on moodsInMonth
-
-                Calendar whatDay = (Calendar) selectedDateCalendar.clone();
-                whatDay.add(Calendar.DATE, -1*selectedDateCalendar.get(Calendar.DATE));
-                String dateNumberString = daysInMonth.get(i);
-                //date of the cell
-                whatDay.add(Calendar.DATE, Integer.parseInt(dateNumberString));
-                Date cellDate = whatDay.getTime();
-                ArrayList<DocumentSnapshot> queryReturn = new ArrayList<>();
-                Log.d("fuck",loggedInUser.getUsername());
-                moods.whereEqualTo("owner.username", loggedInUser.getUsername())
-                        .whereLessThan("postedDate", new Date(cellDate.getTime()+86400000))
-                        .whereGreaterThan("postedDate", cellDate)
-                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                for(QueryDocumentSnapshot document : task.getResult()){
-                                    queryReturn.add(document);
-                                    Log.d("NANCY",  "snapshot doc: "+ document.toString());
-                                }
-
-                                List<Integer> largestEmotion = Arrays.asList(0,0,0,0,0,0,0,0);
-                                for (int k = 0; k< queryReturn.size()-1; k++){
-                                    String t = (String) queryReturn.get(k).get("emotionalState");
-                                    switch (t){
-                                        case "ANGER":
-                                            largestEmotion.set(0, largestEmotion.get(0)+1);
-                                            break;
-                                        case "CONFUSION":
-                                            largestEmotion.set(1, largestEmotion.get(1)+1);
-                                            break;
-                                        case "DISGUST":
-                                            largestEmotion.set(2, largestEmotion.get(2)+1);
-                                            break;
-                                        case "FEAR":
-                                            largestEmotion.set(3, largestEmotion.get(3)+1);
-                                            break;
-                                        case "HAPPINESS":
-                                            largestEmotion.set(4, largestEmotion.get(4)+1);
-                                            break;
-                                        case "SADNESS":
-                                            largestEmotion.set(5, largestEmotion.get(5)+1);
-                                            break;
-                                        case "SHAME":
-                                            largestEmotion.set(6, largestEmotion.get(6)+1);
-                                            break;
-                                        case "SURPRISE":
-                                            largestEmotion.set(7, largestEmotion.get(7)+1);
-                                            break;
-                                    }
-                                }
-                                int maxValue = Integer.MIN_VALUE;
-                                for (Integer integer: largestEmotion){
-                                    if (integer>maxValue)
-                                        maxValue=integer;
-                                }
-                                int loca = 0;
-                                loca = largestEmotion.indexOf(maxValue);
-                                String emotion = locaToEmotion(loca);
-                                moodsInMonth.add(emotion);
-                            }
-                        });
-            }
-
-        };
-    }
 
     public String getMonthFromCalendar(Calendar calendar){
         String month = null;
@@ -529,14 +466,100 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     }
 
 
+    public List<Integer> largestEmotion(ArrayList<Mood> moods3){
+        List<Integer> largestEmotion = Arrays.asList(0,0,0,0,0,0,0,0);
+        for (int k = 0; k< moods3.size()-1; k++){
+            EmotionalStates t = moods3.get(k).getEmotionalState();
+            switch (t){
+                case ANGER:
+                    largestEmotion.set(0, largestEmotion.get(0)+1);
+                    break;
+                case CONFUSION:
+                    largestEmotion.set(1, largestEmotion.get(1)+1);
+                    break;
+                case DISGUST:
+                    largestEmotion.set(2, largestEmotion.get(2)+1);
+                    break;
+                case FEAR:
+                    largestEmotion.set(3, largestEmotion.get(3)+1);
+                    break;
+                case HAPPINESS:
+                    largestEmotion.set(4, largestEmotion.get(4)+1);
+                    break;
+                case SADNESS:
+                    largestEmotion.set(5, largestEmotion.get(5)+1);
+                    break;
+                case SHAME:
+                    largestEmotion.set(6, largestEmotion.get(6)+1);
+                    break;
+                case SURPRISE:
+                    largestEmotion.set(7, largestEmotion.get(7)+1);
+                    break;
+            }
+        }
+
+        return largestEmotion;
+    }
+    public String tip (String emoticon){
+        String color = null;
+        switch (emoticon){
+            //anger
+            case "\uD83D\uDE20":
+                color = "You seem very angry lately...";
+
+                break;
+
+            //confusion
+            case "\uD83E\uDD14":
+                color = "Everything's always been confusing, no?";
+                break;
+
+            //disgust
+            case "\uD83E\uDD22":
+                color = "Everything's giving you digust? Might need to go to other places...";
+                break;
+
+            //fear
+            case "\uD83D\uDE28":
+                color = "Are you paranoid, or do you really need to watch out for serial killers?";
+                break;
+
+            //happiness
+            case "\uD83D\uDE04":
+                color = "All's happy go lucky here!";
+                break;
+
+            //sadness
+            case "☹️":
+                color = "Sadness isn't the end. It'll get better soon.";
+                break;
+
+            //shame
+            case "\uD83D\uDE14":
+                color = "Shame? You gotta stop embarrassing yourself bbg.";
+                break;
+
+            //surprise
+            case "\uD83D\uDE2F":
+                color = "Surprises are everywhere. Time to get used to them.";
+                break;
+
+            default:
+                color = "Nothing much to say.";
+
+
+        }
+        return color;
+    }
 
 
     @Override
-    public void onItemClick(int position, String dayText) {
-        if(!dayText.equals("")) {
-            //you can probably change this later
-            String message = "Selected Date " + dayText + " " + selectedDateCalendar.get(Calendar.MONTH);
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    public void onItemClick(CharSequence mood) {
+        mood = mood.toString();
+        if(!(mood == null)) {
+            sticky.setText(tip(mood.toString()));
+        } else{
+            sticky.setText("");
         }
     }
 

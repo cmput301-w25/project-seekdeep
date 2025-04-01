@@ -74,7 +74,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarCellHolder> {
     }
 
     public interface  OnItemListener{
-        void onItemClick(int position, String dayText);
+        void onItemClick(CharSequence charSequence);
     }
 
     public int cellColor (String emoticon){
