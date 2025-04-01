@@ -1,12 +1,10 @@
 package com.example.project_seekdeep;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,21 +12,19 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.project_seekdeep.Followings.FollowingFragment;
+import com.example.project_seekdeep.Helpers.NotificationHandler;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.Helpers.UserProvider;
+import com.example.project_seekdeep.LoginAndSignup.LogInFragment;
+import com.example.project_seekdeep.Moods.MoodHistoryFragment;
+import com.example.project_seekdeep.Navigation.CreateMoodEventFragment;
+import com.example.project_seekdeep.Navigation.FeedFragment;
+import com.example.project_seekdeep.Navigation.MapsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * MainActivity is the entry point for the Little Blue Notebook app which launches the initial Login page and initializes Firebase Firestore
@@ -52,12 +48,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
 
         BottomNavigationView navBar = findViewById(R.id.bottomNavigationView);
         navBar.setOnItemSelectedListener(navListener);
+
 
         // Initially hide the navigation bar until a successful log-in
         navBar.setVisibility(View.GONE);
@@ -86,13 +83,19 @@ public class MainActivity extends AppCompatActivity {
             // TODO: Replace "feed_bottom_nav" with "Feed" so it's simple and consistent with "History"
         } else if (itemPressed == R.id.feed_bottom_nav) {
             selectedFragment = new FeedFragment();
+            //add logged in user's UserProfile to bundle to pass to feed
+            Bundle bundle = new Bundle();
+            bundle.putString("username", getCurrentUsername().getUsername());
+            bundle.putSerializable("userProfile", currentUser);
+            selectedFragment.setArguments(bundle);
         } else if (itemPressed == R.id.create_mood_bottom_nav) {
             selectedFragment = new CreateMoodEventFragment();
             //Bundle the logged-in user's UserProfile & pass to CreateMoodEventFragment()
             Bundle bundle = new Bundle();
             bundle.putSerializable("userProfile", currentUser); //make currentUser Serializbale, with key "userProfile"
-//            bundle.putString("username", getCurrentUsername()); //username stored as string in the bundle
             selectedFragment.setArguments(bundle);  //attach bundle to the fragment
+            //go to Create Mood page with a BackStack
+            fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).addToBackStack(null).commit();
         } else if (itemPressed == R.id.following_bottom_nav) {
             selectedFragment = new FollowingFragment();
         }
@@ -105,7 +108,8 @@ public class MainActivity extends AppCompatActivity {
             //add logged in user's UserProfile to bundle to pass to mood history
             Bundle bundle = new Bundle();
             bundle.putString("username", getCurrentUsername().getUsername());
-            bundle.putSerializable("userProfile", currentUser);
+            UserProfile user = getCurrentUsername();
+            bundle.putSerializable("userProfile", user);
             selectedFragment.setArguments(bundle);
             fragManager.beginTransaction().replace(R.id.frameLayout, selectedFragment).commit();
         }
@@ -137,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         FeedFragment feedFragment = new FeedFragment();
         navBar.setVisibility(View.VISIBLE);
         Bundle bundle = new Bundle();
-        bundle.putString("username", getCurrentUsername().getUsername());
+        bundle.putString("username", currentUser.getUsername());
         bundle.putSerializable("userProfile", currentUser);
         feedFragment.setArguments(bundle);
         fragManager.beginTransaction().replace(R.id.frameLayout, feedFragment).commit();
@@ -149,10 +153,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Once login is successful, can create initizlize the followings list
         //Use one instance of UserProvider (to which will control follow requests throughout MainActivity's lifecycle)
-        userProvider = UserProvider.getInstance(this, currentUser);
-        userProvider.initializeFollowingsList();
-        userProvider.listenForNewFollowRequests();
-        userProvider.listenForAcceptedRequests();
+        NotificationHandler notifs = new NotificationHandler(this, currentUser, FirebaseFirestore.getInstance());
+        notifs.initializeFollowingsList();
+        notifs.listenForNewFollowRequests();
+        notifs.listenForAcceptedRequests();
     }
 
     public Fragment getSelectedFragment() { return selectedFragment; }

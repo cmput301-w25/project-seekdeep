@@ -4,15 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
+
+import com.example.project_seekdeep.Helpers.EmotionalStates;
+import com.example.project_seekdeep.Helpers.UserProfile;
+import com.example.project_seekdeep.Moods.Mood;
+import com.example.project_seekdeep.Moods.MoodFiltering;
 
 import org.junit.Test;
 
-import java.util.Calendar;
-
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MoodFilteringTest {
@@ -699,7 +701,6 @@ public class MoodFilteringTest {
         Calendar calendar = Calendar.getInstance();
         Mood amood = new Mood(testUser, EmotionalStates.HAPPINESS, calendar.getTime(), "3");
         moods.add(amood);
-
         calendar.add(Calendar.DAY_OF_YEAR, -2);
         // add a mood for testUser2
         UserProfile testUser2 = new UserProfile("tofu", "tofu123");
