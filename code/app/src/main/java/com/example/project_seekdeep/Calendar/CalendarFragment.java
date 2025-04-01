@@ -248,7 +248,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                                 if(moods3 != null) {
 
                                     List<Integer> largestEmotion = Arrays.asList(0,0,0,0,0,0,0,0);
-                                    for (int k = 0; k< moods3.size()-1; k++){
+                                    for (int k = 0; k< moods3.size(); k++){
                                         EmotionalStates t = moods3.get(k).getEmotionalState();
                                         switch (t){
                                             case ANGER:
@@ -287,6 +287,10 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                                     loca = largestEmotion.indexOf(maxValue);
                                     String emotion = locaToEmotion(loca);
                                     moodsInMonth.add(emotion);
+
+                                    if(whatDay.get(Calendar.DAY_OF_YEAR) == selectedDateCalendar.get(Calendar.DAY_OF_YEAR)){
+                                        sticky.setText(tip(emotion));
+                                    }
                                 } else{
                                     moodsInMonth.add("");
                                 }
@@ -303,22 +307,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 
 
                         //set tip based on today
-                        Calendar todayCalendar = Calendar.getInstance();
-                        todayCalendar.setTime(new Date());
-                        int dayFromYearToday = todayCalendar.get(Calendar.DAY_OF_YEAR);
-                        ArrayList<Mood> moods5 = calendarMoodHash.get(dayFromYearToday);
-                        if(moods5 != null) {
-                            int maxValue = Integer.MIN_VALUE;
-                            for (Integer integer: largestEmotion(moods5)){
-                                if (integer>maxValue)
-                                    maxValue=integer;
-                            }
-                            int loca = 0;
-                            loca = largestEmotion(moods5).indexOf(maxValue);
-                            String emo = locaToEmotion(loca);
 
-                            sticky.setText(tip(emo));
-                        }
                     }
                 });
 
@@ -416,42 +405,42 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         String emotion = null;
         switch (loca) {
             //anger
-            case 1:
+            case 0:
                 emotion = EmotionalStates.ANGER.getEmoticon();
                 break;
 
             //confusion
-            case 2:
+            case 1:
                 emotion = EmotionalStates.CONFUSION.getEmoticon();
                 break;
 
             //disgust
-            case 3:
+            case 2:
                 emotion = EmotionalStates.DISGUST.getEmoticon();
                 break;
 
             //fear
-            case 4:
+            case 3:
                 emotion = EmotionalStates.FEAR.getEmoticon();
                 break;
 
             //happiness
-            case 5:
+            case 4:
                 emotion = EmotionalStates.HAPPINESS.getEmoticon();
                 break;
 
             //sadness
-            case 6:
+            case 5:
                 emotion = EmotionalStates.SADNESS.getEmoticon();
                 break;
 
             //shame
-            case 7:
+            case 6:
                 emotion = EmotionalStates.SHAME.getEmoticon();
                 break;
 
             //surprise
-            case 8:
+            case 7:
                 emotion = EmotionalStates.SURPRISE.getEmoticon();
                 break;
             default:
@@ -552,7 +541,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 
     @Override
     public void onItemClick(CharSequence mood) {
-        mood = mood.toString();
+        if(mood != null) {
+            mood = mood.toString();
+        }
         if(!(mood == null)) {
             sticky.setText(tip(mood.toString()));
         } else{
